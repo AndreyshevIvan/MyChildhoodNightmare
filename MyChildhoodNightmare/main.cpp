@@ -21,7 +21,8 @@ int main()
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar + sf::Style::Close);
 
 	Game game;
-	game.InitGame();
+	if (!game.InitGame())
+		return false;
 
 	EnterGameLoop(window, game);
 

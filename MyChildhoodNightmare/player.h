@@ -2,14 +2,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-const sf::Vector2f PLAYER_SIZE = { 50, 90 };
+const sf::Vector2f PLAYER_SIZE = { 75, 90 };
 const sf::Vector2f PLAYER_START_POS = { 200 , 300 };
 const float PLAYER_MOVE_SPEED = 1;
 
 class Player
 {
 private:
-	sf::RectangleShape playerShape;
+	sf::Sprite playerSprite;
 	sf::Texture playerTexture;
 public:
 	bool InitPlayer();

@@ -1,11 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <iostream>
+#include <cmath>
 #include "player.h"
 
 enum GameStatus
 {
 	START_MENU,
+	CHENGE_LEVEL,
 	PLAY,
 	PAUSE,
 	GAME_OVER

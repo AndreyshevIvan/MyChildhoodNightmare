@@ -5,8 +5,12 @@ using namespace sf;
 
 bool Game::InitGame()
 {
+	if (!player.InitPlayer())
+	{
+		cout << "Player textures not found" "\n";
+		return false;
+	}
 	gameStatus = PLAY;
-	player.InitPlayer();
 
 	return true;
 }
