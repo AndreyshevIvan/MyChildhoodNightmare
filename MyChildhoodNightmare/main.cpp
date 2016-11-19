@@ -4,8 +4,6 @@
 #include <string>
 #include "game.h"
 
-static const int RESOLUTION_WIDTH = 1280;
-static const int RESOLUTION_HEIGHT = 720;
 static const std::string GAME_NAME = "My Childhood Nightmare";
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
@@ -59,7 +57,8 @@ void Update(Game& game)
 
 void Render(sf::RenderWindow& window, Game& game)
 {
-	window.clear();
+	window.clear(BACKGROUND_COLOR);
 	game.player.DrawPlayer(window);
+	game.map.DrawMap(window);
 	window.display();
 }

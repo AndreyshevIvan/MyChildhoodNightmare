@@ -7,7 +7,12 @@ bool Game::InitGame()
 {
 	if (!player.InitPlayer())
 	{
-		cout << "Player textures not found" "\n";
+		cout << "ERROR : Player textures not found" "\n";
+		return false;
+	}
+	if (!map.InitMap())
+	{
+		cout << "ERROR : Map not found" "\n";
 		return false;
 	}
 	gameStatus = PLAY;
@@ -30,15 +35,16 @@ void Game::Control()
 {
 	if (gameStatus == PLAY)
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		if (Keyboard::isKeyPressed(Keyboard::Up))
 			player.Jump();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		if (Keyboard::isKeyPressed(Keyboard::Down))
 			player.Seat();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		if (Keyboard::isKeyPressed(Keyboard::Left))
 			player.GoLeft();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		if (Keyboard::isKeyPressed(Keyboard::Right))
 			player.GoRight();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		if (Keyboard::isKeyPressed(Keyboard::Escape))
 			gameStatus = PAUSE;
+		player.pCollisionShape.setPosition(player.GetPlayerPos());
 	}
 }
