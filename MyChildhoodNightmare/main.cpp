@@ -72,8 +72,7 @@ void Update(Game& game, float const& elapsedTime)
 
 void Render(sf::RenderWindow& window, Game& game)
 {
-	window.clear(BACKGROUND_COLOR);
-	game.map.DrawMap(window);
+	window.clear(sf::Color::White);
 	window.setView(game.camera);
 	game.level.Draw(window);
 	game.player.DrawCharacter(window);

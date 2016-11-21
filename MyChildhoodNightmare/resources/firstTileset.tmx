@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="80" height="40" tilewidth="32" tileheight="32" nextobjectid="16">
  <tileset firstgid="1" name="fitstTileset" tilewidth="32" tileheight="32" tilecount="24" columns="8">
-  <image source="platformertiles.png" width="256" height="96"/>
+  <image source="resources/platformertiles.png" width="256" height="96"/>
  </tileset>
  <layer name="Wrapper" width="80" height="40">
   <data>
@@ -12286,7 +12286,7 @@
    <tile gid="12"/>
    <tile gid="12"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="12"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
