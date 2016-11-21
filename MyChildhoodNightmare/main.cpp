@@ -8,19 +8,35 @@ static const std::string GAME_NAME = "My Childhood Nightmare";
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 void HandleEvents(sf::RenderWindow& window, Game& game);
-void Update(Game& game);
+void Update(Game& game, float const& elapsedTime);
 void Render(sf::RenderWindow& window, Game& game);
+
+/*
+for (auto enemyObject : enemyObjects)
+{
+Enemy enemy;
+enemy.enemySprite.setTexture(texture);
+enemy.enemy.setPosition(enemyObject.rect.left, enemyObject.rect.top);
+}
+character player;
+Map map;
+
+Game game(player, map);
+*/
 
 int main()
 {
 	sf::VideoMode videoMode;
-	videoMode.width = RESOLUTION_WIDTH;
-	videoMode.height = RESOLUTION_HEIGHT;
+	videoMode.width = (unsigned int)RESOLUTION_WIDTH;
+	videoMode.height = (unsigned int)RESOLUTION_HEIGHT;
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar + sf::Style::Close);
 
 	Game game;
+
 	if (!game.InitGame())
-		return false;
+	{
+		return 1;
+	}
 
 	EnterGameLoop(window, game);
 
@@ -31,10 +47,8 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 {
 	while (window.isOpen())
 	{
-		game.UpdateElapsedTime();
-
 		HandleEvents(window, game);
-		Update(game);
+		Update(game, game.GetElapsedTime());
 		Render(window, game);
 	}
 }
@@ -48,17 +62,20 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 			window.close();
 	}
 	game.Control();
+	game.UpdateCamera(game.player.GetCharacterPos());
 }
 
-void Update(Game& game)
+void Update(Game& game, float const& elapsedTime)
 {
-
+	game.Collision(elapsedTime);
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(BACKGROUND_COLOR);
-	game.player.DrawPlayer(window);
 	game.map.DrawMap(window);
+	window.setView(game.camera);
+	game.level.Draw(window);
+	game.player.DrawCharacter(window);
 	window.display();
 }

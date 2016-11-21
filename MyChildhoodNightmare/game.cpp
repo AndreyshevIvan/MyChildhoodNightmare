@@ -5,29 +5,27 @@ using namespace sf;
 
 bool Game::InitGame()
 {
-	if (!player.InitPlayer())
+	if (player.InitPlayer() && map.InitMap() && level.LoadFromFile("resources/firstTileset.tmx"))
 	{
-		cout << "ERROR : Player textures not found" "\n";
-		return false;
-	}
-	if (!map.InitMap())
-	{
-		cout << "ERROR : Map not found" "\n";
-		return false;
-	}
-	gameStatus = PLAY;
+		camera.reset(sf::FloatRect(0, 0, RESOLUTION_WIDTH, RESOLUTION_HEIGHT));
+		gameStatus = PLAY;
+		mapObj = level.GetAllObjects();
 
-	return true;
+		return true;
+	}
+
+	return false;
 }
 
-void Game::UpdateElapsedTime()
+void Game::UpdateCamera(sf::Vector2f const& playerPos)
 {
-	elapsedTime = clock.getElapsedTime().asSeconds();
-	clock.restart();
+	camera.setCenter(sf::Vector2f(playerPos.x, playerPos.y - PLAYER_SIZE.y / 2.0f));
 }
 
 float Game::GetElapsedTime()
 {
+	elapsedTime = clock.getElapsedTime().asSeconds();
+	clock.restart();
 	return elapsedTime;
 }
 
@@ -36,15 +34,24 @@ void Game::Control()
 	if (gameStatus == PLAY)
 	{
 		if (Keyboard::isKeyPressed(Keyboard::Up))
-			player.Jump();
+			player.Jump(elapsedTime);
 		if (Keyboard::isKeyPressed(Keyboard::Down))
-			player.Seat();
+			player.Seat(elapsedTime);
 		if (Keyboard::isKeyPressed(Keyboard::Left))
-			player.GoLeft();
+			player.GoLeft(elapsedTime);
 		if (Keyboard::isKeyPressed(Keyboard::Right))
-			player.GoRight();
+			player.GoRight(elapsedTime);
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 			gameStatus = PAUSE;
-		player.pCollisionShape.setPosition(player.GetPlayerPos());
+		player.cCollisionShape.setPosition(player.GetCharacterPos());
 	}
+}
+
+void Game::Collision(float const& elapsedTime)
+{
+	Vector2f mapPos = map.mSprite.getPosition();
+	Vector2f playerPos = player.GetCharacterPos();
+	auto playerBounds = player.cCollisionShape.getGlobalBounds();
+	auto mapBounds = map.mSprite.getGlobalBounds();
+	float step = PLAYER_MOVE_SPEED * elapsedTime;
 }

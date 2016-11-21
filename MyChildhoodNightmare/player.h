@@ -1,25 +1,42 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <string>
 
 const sf::Vector2f PLAYER_SIZE = { 75, 90 };
 const sf::Vector2f PLAYER_COLLISION_SHAPE_SIZE = { PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y - 10 };
-const sf::Vector2f PLAYER_START_POS = { 200 , 300 };
-const float PLAYER_MOVE_SPEED = 1;
+const sf::Vector2f PLAYER_SPAWN_POS = { 200 , 300 };
+const float PLAYER_MOVE_SPEED = 350;
+const std::string PLAYER_FILE_NAME = "player.png";
 
-class Player
+enum ExistenceStatus
 {
-private:
-	sf::Sprite pSprite;
-	sf::Texture pTexture;
-public:
-	sf::RectangleShape pCollisionShape;
+	NOT_SPAWNED,
+	LIVE,
+	DEATH
+};
+
+enum MoveingStatus
+{
+	IDLE,
+	RUN,
+	FLY,
+	SEAT
+};
+
+struct Player
+{
+	sf::Texture cTexture;
+	MoveingStatus cMoveStatus;
+	ExistenceStatus cExistenceStatus;
+	sf::Sprite cSprite;
+	sf::RectangleShape cCollisionShape;
 
 	bool InitPlayer();
-	void DrawPlayer(sf::RenderWindow& window);
-	void Jump();
-	void Seat();
-	void GoLeft();
-	void GoRight();
-	sf::Vector2f GetPlayerPos();
+	sf::Vector2f GetCharacterPos();
+	void DrawCharacter(sf::RenderWindow& window);
+	void Jump(float const& elapsedTime);
+	void Seat(float const& elapsedTime);
+	void GoLeft(float const& elapsedTime);
+	void GoRight(float const& elapsedTime);
 };

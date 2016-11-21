@@ -2,14 +2,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+const std::string MAP_FILE_NAME = "map.png";
 const sf::Color BACKGROUND_COLOR = sf::Color(64, 1, 1);
 
-class Map
+struct Map
 {
-private:
-	sf::Sprite mSprite;
 	sf::Texture mTexture;
-public:
+	sf::Sprite mSprite;
+
 	bool InitMap();
 	void DrawMap(sf::RenderWindow& window);
 };

@@ -1,53 +1,59 @@
 #include "player.h"
+#include <iostream>
 
 using namespace std;
 using namespace sf;
 
 bool Player::InitPlayer()
 {
-	if (!pTexture.loadFromFile("resources/player.png", sf::IntRect(0, 0, PLAYER_SIZE.x, PLAYER_SIZE.y)))
+	if (!cTexture.loadFromFile("resources/" + PLAYER_FILE_NAME, sf::IntRect(0, 0, PLAYER_SIZE.x, PLAYER_SIZE.y)))
+	{
 		return false;
+	}
 
-	pTexture.setSmooth(true);
-	pSprite.setTexture(pTexture);
-	pSprite.setOrigin(PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y);
-	pSprite.setPosition(600, 400);
+	cTexture.setSmooth(true);
+	cSprite.setTexture(cTexture);
+	cSprite.setOrigin(PLAYER_SIZE.x / 2.0, PLAYER_SIZE.y);
+	cSprite.setPosition(PLAYER_SPAWN_POS);
 
-	pCollisionShape.setSize(PLAYER_COLLISION_SHAPE_SIZE);
-	pCollisionShape.setOrigin(PLAYER_COLLISION_SHAPE_SIZE.x / 2.0f, PLAYER_COLLISION_SHAPE_SIZE.y);
-	pCollisionShape.setPosition(GetPlayerPos());
-	pCollisionShape.setFillColor(Color::Green);
+	cCollisionShape.setSize({ PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y - 10 });
+	cCollisionShape.setOrigin(cCollisionShape.getSize().x / 2.0f, cCollisionShape.getSize().y);
+	cCollisionShape.setPosition(PLAYER_SPAWN_POS);
+	cCollisionShape.setFillColor(sf::Color::Green);
+
+	cMoveStatus = IDLE;
+	cExistenceStatus = NOT_SPAWNED;
 
 	return true;
 }
 
-void Player::DrawPlayer(RenderWindow& window)
+void Player::DrawCharacter(RenderWindow& window)
 {
-	window.draw(pSprite);
-	window.draw(pCollisionShape);
+	window.draw(cSprite);
+	window.draw(cCollisionShape);
 }
 
-void Player::Jump()
+void Player::Jump(float const& elapsedTime)
 {
-	pSprite.move(0, -PLAYER_MOVE_SPEED);
+	cSprite.move(0, -PLAYER_MOVE_SPEED * elapsedTime);
 }
 
-void Player::Seat()
+void Player::Seat(float const& elapsedTime)
 {
-	pSprite.move(0, PLAYER_MOVE_SPEED);
+	cSprite.move(0, PLAYER_MOVE_SPEED * elapsedTime);
 }
 
-void Player::GoLeft()
+void Player::GoLeft(float const& elapsedTime)
 {
-	pSprite.move(-PLAYER_MOVE_SPEED, 0);
+	cSprite.move(-PLAYER_MOVE_SPEED * elapsedTime, 0);
 }
 
-void Player::GoRight()
+void Player::GoRight(float const& elapsedTime)
 {
-	pSprite.move(PLAYER_MOVE_SPEED, 0);
+	cSprite.move(PLAYER_MOVE_SPEED * elapsedTime, 0);
 }
 
-sf::Vector2f Player::GetPlayerPos()
+sf::Vector2f Player::GetCharacterPos()
 {
-	return pSprite.getPosition();
+	return cSprite.getPosition();
 }

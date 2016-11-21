@@ -1,13 +1,17 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "tinyxml/level.h"
+#include <vector>
+#include <list>
 #include <iostream>
 #include <cmath>
-#include "player.h"
 #include "map.h"
+#include "game.h"
+#include "player.h"
 
-static const int RESOLUTION_WIDTH = 1280;
-static const int RESOLUTION_HEIGHT = 720;
+static const float RESOLUTION_WIDTH = 1280;
+static const float RESOLUTION_HEIGHT = 720;
 
 enum GameStatus
 {
@@ -18,19 +22,20 @@ enum GameStatus
 	GAME_OVER
 };
 
-class Game
+struct Game
 {
-private:
 	sf::Clock clock;
-public:
-	Map map;
 	Player player;
-
-	float elapsedTime;
+	Map map; 
+	sf::View camera;
 	GameStatus gameStatus;
+	Level level;
+	float elapsedTime;
+	std::vector<Object> mapObj;
 
 	bool InitGame();
-	void UpdateElapsedTime();
+	void UpdateCamera(sf::Vector2f const& centerPos);
 	float GetElapsedTime();
 	void Control();
+	void Collision(float const& elapsedTime);
 };
