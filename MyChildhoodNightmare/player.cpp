@@ -6,54 +6,75 @@ using namespace sf;
 
 bool Player::InitPlayer()
 {
-	if (!cTexture.loadFromFile("resources/" + PLAYER_FILE_NAME, sf::IntRect(0, 0, PLAYER_SIZE.x, PLAYER_SIZE.y)))
+	if (!playerTexture.loadFromFile("resources/" + PLAYER_FILE_NAME))
 	{
 		return false;
 	}
+	playerMoveRect.left = PLAYER_SPAWN_POS.x;
+	playerMoveRect.top = PLAYER_SPAWN_POS.y;
+	playerMoveRect.width = PLAYER_SIZE.x; 
+	playerMoveRect.height = PLAYER_SIZE.y;
 
-	cTexture.setSmooth(true);
-	cSprite.setTexture(cTexture);
-	cSprite.setOrigin(PLAYER_SIZE.x / 2.0, PLAYER_SIZE.y);
-	cSprite.setPosition(PLAYER_SPAWN_POS);
+	playerTexture.setSmooth(true);
+	playerShape.setSize(PLAYER_SIZE);
+	playerShape.setTexture(&playerTexture);
+	playerShape.setPosition(PLAYER_SPAWN_POS);
 
-	cCollisionShape.setSize({ PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y - 10 });
-	cCollisionShape.setOrigin(cCollisionShape.getSize().x / 2.0f, cCollisionShape.getSize().y);
-	cCollisionShape.setPosition(PLAYER_SPAWN_POS);
-	cCollisionShape.setFillColor(sf::Color::Green);
+	playerRunStatus = NOT_RUN;
+	playerJumpStatus = FLY;
+	playerSeatStatus = NOT_SEAT;
+	playerExistStatus = NOT_SPAWNED;
 
-	cMoveStatus = IDLE;
-	cExistenceStatus = NOT_SPAWNED;
+	playerSpeed = { 0, 0 };
 
 	return true;
 }
 
 void Player::DrawCharacter(RenderWindow& window)
 {
-	window.draw(cSprite);
-	window.draw(cCollisionShape);
+	window.draw(playerShape);
 }
 
 void Player::Jump(float const& elapsedTime)
 {
-	cSprite.move(0, -PLAYER_MOVE_SPEED * elapsedTime);
+	if (isPlayerOnGround)
+	{
+		playerSpeed.y = -PLAYER_MOVE_SPEED * elapsedTime;
+	}
 }
 
 void Player::Seat(float const& elapsedTime)
 {
-	cSprite.move(0, PLAYER_MOVE_SPEED * elapsedTime);
+
 }
 
 void Player::GoLeft(float const& elapsedTime)
 {
-	cSprite.move(-PLAYER_MOVE_SPEED * elapsedTime, 0);
+	playerSpeed.x = -PLAYER_MOVE_SPEED * elapsedTime;
+	playerRunStatus = RUN_LEFT;
 }
 
 void Player::GoRight(float const& elapsedTime)
 {
-	cSprite.move(PLAYER_MOVE_SPEED * elapsedTime, 0);
+	playerSpeed.x = PLAYER_MOVE_SPEED * elapsedTime;
+	playerRunStatus = RUN_RIGHT;
 }
 
 sf::Vector2f Player::GetCharacterPos()
 {
-	return cSprite.getPosition();
+	return { playerMoveRect.left, playerMoveRect.top };
+}
+
+void Player::MovePlayer(float const& elapsedTime)
+{
+	if (playerRunStatus != NOT_RUN)
+	{
+		playerMoveRect.left += playerSpeed.x;
+		playerRunStatus = NOT_RUN;
+	}
+	cout << playerSpeed.x << "\n";
+
+	//playerMoveRect.top += playerSpeed.y;
+
+	playerShape.setPosition(GetCharacterPos());
 }

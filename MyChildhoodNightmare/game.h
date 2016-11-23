@@ -37,5 +37,5 @@ struct Game
 	void UpdateCamera(sf::Vector2f const& centerPos);
 	float GetElapsedTime();
 	void Control();
-	void Collision(float const& elapsedTime);
+	void Collision();
 };

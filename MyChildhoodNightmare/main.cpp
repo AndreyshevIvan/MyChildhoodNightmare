@@ -11,19 +11,6 @@ void HandleEvents(sf::RenderWindow& window, Game& game);
 void Update(Game& game, float const& elapsedTime);
 void Render(sf::RenderWindow& window, Game& game);
 
-/*
-for (auto enemyObject : enemyObjects)
-{
-Enemy enemy;
-enemy.enemySprite.setTexture(texture);
-enemy.enemy.setPosition(enemyObject.rect.left, enemyObject.rect.top);
-}
-character player;
-Map map;
-
-Game game(player, map);
-*/
-
 int main()
 {
 	sf::VideoMode videoMode;
@@ -62,19 +49,22 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 			window.close();
 	}
 	game.Control();
-	game.UpdateCamera(game.player.GetCharacterPos());
+	game.Collision();
 }
 
 void Update(Game& game, float const& elapsedTime)
 {
-	game.Collision(elapsedTime);
+	game.player.MovePlayer(elapsedTime);
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(sf::Color::White);
+
+	game.UpdateCamera(game.player.GetCharacterPos());
 	window.setView(game.camera);
 	game.level.Draw(window);
 	game.player.DrawCharacter(window);
+
 	window.display();
 }
