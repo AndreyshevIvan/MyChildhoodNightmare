@@ -3,13 +3,13 @@
 #include <SFML/Audio.hpp>
 #include <string>
 
-const float FLYING_SLOWDOWN = 0.55;
+const float PLAYER_SHOOT_COLDOWN = 0.3;
 
 enum ExistenceStatus
 {
 	NOT_SPAWNED,
 	LIVE,
-	DEATH
+	DEAD
 };
 
 enum MoveingStatus
@@ -31,13 +31,10 @@ enum SeatStatus
 	NOT_SEAT
 };
 
-enum GameStatus
+enum Orientation
 {
-	START_MENU,
-	CHENGE_LEVEL,
-	PLAY,
-	PAUSE,
-	GAME_OVER
+	LEFT = 1,
+	RIGHT
 };
 
 struct Character
@@ -50,10 +47,13 @@ struct Character
 	JumpingStatus jumpStatus;
 	SeatStatus seatStatus;
 	ExistenceStatus existStatus;
+	Orientation orientation;
 
 	float moveSpeed;
-	float moveVelocity;
+	float jumpSpeed;
 	float jumpHeight;
+
+	float shootColdown;
 
 	bool InitCharacter(std::string const& textureFileName, sf::Vector2f const& spawnPos, sf::Vector2f const& size, float speed, float jumpH);
 

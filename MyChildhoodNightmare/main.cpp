@@ -34,8 +34,10 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 {
 	while (window.isOpen())
 	{
+		game.SetElapsedTime();
+
 		HandleEvents(window, game);
-		Update(game, game.GetElapsedTime());
+		Update(game, game.elapsedTime);
 		Render(window, game);
 	}
 }
@@ -53,17 +55,19 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 
 void Update(Game& game, float const& elapsedTime)
 {
-	game.MoveCharacter(game.character, elapsedTime);
+	game.MoveCharacter(game.player);
+	game.UpdateBullets();
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
-	window.clear(sf::Color::White);
+	window.clear(sf::Color(20, 12, 28));
 
-	game.UpdateCamera(game.character.GetCharacterPos());
-	window.setView(game.camera);
+	game.UpdateColdowns();
+	game.UpdateCamera(window);
 	game.DrawLevel(window);
-	game.DrawCharacter(window);
+	game.DrawCharacter(game.player, window);
+	game.DrawBullets(window);
 
 	window.display();
 }

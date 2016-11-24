@@ -22,8 +22,11 @@ bool Character::InitCharacter(string const& textureFileName, sf::Vector2f const&
 	collisionShape.setPosition(spawnPos);
 
 	moveSpeed = speed;
-	moveVelocity = 0;
+	jumpSpeed = 0;
 	jumpHeight = jumpH;
+	shootColdown = PLAYER_SHOOT_COLDOWN;
+
+	orientation = RIGHT;
 
 	return true;
 }
@@ -32,7 +35,7 @@ void Character::Jump()
 {
 	if (jumpStatus == ON_GROUND)
 	{
-		moveVelocity = -jumpHeight;
+		jumpSpeed = -jumpHeight;
 	}
 }
 
