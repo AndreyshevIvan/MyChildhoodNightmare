@@ -7,9 +7,14 @@ bool Game::InitGame()
 {
 	if (level.LoadFromFile("resources/firstTileset.tmx"))
 	{
-		mapObj = level.GetAllObjects();
+		string str;
+		mapTiles = level.GetAllObjects();
+		for (unsigned int i = 0; i < mapTiles.size(); i++)
+		{
+			mapTiles[i].GetPropertyFloat(str);
+		}
 
-		if (player.InitPlayer() && map.InitMap())
+		if (character.InitCharacter(PLAYER_FILE_NAME, PLAYER_SPAWN_POS, PLAYER_SIZE, PLAYER_MOVE_SPEED, PLAYER_JUMP_HEIGHT))
 		{
 			camera.reset(sf::FloatRect(0, 0, RESOLUTION_WIDTH, RESOLUTION_HEIGHT));
 			gameStatus = PLAY;
@@ -17,7 +22,7 @@ bool Game::InitGame()
 			return true;
 		}
 	}
-
+	 
 	return false;
 }
 
@@ -33,51 +38,92 @@ float Game::GetElapsedTime()
 	return elapsedTime;
 }
 
-void Game::Control()
+void Game::DrawLevel(sf::RenderWindow& window)
+{
+	level.Draw(window);
+}
+
+void Game::DrawCharacter(sf::RenderWindow& window)
+{
+	window.draw(character.bodyShape);
+	window.draw(character.collisionShape);
+}
+
+void Game::ControlPlayer()
 {
 	if (gameStatus == PLAY)
 	{
 		if (Keyboard::isKeyPressed(Keyboard::Space))
-			player.Jump(elapsedTime);
+			character.Jump();
 		if (Keyboard::isKeyPressed(Keyboard::Down))
-			player.Seat(elapsedTime);
+			character.Seat();
 		if (Keyboard::isKeyPressed(Keyboard::Left))
-			player.GoLeft(elapsedTime);
+			character.runStatus = RUN_LEFT;
 		if (Keyboard::isKeyPressed(Keyboard::Right))
-			player.GoRight(elapsedTime);
+			character.runStatus = RUN_RIGHT;
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 			gameStatus = PAUSE;
 	}
 }
 
-void Game::Collision()
+void Game::MoveCharacter(Character& character, float elapsedTime)
 {
-	auto collisionRect = player.playerMoveRect;
-	collisionRect.left += player.playerSpeed.x;
-	collisionRect.top += player.playerSpeed.y;
-
-	for (unsigned int i = 0; i < mapObj.size(); i++)
+	if (character.runStatus != NOT_RUN)
 	{
-		if (collisionRect.intersects(mapObj[i].rect) && mapObj[i].name == "solid")
+		float movement = character.moveSpeed * elapsedTime;
+
+		if (character.jumpStatus == FLY)
 		{
-			if (player.playerRunStatus = RUN_RIGHT) // right
-			{
-				player.playerMoveRect.left -= player.playerSpeed.x;
-				player.playerRunStatus = NOT_RUN;
-			}
-			if (player.playerRunStatus = RUN_LEFT) // left
-			{
-				player.playerMoveRect.left -= player.playerSpeed.x;
-				player.playerRunStatus = NOT_RUN;
-			}
-			if (player.playerSpeed.y > 0) // bottom
-			{
+			movement *= FLYING_SLOWDOWN;
+		}
+		if (character.runStatus == RUN_LEFT)
+		{
+			movement = -movement;
+		}
 
-			}
-			if (player.playerSpeed.y > 0) // top
-			{
+		character.collisionShape.move(movement, 0);
 
-			}
+		if (IsCollidesWithLevel(character.collisionShape))
+		{
+			character.collisionShape.move(-movement, 0);
 		}
 	}
+
+	ApplyGravity(character, elapsedTime);
+
+	character.runStatus = NOT_RUN;
+	character.bodyShape.setPosition(character.GetCharacterPos());
+}
+
+void Game::ApplyGravity(Character& character, float elapsedTime)
+{
+	character.moveVelocity = character.moveVelocity + G * elapsedTime;
+	float movementY = character.moveVelocity * elapsedTime;
+
+	character.collisionShape.move(0, movementY);
+
+	if (IsCollidesWithLevel(character.collisionShape))
+	{
+		character.collisionShape.move(0, -movementY);
+		character.jumpStatus = ON_GROUND;
+		character.moveVelocity = 0;
+	}
+	else
+	{
+		character.jumpStatus = FLY;
+	}
+}
+
+bool Game::IsCollidesWithLevel(sf::RectangleShape& shape)
+{
+	auto collisionRect = shape.getGlobalBounds();
+
+	for (unsigned int i = 0; i < mapTiles.size(); i++)
+	{
+		if (collisionRect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
+		{
+			return true;
+		}
+	}
+	return false;
 }

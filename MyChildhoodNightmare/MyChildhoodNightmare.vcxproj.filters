@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Tiles">
+      <UniqueIdentifier>{adb267e5-b80c-4bed-90e1-f5bf250abb4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,45 +24,39 @@
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\level.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="tinyxml\tinyxmlparser.cpp">
+      <Filter>Tiles</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml\tinystr.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Tiles</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml\tinyxml.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Tiles</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml\tinyxmlerror.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Tiles</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml\tinyxmlparser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="tinyxml\level.cpp">
+      <Filter>Tiles</Filter>
     </ClCompile>
-    <ClCompile Include="map.cpp">
+    <ClCompile Include="character.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml\tinystr.h">
-      <Filter>Header Files</Filter>
+      <Filter>Tiles</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml\tinyxml.h">
-      <Filter>Header Files</Filter>
+      <Filter>Tiles</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml\level.h">
-      <Filter>Header Files</Filter>
+      <Filter>Tiles</Filter>
     </ClInclude>
-    <ClInclude Include="map.h">
+    <ClInclude Include="character.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

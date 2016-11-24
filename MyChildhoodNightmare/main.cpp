@@ -48,23 +48,22 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	game.Control();
-	game.Collision();
+	game.ControlPlayer();
 }
 
 void Update(Game& game, float const& elapsedTime)
 {
-	game.player.MovePlayer(elapsedTime);
+	game.MoveCharacter(game.character, elapsedTime);
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(sf::Color::White);
 
-	game.UpdateCamera(game.player.GetCharacterPos());
+	game.UpdateCamera(game.character.GetCharacterPos());
 	window.setView(game.camera);
-	game.level.Draw(window);
-	game.player.DrawCharacter(window);
+	game.DrawLevel(window);
+	game.DrawCharacter(window);
 
 	window.display();
 }
