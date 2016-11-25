@@ -6,6 +6,9 @@
 
 static const std::string GAME_NAME = "My Childhood Nightmare";
 
+void InitScenes(Game& game);
+void InitGamePlayScene(Game& game);
+
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 void HandleEvents(sf::RenderWindow& window, Game& game);
 void Update(Game& game, float const& elapsedTime);
@@ -20,12 +23,16 @@ int main()
 
 	Game game;
 
-	if (!game.InitGame())
+	if (game.InitGame())
 	{
-		return 1;
+        InitScenes(game);
+        EnterGameLoop(window, game);
 	}
-
-	EnterGameLoop(window, game);
+    else
+    {
+        std::cout << "ERROR: FILES NOT FOUND.";
+        return 1;
+    }
 
 	return 0;
 }
@@ -55,21 +62,35 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 
 void Update(Game& game, float const& elapsedTime)
 {
-	game.MoveCharacter(game.player);
-	game.UpdateBullets(game.player);
-	game.UpdateHealthBar();
+    game.m_currentScene->onUpdate();
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(sf::Color(20, 12, 28));
-
-	game.UpdateColdowns();
-	game.UpdateCamera(window);
-	game.DrawLevel(window);
-	game.DrawCharacter(game.player, window);
-	game.DrawBullets(window, game.player);
-	game.DrawPlayerBar(window);
-
+    game.m_currentScene->onDraw(window);
 	window.display();
+}
+
+void InitScenes(Game& game)
+{
+    InitGamePlayScene(game);
+}
+
+void InitGamePlayScene(Game& game)
+{
+    game.m_gameplayScene.onUpdate = [&]() {
+        game.MoveCharacter(game.player);
+        game.UpdateBullets(game.player);
+        game.UpdateHealthBar();
+        game.UpdateColdowns();
+    };
+    game.m_gameplayScene.onDraw = [&](sf::RenderWindow& window) {
+        game.UpdateCamera(window);
+        game.DrawLevel(window);
+        game.DrawCharacter(game.player, window);
+        game.DrawBullets(window, game.player);
+        game.DrawPlayerBar(window);
+    };
+    game.m_currentScene = &game.m_gameplayScene;
 }
