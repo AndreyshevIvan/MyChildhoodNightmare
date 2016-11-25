@@ -48,48 +48,44 @@ void Game::ControlPlayer()
 {
 	if (gameStatus == PLAY)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::Up) || Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Space))
+		if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Space))
 		{
 			player.Jump();
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))
+		if (Keyboard::isKeyPressed(Keyboard::S))
 		{
 			player.Seat();
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
+		if (Keyboard::isKeyPressed(Keyboard::A))
 		{
 			player.runStatus = RUN_LEFT;
 			player.orientation = LEFT;
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
+		if (Keyboard::isKeyPressed(Keyboard::D))
 		{
 			player.runStatus = RUN_RIGHT;
 			player.orientation = RIGHT;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Numpad5))
 		{
-			if (player.shootColdown > PLAYER_SHOOT_COLDOWN)
-			{
-				sf::Vector2f startPos = player.GetCharacterPos();
-				if (player.orientation == RIGHT)
-				{
-					bullets.push_back(new Bullet(startPos, level, player.orientation));
-					bullets.push_back(new Bullet({ startPos.x - 20, startPos.y + 20 }, level, player.orientation));
-					bullets.push_back(new Bullet({ startPos.x - 20, startPos.y - 20 }, level, player.orientation));
-				}
-				else
-				{
-					bullets.push_back(new Bullet(startPos, level, player.orientation));
-					bullets.push_back(new Bullet({ startPos.x + 20, startPos.y + 20 }, level, player.orientation));
-					bullets.push_back(new Bullet({ startPos.x + 20, startPos.y - 20 }, level, player.orientation));
-				}
-				player.shootColdown = 0;
-			}
+			player.Shoot(level);
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
 			gameStatus = PAUSE;
 		}
+        if (Keyboard::isKeyPressed(Keyboard::Num1))
+        {
+            player.weapon = CRY;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Num2))
+        {
+            player.weapon = PISTOL;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Num3))
+        {
+            player.weapon = AK;
+        }
 	}
 }
 
@@ -130,7 +126,6 @@ void Game::ApplyGravity(Character& character)
 	movementY = JUMP_IMPULSE * character.jumpSpeed * elapsedTime;
 	
 	character.collisionShape.move(0, movementY);
-	cout << movementY << "\n";
 
 	if (IsCollidesWithLevel(character.collisionShape))
 	{
@@ -161,38 +156,48 @@ bool Game::IsCollidesWithLevel(sf::RectangleShape& shape)
 	return false;
 }
 
-void Game::UpdateBullets()
+void Game::UpdateColdowns()
 {
-	for (bulletsIter = bullets.begin(); bulletsIter != bullets.end();)
+	if (player.shootColdown <= MAX_WEAPON_COLDOWN)
 	{
-		Bullet* bullet = *bulletsIter;
+		player.shootColdown += elapsedTime;
+	}
+}
+
+void Game::UpdateBullets(Character& character)
+{
+	for (character.bulletsIter = character.bullets.begin(); character.bulletsIter != character.bullets.end();)
+	{
+		Bullet* bullet = *character.bulletsIter;
 		bullet->Update(elapsedTime);
 		if (bullet->IsLife == false)
 		{
-			bulletsIter = bullets.erase(bulletsIter);
+			character.bulletsIter = character.bullets.erase(character.bulletsIter);
 			delete(bullet);
 		}
 		else
 		{
-			bulletsIter++;
+			character.bulletsIter++;
 		}
 	}
 }
 
-void Game::DrawBullets(sf::RenderWindow& window)
+void Game::DrawBullets(sf::RenderWindow& window, Character& character)
 {
-	for (bulletsIter = bullets.begin(); bulletsIter != bullets.end();)
+	for (character.bulletsIter = character.bullets.begin(); character.bulletsIter != character.bullets.end();)
 	{
-		Bullet* bullet = *bulletsIter;
+		Bullet* bullet = *character.bulletsIter;
 		window.draw(bullet->bodyShape);
-		bulletsIter++;
+		character.bulletsIter++;
 	}
 }
 
-void Game::UpdateColdowns()
+void Game::UpdateHealthBar()
 {
-	if (player.shootColdown <= 1)
-	{
-		player.shootColdown += elapsedTime;
-	}
+	player.healthBar.setPosition(player.GetCharacterPos() + PLAYER_BAR_DISPLACEMENT);
+}
+
+void Game::DrawPlayerBar(sf::RenderWindow& window)
+{
+	window.draw(player.healthBar);
 }

@@ -56,7 +56,8 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 void Update(Game& game, float const& elapsedTime)
 {
 	game.MoveCharacter(game.player);
-	game.UpdateBullets();
+	game.UpdateBullets(game.player);
+	game.UpdateHealthBar();
 }
 
 void Render(sf::RenderWindow& window, Game& game)
@@ -67,7 +68,8 @@ void Render(sf::RenderWindow& window, Game& game)
 	game.UpdateCamera(window);
 	game.DrawLevel(window);
 	game.DrawCharacter(game.player, window);
-	game.DrawBullets(window);
+	game.DrawBullets(window, game.player);
+	game.DrawPlayerBar(window);
 
 	window.display();
 }

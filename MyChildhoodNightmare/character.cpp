@@ -24,7 +24,13 @@ bool Character::InitCharacter(string const& textureFileName, sf::Vector2f const&
 	moveSpeed = speed;
 	jumpSpeed = 0;
 	jumpHeight = jumpH;
-	shootColdown = PLAYER_SHOOT_COLDOWN;
+
+	healthBar.setSize({ PLAYER_START_HEALTH, 16 });
+	healthBar.setPosition(GetCharacterPos() + PLAYER_BAR_DISPLACEMENT);
+	healthBar.setFillColor(sf::Color::Red);
+
+	shootColdown = 0;
+    weapon = AK;
 
 	orientation = RIGHT;
 
@@ -47,4 +53,36 @@ void Character::Seat()
 sf::Vector2f Character::GetCharacterPos()
 {
 	return collisionShape.getPosition();
+}
+
+void Character::Shoot(Level const& level)
+{
+    switch (weapon)
+    {
+    case CRY:
+        if (shootColdown > CRY_COLDOWN)
+        {
+            bullets.push_back(new Bullet(GetCharacterPos(), level, orientation));
+            shootColdown = 0;
+        }
+        break;
+    case AK:
+        if (shootColdown > AK_COLDOWN)
+        {
+            bullets.push_back(new Bullet(GetCharacterPos(), level, orientation));
+            shootColdown = 0;
+        }
+        break;
+    case PISTOL:
+        if (shootColdown > PISTOL_COLDOWN)
+        {
+            bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y + 20 }, level, orientation));
+            bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y }, level, orientation));
+            bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y - 20 }, level, orientation));
+            shootColdown = 0;
+        }
+        break;
+    default:
+        break;
+    }
 }

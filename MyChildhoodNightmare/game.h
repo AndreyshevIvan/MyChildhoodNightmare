@@ -6,7 +6,6 @@
 #include <cmath>
 #include "game.h"
 #include "character.h"
-#include "bullets.h"
 
 const float RESOLUTION_WIDTH = 1280;
 const float RESOLUTION_HEIGHT = 720;
@@ -38,8 +37,6 @@ struct Game
 	Character player;
 	Level level;
 	std::vector<Object> mapTiles;
-	std::list<Bullet*> bullets;
-	std::list<Bullet*>::iterator bulletsIter;
 	float elapsedTime;
 
 	void SetElapsedTime();
@@ -50,10 +47,12 @@ struct Game
 	bool IsCollidesWithLevel(sf::RectangleShape& shape);
 	void MoveCharacter(Character& character);
 	void ApplyGravity(Character& character);
-	void UpdateBullets();
 	void UpdateColdowns();
+	void UpdateBullets(Character& character);
+	void UpdateHealthBar();
 
 	void DrawCharacter(Character& character, sf::RenderWindow& window);
 	void DrawLevel(sf::RenderWindow& window);
-	void DrawBullets(sf::RenderWindow& window);
+	void DrawBullets(sf::RenderWindow& window, Character& character);
+	void DrawPlayerBar(sf::RenderWindow& window);
 };
