@@ -6,6 +6,7 @@
 #include <cmath>
 #include "game.h"
 #include "character.h"
+#include "menu.h"
 #include <functional>
 
 const float RESOLUTION_WIDTH = 1280;
@@ -13,9 +14,9 @@ const float RESOLUTION_HEIGHT = 720;
 
 const float G = 700;
 const float JUMP_IMPULSE = 2;
-const float FLYING_SLOWDOWN = 0.7;
+const float FLYING_SLOWDOWN = 0.6;
 
-const sf::Vector2f PLAYER_SIZE = { 75, 90 };
+const sf::Vector2f PLAYER_SIZE = { 42, 56 };
 const sf::Vector2f PLAYER_SPAWN_POS = { 350 , 700 };
 const std::string PLAYER_FILE_NAME = "player.png";
 const float PLAYER_MOVE_SPEED = 350;
@@ -23,7 +24,7 @@ const float PLAYER_JUMP_HEIGHT = 280;
 
 enum GameStatus
 {
-	START_MENU,
+	MAIN_MENU,
 	CHENGE_LEVEL,
 	PLAY,
 	PAUSE,
@@ -32,8 +33,9 @@ enum GameStatus
 
 struct GameScene
 {
+    std::function<void(sf::RenderWindow& window)> toHandle;
     std::function<void()> onUpdate;
-    std::function<void(sf::RenderWindow &window)> onDraw;
+    std::function<void(sf::RenderWindow& window)> onDraw;
 };
 
 struct Game
@@ -43,17 +45,20 @@ struct Game
 	GameStatus gameStatus;
 	Character player;
 	Level level;
+    Menu mainMenu;
 	std::vector<Object> mapTiles;
 	float elapsedTime;
 
+    bool InitGame();
+
 	void SetElapsedTime();
 
-	bool InitGame();
-	void UpdateCamera(sf::RenderWindow& window);
 	void ControlPlayer();
-	bool IsCollidesWithLevel(sf::RectangleShape& shape);
-	void MoveCharacter(Character& character);
-	void ApplyGravity(Character& character);
+    void ControlMainMenu(sf::RenderWindow& window);
+
+    void UpdateCamera(sf::RenderWindow& window);
+	void UpdateGravity(Character& character);
+    void UpdateCharacterPos(Character& character);
 	void UpdateColdowns();
 	void UpdateBullets(Character& character);
 	void UpdateHealthBar();
@@ -63,10 +68,13 @@ struct Game
 	void DrawBullets(sf::RenderWindow& window, Character& character);
 	void DrawPlayerBar(sf::RenderWindow& window);
 
-    GameScene m_startMenuScene;
+    bool IsCollidesWithLevel(sf::RectangleShape& shape);
+
+    GameScene m_mainMenuScene;
     GameScene m_gameplayScene;
     GameScene m_gameplayScene2;
     GameScene m_pauseScene;
     GameScene m_creditsScene;
+    
     GameScene *m_currentScene = nullptr;
 };

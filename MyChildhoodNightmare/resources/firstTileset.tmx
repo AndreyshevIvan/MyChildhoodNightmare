@@ -9617,9 +9617,9 @@
  </layer>
  <objectgroup name="solids">
   <object id="30" name="solid" x="-3.0303" y="1185.82" width="2569.7" height="103.03"/>
-  <object id="31" x="2533.33" y="-9.09091" width="66.6667" height="1306.06"/>
-  <object id="32" x="-48.4848" y="-42.4242" width="2678.79" height="69.697"/>
-  <object id="33" x="-45.4545" y="-78.7879" width="69.697" height="1360.61"/>
+  <object id="31" name="solid" x="2533.33" y="-9.09091" width="66.6667" height="1306.06"/>
+  <object id="32" name="solid" x="-48.4848" y="-42.4242" width="2678.79" height="69.697"/>
+  <object id="33" name="solid" x="-45.4545" y="-78.7879" width="69.697" height="1360.61"/>
   <object id="34" name="solid" x="1313.33" y="1122.67" width="124" height="28"/>
   <object id="35" name="solid" x="1473.33" y="1024" width="124" height="30.6667"/>
   <object id="36" name="solid" x="1668" y="961.333" width="602.667" height="28"/>

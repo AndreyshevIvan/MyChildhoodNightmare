@@ -8,6 +8,7 @@ static const std::string GAME_NAME = "My Childhood Nightmare";
 
 void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
+void InitMainMenuScene(Game& game);
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 void HandleEvents(sf::RenderWindow& window, Game& game);
@@ -20,6 +21,7 @@ int main()
 	videoMode.width = (unsigned int)RESOLUTION_WIDTH;
 	videoMode.height = (unsigned int)RESOLUTION_HEIGHT;
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar + sf::Style::Close);
+    window.setKeyRepeatEnabled(false);
 
 	Game game;
 
@@ -57,7 +59,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	game.ControlPlayer();
+    game.m_currentScene->toHandle(window);
 }
 
 void Update(Game& game, float const& elapsedTime)
@@ -75,15 +77,21 @@ void Render(sf::RenderWindow& window, Game& game)
 void InitScenes(Game& game)
 {
     InitGamePlayScene(game);
+    InitMainMenuScene(game);
+
+    game.m_currentScene = &game.m_mainMenuScene;
 }
 
 void InitGamePlayScene(Game& game)
 {
+    game.m_gameplayScene.toHandle = [&](sf::RenderWindow& window) {
+        game.ControlPlayer();
+    };
     game.m_gameplayScene.onUpdate = [&]() {
-        game.MoveCharacter(game.player);
+        game.UpdateColdowns();
+        game.UpdateCharacterPos(game.player);
         game.UpdateBullets(game.player);
         game.UpdateHealthBar();
-        game.UpdateColdowns();
     };
     game.m_gameplayScene.onDraw = [&](sf::RenderWindow& window) {
         game.UpdateCamera(window);
@@ -92,5 +100,19 @@ void InitGamePlayScene(Game& game)
         game.DrawBullets(window, game.player);
         game.DrawPlayerBar(window);
     };
-    game.m_currentScene = &game.m_gameplayScene;
 }
+
+void InitMainMenuScene(Game& game)
+{
+    game.m_mainMenuScene.toHandle = [&](sf::RenderWindow& window) {
+        game.ControlMainMenu(window);
+    };
+    game.m_mainMenuScene.onUpdate = [&]() {
+        game.UpdateColdowns();
+        game.mainMenu.UdateMainMenu();
+    };
+    game.m_mainMenuScene.onDraw = [&](sf::RenderWindow& window) {
+        game.mainMenu.DrawMainMenu(window);
+    };
+}
+
