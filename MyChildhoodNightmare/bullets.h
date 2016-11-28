@@ -2,11 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <list>
-#include "tinyxml/level.h"
 #include <iostream>
+#include "tinyxml/level.h"
 
 const float BULLET_SPEED = 700;
 const sf::Vector2f BULLET_SIZE = { 20, 4 };
+const float MAX_WEAPON_COLDOWN = 1;
+const float PISTOL_COLDOWN = 0.3;
+const float AK_COLDOWN = 0.08;
+const float CRY_COLDOWN = 0.5;
 
 struct Bullet
 {
