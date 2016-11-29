@@ -9,12 +9,13 @@ const sf::Vector2f GAMENAME_SIZE = { 328, 180 };
 const float BUTTONS_COLDOWN = 0.15f;
 const sf::Vector2f ICON_SIZE = { 37 , 45 };
 
-enum MainMenu
+enum struct MainMenu
 {
 	START = 0,
+	// TODO: fix typo
 	CHENGE_MAP,
 	DIFFICULT,
-	EXIT
+	EXIT,
 };
 
 struct Menu

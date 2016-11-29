@@ -12,7 +12,6 @@
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 
 const float G = 700;
-const float JUMP_IMPULSE = 2;
 const float FLYING_SLOWDOWN = 0.6f;
 
 enum GameStatus
@@ -41,11 +40,10 @@ struct Game
 	Menu mainMenu;
 	std::vector<Object> mapTiles;
 	float elapsedTime;
-	GameScene m_mainMenuScene;
-	GameScene m_gameplayScene;
-	GameScene m_gameplayScene2;
-	GameScene m_pauseScene;
-	GameScene *m_currentScene = nullptr;
+	GameScene mainMenuScene;
+	GameScene gameplayScene;
+	GameScene pauseScene;
+	GameScene *currentScene = nullptr;
 
 	bool InitGame();
 

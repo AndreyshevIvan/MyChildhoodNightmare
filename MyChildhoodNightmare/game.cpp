@@ -40,12 +40,12 @@ void Game::ControlPlayer(sf::RenderWindow& window)
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
 		player.runStatus = RUN_LEFT;
-		player.orientation = LEFT;
+		player.orientationStatus = LEFT;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::D))
 	{
 		player.runStatus = RUN_RIGHT;
-		player.orientation = RIGHT;
+		player.orientationStatus = RIGHT;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::P))
 	{
@@ -69,17 +69,17 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 {
 	if (Keyboard::isKeyPressed(Keyboard::F))
 	{
-		switch ((int)mainMenu.currentButton)
+		switch (mainMenu.currentButton)
 		{
-		case 0:
+		case  MainMenu::START:
 			gameStatus = PLAY;
-			m_currentScene = &m_gameplayScene;
+			currentScene = &gameplayScene;
 			break;
-		case 1:
+		case  MainMenu::CHENGE_MAP:
 			break;
-		case 2:
+		case  MainMenu::DIFFICULT:
 			break;
-		case 3:
+		case  MainMenu::EXIT:
 			window.close();
 			break;
 		default:
@@ -89,9 +89,9 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 	if ((Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up)) && mainMenu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		mainMenu.buttonsColdown = 0;
-		if (mainMenu.currentButton == START)
+		if (mainMenu.currentButton == MainMenu::START)
 		{
-			mainMenu.currentButton = EXIT;
+			mainMenu.currentButton = MainMenu::EXIT;
 		}
 		else
 		{
@@ -101,9 +101,9 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 	if ((Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)) && mainMenu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		mainMenu.buttonsColdown = 0;
-		if (mainMenu.currentButton == EXIT)
+		if (mainMenu.currentButton == MainMenu::EXIT)
 		{
-			mainMenu.currentButton = START;
+			mainMenu.currentButton = MainMenu::START;
 		}
 		else
 		{
@@ -152,7 +152,7 @@ void Game::UpdateGravity(Character& character)
 	float movementY = character.jumpSpeed;
 
 	character.jumpSpeed = character.jumpSpeed + G * elapsedTime;
-	movementY = JUMP_IMPULSE * character.jumpSpeed * elapsedTime;
+	movementY = character.jumpSpeed * elapsedTime;
 
 	character.collisionShape.move(0, movementY);
 

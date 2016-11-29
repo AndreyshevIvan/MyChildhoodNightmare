@@ -25,7 +25,7 @@ enum JumpingStatus
 	ON_GROUND
 };
 
-enum Orientation
+enum OrientationStatus
 {
 	LEFT = 1,
 	RIGHT
@@ -35,12 +35,14 @@ struct Character
 {
 	sf::Texture bodyTexture;
 	sf::RectangleShape bodyShape;
+	// TODO: use sf::FloatRect
 	sf::RectangleShape collisionShape;
 
+	// TODO: fix typo
 	MoveingStatus runStatus;
 	JumpingStatus jumpStatus;
 	ExistenceStatus existStatus;
-	Orientation orientation;
+	OrientationStatus orientationStatus;
 
 	float moveSpeed;
 	float jumpSpeed;

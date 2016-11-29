@@ -18,10 +18,9 @@ void Render(sf::RenderWindow& window, Game& game);
 int main()
 {
 	sf::VideoMode videoMode;
-	videoMode.width = (unsigned)RESOLUTION.x;
-	videoMode.height = (unsigned)RESOLUTION.y;
-	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar + sf::Style::Close + sf::Style::Fullscreen);
-	window.setKeyRepeatEnabled(false);
+	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
+	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
+	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close | sf::Style::Fullscreen);
 
 	Game game;
 
@@ -59,18 +58,18 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	game.m_currentScene->toHandle(window);
+	game.currentScene->toHandle(window);
 }
 
 void Update(Game& game)
 {
-	game.m_currentScene->onUpdate();
+	game.currentScene->onUpdate();
 }
 
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(sf::Color(20, 12, 28));
-	game.m_currentScene->onDraw(window);
+	game.currentScene->onDraw(window);
 	window.display();
 }
 
@@ -79,19 +78,19 @@ void InitScenes(Game& game)
 	InitGamePlayScene(game);
 	InitMainMenuScene(game);
 
-	game.m_currentScene = &game.m_mainMenuScene;
+	game.currentScene = &game.mainMenuScene;
 }
 
 void InitGamePlayScene(Game& game)
 {
-	game.m_gameplayScene.toHandle = [&](sf::RenderWindow& window) {
+	game.gameplayScene.toHandle = [&](sf::RenderWindow& window) {
 		game.ControlPlayer(window);
 	};
-	game.m_gameplayScene.onUpdate = [&]() {
+	game.gameplayScene.onUpdate = [&]() {
 		game.UpdateColdowns();
 		game.UpdatePlayer();
 	};
-	game.m_gameplayScene.onDraw = [&](sf::RenderWindow& window) {
+	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
 		game.UpdateCamera(window);
 		game.DrawLevel(window);
 		game.DrawCharacter(game.player, window);
@@ -101,14 +100,14 @@ void InitGamePlayScene(Game& game)
 
 void InitMainMenuScene(Game& game)
 {
-	game.m_mainMenuScene.toHandle = [&](sf::RenderWindow& window) {
+	game.mainMenuScene.toHandle = [&](sf::RenderWindow& window) {
 		game.ControlMainMenu(window);
 	};
-	game.m_mainMenuScene.onUpdate = [&]() {
+	game.mainMenuScene.onUpdate = [&]() {
 		game.UpdateColdowns();
 		game.mainMenu.UdateMainMenu();
 	};
-	game.m_mainMenuScene.onDraw = [&](sf::RenderWindow& window) {
+	game.mainMenuScene.onDraw = [&](sf::RenderWindow& window) {
 		game.mainMenu.DrawMainMenu(window);
 	};
 }

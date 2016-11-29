@@ -44,7 +44,7 @@ bool Menu::InitMenuItems()
 			mainMenuItems[i].setPosition(MAINMENU_ITEMS_POS_X, MAIN_MENU_TOP_MARGIN + i * MAIN_MENU_ITEMS_MARGIN);
 			mainMenuItems[i].setOutlineColor(FONT_OUTLINE_COLOR);
 		}
-		currentButton = START;
+		currentButton = MainMenu::START;
 		buttonsColdown = 0;
 
 		return true;

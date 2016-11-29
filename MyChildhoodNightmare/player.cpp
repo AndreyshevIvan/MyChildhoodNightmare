@@ -25,7 +25,7 @@ bool Player::InitPlayer(Object const& spawnObj)
 
 	shootColdown = 0;
 	currentFrame = 0;
-	orientation = RIGHT;
+	orientationStatus = RIGHT;
 
 	return true;
 }
@@ -37,7 +37,7 @@ void Player::Attack(Level const& level)
 	case FIREBALL:
 		if (shootColdown > CRY_COLDOWN)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos(), level, orientation));
+			bullets.push_back(new Bullet(GetCharacterPos(), level, orientationStatus));
 			shootColdown = 0;
 		}
 		break;

@@ -2736,18 +2736,18 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
    <tile gid="24"/>
    <tile gid="24"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
@@ -2816,12 +2816,12 @@
    <tile gid="37"/>
    <tile gid="37"/>
    <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
    <tile gid="24"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
@@ -2896,11 +2896,11 @@
    <tile gid="24"/>
    <tile gid="37"/>
    <tile gid="47"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
-   <tile gid="37"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
+   <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
    <tile gid="24"/>
@@ -5699,10 +5699,10 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
    <tile gid="3"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -5779,10 +5779,10 @@
    <tile gid="12"/>
    <tile gid="12"/>
    <tile gid="12"/>
-   <tile gid="12"/>
-   <tile gid="12"/>
-   <tile gid="81"/>
-   <tile gid="23"/>
+   <tile gid="13"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -5859,9 +5859,9 @@
    <tile gid="22"/>
    <tile gid="22"/>
    <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
    <tile gid="23"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -9623,8 +9623,8 @@
   <object id="34" name="solid" x="1313.33" y="1122.67" width="124" height="28"/>
   <object id="35" name="solid" x="1473.33" y="1024" width="124" height="30.6667"/>
   <object id="36" name="solid" x="1668" y="961.333" width="602.667" height="28"/>
-  <object id="40" name="solid" x="26" y="994" width="416" height="59"/>
-  <object id="41" name="solid" x="24" y="1051" width="389" height="33"/>
+  <object id="40" name="solid" x="26" y="994" width="326" height="59"/>
+  <object id="41" name="solid" x="24" y="1051" width="329" height="33"/>
   <object id="42" name="solid" x="419" y="1154" width="92" height="31"/>
   <object id="43" name="solid" x="449" y="1119" width="92" height="31"/>
   <object id="44" name="solid" x="483" y="1089" width="283" height="31"/>
