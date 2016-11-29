@@ -3,10 +3,10 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 
-const float FONT_SIZE = 70; // 35
+const unsigned FONT_SIZE = 70; // 35
 const sf::Color FONT_OUTLINE_COLOR = sf::Color(145, 131, 92);
 const sf::Vector2f GAMENAME_SIZE = { 328, 180 };
-const float BUTTONS_COLDOWN = 0.15;
+const float BUTTONS_COLDOWN = 0.15f;
 const sf::Vector2f ICON_SIZE = { 37 , 45 };
 
 enum MainMenu

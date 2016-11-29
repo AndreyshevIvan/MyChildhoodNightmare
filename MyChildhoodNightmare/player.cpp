@@ -10,8 +10,8 @@ bool Player::InitPlayer(Object const& spawnObj)
 	sf::Vector2f spawnPos = { spawnObj.rect.left, spawnObj.rect.top };
 
 	bodyShape.setTextureRect(sf::IntRect(30, 35, 80, 140));
-	bodyShape.setSize(PLAYER_SIZE);
 	bodyShape.setTexture(&bodyTexture);
+	bodyShape.setSize(PLAYER_SIZE);
 	bodyShape.setOrigin(PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y);
 
 	collisionShape.setSize({ PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y - 10 });
@@ -34,26 +34,10 @@ void Player::Attack(Level const& level)
 {
 	switch (weapon)
 	{
-	case CRY:
+	case FIREBALL:
 		if (shootColdown > CRY_COLDOWN)
 		{
 			bullets.push_back(new Bullet(GetCharacterPos(), level, orientation));
-			shootColdown = 0;
-		}
-		break;
-	case AK:
-		if (shootColdown > AK_COLDOWN)
-		{
-			bullets.push_back(new Bullet(GetCharacterPos(), level, orientation));
-			shootColdown = 0;
-		}
-		break;
-	case PISTOL:
-		if (shootColdown > PISTOL_COLDOWN)
-		{
-			bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y + 20 }, level, orientation));
-			bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y }, level, orientation));
-			bullets.push_back(new Bullet({ GetCharacterPos().x, GetCharacterPos().y - 20 }, level, orientation));
 			shootColdown = 0;
 		}
 		break;

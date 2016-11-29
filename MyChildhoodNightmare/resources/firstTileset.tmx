@@ -9631,6 +9631,6 @@
   <object id="45" name="solid" x="515" y="1055" width="252" height="32"/>
  </objectgroup>
  <objectgroup name="spawns">
-  <object id="37" name="player_spawn" x="228.667" y="1154.67" width="16.6667" height="18.3333"/>
+  <object id="37" name="player_spawn" x="231.667" y="1177.67" width="43.6667" height="49.3333"/>
  </objectgroup>
 </map>

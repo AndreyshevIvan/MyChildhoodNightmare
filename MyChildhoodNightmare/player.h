@@ -4,7 +4,7 @@
 #include <iostream>
 #include "character.h"
 
-const sf::Vector2f PLAYER_SIZE = { 42, 64 };
+const sf::Vector2f PLAYER_SIZE = { 70, 100 };
 const sf::Vector2f PLAYER_SPAWN_POS = { 350 , 700 };
 const float PLAYER_MOVE_SPEED = 250;
 const float PLAYER_JUMP_HEIGHT = 280;
@@ -12,15 +12,13 @@ const float PLAYER_START_HEALTH = 300;
 
 enum Weapon
 {
-	BRANCH,
-	CRY,
-	PISTOL,
-	AK
+	MELEE,
+	FIREBALL
 };
 
 struct Player :Character
 {
-	Weapon weapon = AK;
+	Weapon weapon = FIREBALL;
 	std::list<Bullet*> bullets;
 	std::list<Bullet*>::iterator bulletsIter;
 	float currentFrame;

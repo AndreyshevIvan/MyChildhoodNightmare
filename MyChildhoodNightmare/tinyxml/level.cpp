@@ -1,18 +1,18 @@
 #include "level.h"
 
-int Object::GetPropertyInt(std::string name)//возвращаем номер свойства в нашем списке
+int Object::GetPropertyInt(std::string const& objName)//возвращаем номер свойства в нашем списке
 {
-    return atoi(properties[name].c_str());
+    return atoi(properties[objName].c_str());
 }
 
-float Object::GetPropertyFloat(std::string name)
+float Object::GetPropertyFloat(std::string const& objName)
 {
-    return strtod(properties[name].c_str(), NULL);
+    return (float)strtod(properties[objName].c_str(), NULL);
 }
 
-std::string Object::GetPropertyString(std::string name)//получить имя в виде строки.вроде понятно
+std::string Object::GetPropertyString(std::string const& objName)//получить имя в виде строки.вроде понятно
 {
-    return properties[name];
+    return properties[objName];
 }
 
 bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам класса вне класса 
@@ -91,8 +91,8 @@ bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам кл
         // если присутствует opacity, то задаем прозрачность слоя, иначе он полностью непрозрачен
         if (layerElement->Attribute("opacity") != NULL)
         {
-            float opacity = strtod(layerElement->Attribute("opacity"), NULL);
-            layer.opacity = 255 * opacity;
+            float opacity = (float)strtod(layerElement->Attribute("opacity"), NULL);
+            layer.opacity = (int)(255 * opacity);
         }
         else
         {
@@ -132,8 +132,8 @@ bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам кл
                 sf::Sprite sprite;
                 sprite.setTexture(tilesetImage);
                 sprite.setTextureRect(subRects[subRectToUse]);
-                sprite.setPosition(x * tileWidth, y * tileHeight);
-                sprite.setColor(sf::Color(255, 255, 255, layer.opacity));
+                sprite.setPosition((float)(x * tileWidth), (float)(y * tileHeight));
+                sprite.setColor(sf::Color(255, 255, 255, (sf::Uint8)layer.opacity));
 
                 layer.tiles.push_back(sprite);//закидываем в слой спрайты тайлов
             }
@@ -184,22 +184,22 @@ bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам кл
                 int x = atoi(objectElement->Attribute("x"));
                 int y = atoi(objectElement->Attribute("y"));
 
-                int width, height;
+                int objWidth, objHeight;
 
                 sf::Sprite sprite;
                 sprite.setTexture(tilesetImage);
                 sprite.setTextureRect(sf::Rect<int>(0, 0, 0, 0));
-                sprite.setPosition(x, y);
+                sprite.setPosition((float)x, (float)y);
 
                 if (objectElement->Attribute("width") != NULL)
                 {
-                    width = atoi(objectElement->Attribute("width"));
-                    height = atoi(objectElement->Attribute("height"));
+                    objWidth = atoi(objectElement->Attribute("width"));
+                    objHeight = atoi(objectElement->Attribute("height"));
                 }
                 else
                 {
-                    width = subRects[atoi(objectElement->Attribute("gid")) - firstTileID].width;
-                    height = subRects[atoi(objectElement->Attribute("gid")) - firstTileID].height;
+                    objWidth = subRects[atoi(objectElement->Attribute("gid")) - firstTileID].width;
+                    objHeight = subRects[atoi(objectElement->Attribute("gid")) - firstTileID].height;
                     sprite.setTextureRect(subRects[atoi(objectElement->Attribute("gid")) - firstTileID]);
                 }
 
@@ -210,10 +210,10 @@ bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам кл
                 object.sprite = sprite;
 
                 sf::Rect <float> objectRect;
-                objectRect.top = y;
-                objectRect.left = x;
-                objectRect.height = height;
-                objectRect.width = width;
+                objectRect.top = (float)y;
+                objectRect.left = (float)x;
+                objectRect.height = (float)objHeight;
+                objectRect.width = (float)objWidth;
                 object.rect = objectRect;
 
                 // "переменные" объекта
@@ -256,16 +256,18 @@ bool Level::LoadFromFile(std::string filename)//двоеточия-обращение к методам кл
 Object Level::GetObject(std::string name)
 {
     // только первый объект с заданным именем
-    for (int i = 0; i < objects.size(); i++)
+    for (size_t i = 0; i < objects.size(); i++)
         if (objects[i].name == name)
             return objects[i];
+
+	return objects[0];
 }
 
 std::vector<Object> Level::GetObjects(std::string name)
 {
     // все объекты с заданным именем
     std::vector<Object> vec;
-    for (int i = 0; i < objects.size(); i++)
+    for (size_t i = 0; i < objects.size(); i++)
         if (objects[i].name == name)
             vec.push_back(objects[i]);
 
@@ -287,8 +289,8 @@ sf::Vector2i Level::GetTileSize()
 void Level::Draw(sf::RenderWindow &window)
 {
     // рисуем все тайлы (объекты не рисуем!)
-    for (int layer = 0; layer < layers.size(); layer++)
-        for (int tile = 0; tile < layers[layer].tiles.size(); tile++)
+    for (size_t layer = 0; layer < layers.size(); layer++)
+        for (size_t tile = 0; tile < layers[layer].tiles.size(); tile++)
             window.draw(layers[layer].tiles[tile]);
 }
 

@@ -9,12 +9,11 @@
 #include "menu.h"
 #include "player.h"
 
-const float RESOLUTION_WIDTH = 1366;
-const float RESOLUTION_HEIGHT = 768;
+const sf::Vector2f RESOLUTION = { 1366, 768 };
 
 const float G = 700;
 const float JUMP_IMPULSE = 2;
-const float FLYING_SLOWDOWN = 0.6;
+const float FLYING_SLOWDOWN = 0.6f;
 
 enum GameStatus
 {
@@ -52,7 +51,7 @@ struct Game
 
 	void SetElapsedTime();
 
-	void ControlPlayer();
+	void ControlPlayer(sf::RenderWindow& window);
 	void ControlMainMenu(sf::RenderWindow& window);
 
 	void UpdateCamera(sf::RenderWindow& window);

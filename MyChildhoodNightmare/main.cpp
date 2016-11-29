@@ -12,14 +12,14 @@ void InitMainMenuScene(Game& game);
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 void HandleEvents(sf::RenderWindow& window, Game& game);
-void Update(Game& game, float const& elapsedTime);
+void Update(Game& game);
 void Render(sf::RenderWindow& window, Game& game);
 
 int main()
 {
 	sf::VideoMode videoMode;
-	videoMode.width = (unsigned int)RESOLUTION_WIDTH;
-	videoMode.height = (unsigned int)RESOLUTION_HEIGHT;
+	videoMode.width = (unsigned)RESOLUTION.x;
+	videoMode.height = (unsigned)RESOLUTION.y;
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar + sf::Style::Close + sf::Style::Fullscreen);
 	window.setKeyRepeatEnabled(false);
 
@@ -46,7 +46,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		game.SetElapsedTime();
 
 		HandleEvents(window, game);
-		Update(game, game.elapsedTime);
+		Update(game);
 		Render(window, game);
 	}
 }
@@ -62,7 +62,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 	game.m_currentScene->toHandle(window);
 }
 
-void Update(Game& game, float const& elapsedTime)
+void Update(Game& game)
 {
 	game.m_currentScene->onUpdate();
 }
@@ -85,7 +85,7 @@ void InitScenes(Game& game)
 void InitGamePlayScene(Game& game)
 {
 	game.m_gameplayScene.toHandle = [&](sf::RenderWindow& window) {
-		game.ControlPlayer();
+		game.ControlPlayer(window);
 	};
 	game.m_gameplayScene.onUpdate = [&]() {
 		game.UpdateColdowns();

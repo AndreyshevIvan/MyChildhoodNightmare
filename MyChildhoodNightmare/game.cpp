@@ -15,7 +15,7 @@ bool Game::InitGame()
 	}
 
 	mapTiles = level.GetAllObjects();
-	camera.reset(sf::FloatRect(0, 0, RESOLUTION_WIDTH, RESOLUTION_HEIGHT));
+	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 	gameStatus = MAIN_MENU;
 
 	return true;
@@ -27,8 +27,12 @@ void Game::SetElapsedTime()
 	clock.restart();
 }
 
-void Game::ControlPlayer()
+void Game::ControlPlayer(sf::RenderWindow& window)
 {
+	if (Keyboard::isKeyPressed(Keyboard::Escape))
+	{
+		window.close();
+	}
 	if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Space))
 	{
 		player.Jump();
@@ -53,15 +57,11 @@ void Game::ControlPlayer()
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Num1))
 	{
-		player.weapon = CRY;
+		player.weapon = MELEE;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Num2))
 	{
-		player.weapon = PISTOL;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::Num3))
-	{
-		player.weapon = AK;
+		player.weapon = FIREBALL;
 	}
 }
 

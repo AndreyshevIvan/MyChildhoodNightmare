@@ -1,11 +1,12 @@
 #include "menu.h"
 #include <iostream>
 
-static const float RESOLUTION_WIDTH = 1366;
-static const float RESOLUTION_HEIGHT = 768;
-const sf::Vector2f GAMENAME_POS = { RESOLUTION_WIDTH / 2.0f, 220 };
-const float MAINMENU_ITEMS_POS_X = RESOLUTION_WIDTH / 2.0f;
+static const sf::Vector2f RESOLUTION = { 1366, 768 };
+const sf::Vector2f GAMENAME_POS = { RESOLUTION.x / 2.0f, 220 };
+const float MAINMENU_ITEMS_POS_X = RESOLUTION.x / 2.0f;
 const float ICON_MARGIN = 10;
+const float MAIN_MENU_TOP_MARGIN = 400;
+const float MAIN_MENU_ITEMS_MARGIN = 60;
 
 bool Menu::InitMenuItems()
 {
@@ -19,7 +20,7 @@ bool Menu::InitMenuItems()
 		gameName.setTexture(&gameNameTexture);
 		gameName.setPosition(GAMENAME_POS);
 
-		mainMenuWrapper.setSize({ RESOLUTION_WIDTH, RESOLUTION_HEIGHT });
+		mainMenuWrapper.setSize(RESOLUTION);
 		mainMenuWrapper.setTexture(&mainMenuWrapperTexture);
 
 		mainMenuIcon.setSize(ICON_SIZE);
@@ -40,7 +41,7 @@ bool Menu::InitMenuItems()
 			float textCenterX = mainMenuItems[i].getGlobalBounds().width / 2.0f;
 			float textCenterY = mainMenuItems[i].getGlobalBounds().height;
 			mainMenuItems[i].setOrigin(textCenterX, textCenterY);
-			mainMenuItems[i].setPosition(MAINMENU_ITEMS_POS_X, 400 + i * 60);
+			mainMenuItems[i].setPosition(MAINMENU_ITEMS_POS_X, MAIN_MENU_TOP_MARGIN + i * MAIN_MENU_ITEMS_MARGIN);
 			mainMenuItems[i].setOutlineColor(FONT_OUTLINE_COLOR);
 		}
 		currentButton = START;
@@ -54,9 +55,10 @@ bool Menu::InitMenuItems()
 
 void Menu::UdateMainMenu()
 {
-	int button = (int)currentButton;
-	float margin = mainMenuItems[button].getGlobalBounds().width / 2.0f + ICON_MARGIN;
-	mainMenuIcon.setPosition({ RESOLUTION_WIDTH / 2.0f - margin , mainMenuItems[button].getPosition().y });
+	int buttonNumber = (int)currentButton;
+	float menuItemWidth = mainMenuItems[buttonNumber].getGlobalBounds().width;
+	float margin = menuItemWidth / 2.0f + ICON_MARGIN;
+	mainMenuIcon.setPosition({ MAINMENU_ITEMS_POS_X - margin , mainMenuItems[buttonNumber].getPosition().y });
 }
 
 void Menu::DrawMainMenu(sf::RenderWindow& window)
