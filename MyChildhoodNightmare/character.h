@@ -12,7 +12,7 @@ enum ExistenceStatus
 	DEAD
 };
 
-enum MoveingStatus
+enum MovementStatus
 {
 	RUN_LEFT,
 	RUN_RIGHT,
@@ -35,11 +35,9 @@ struct Character
 {
 	sf::Texture bodyTexture;
 	sf::RectangleShape bodyShape;
-	// TODO: use sf::FloatRect
-	sf::RectangleShape collisionShape;
+	sf::FloatRect collisionRect;
 
-	// TODO: fix typo
-	MoveingStatus runStatus;
+	MovementStatus runStatus;
 	JumpingStatus jumpStatus;
 	ExistenceStatus existStatus;
 	OrientationStatus orientationStatus;
@@ -48,6 +46,8 @@ struct Character
 	float jumpSpeed;
 	float jumpHeight;
 	float weaponDemage;
+	float demage;
+	float health;
 	float adoptedDemage;
 	float shootColdown;
 

@@ -37,6 +37,8 @@ public:
     std::vector<Object> GetAllObjects();
     void Draw(sf::RenderWindow &window);
     sf::Vector2i GetTileSize();
+	float Level::GetTilemapWidth();
+	float Level::GetTilemapHeight();
 
 private:
     int width, height, tileWidth, tileHeight;
@@ -46,13 +48,4 @@ private:
     std::vector<Object> objects;
     std::vector<Layer> layers;
 };
-
-
-//class Entity
-//{
-//public:
-//    std::vector<Object> obj;
-//    FloatRect getRect() { return FloatRect(x, y, w, h); }
-//}
 #endif
-

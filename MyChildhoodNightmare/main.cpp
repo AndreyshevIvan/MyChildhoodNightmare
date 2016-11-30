@@ -20,7 +20,7 @@ int main()
 	sf::VideoMode videoMode;
 	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
 	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
-	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close | sf::Style::Fullscreen);
+	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
 
 	Game game;
 
@@ -58,7 +58,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	game.currentScene->toHandle(window);
+	game.currentScene->toHandle(window, event);
 }
 
 void Update(Game& game)
@@ -83,8 +83,8 @@ void InitScenes(Game& game)
 
 void InitGamePlayScene(Game& game)
 {
-	game.gameplayScene.toHandle = [&](sf::RenderWindow& window) {
-		game.ControlPlayer(window);
+	game.gameplayScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
+		game.ControlPlayer(window, event);
 	};
 	game.gameplayScene.onUpdate = [&]() {
 		game.UpdateColdowns();
@@ -94,14 +94,14 @@ void InitGamePlayScene(Game& game)
 		game.UpdateCamera(window);
 		game.DrawLevel(window);
 		game.DrawCharacter(game.player, window);
-		game.player.DrawBullets(window);
+		game.DrawPlayerBullets(window);
 	};
 }
 
 void InitMainMenuScene(Game& game)
 {
-	game.mainMenuScene.toHandle = [&](sf::RenderWindow& window) {
-		game.ControlMainMenu(window);
+	game.mainMenuScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
+		game.ControlMainMenu(window, event);
 	};
 	game.mainMenuScene.onUpdate = [&]() {
 		game.UpdateColdowns();

@@ -5946,13 +5946,13 @@
    <tile gid="0"/>
    <tile gid="1"/>
    <tile gid="8"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="22"/>
-   <tile gid="23"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="13"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6025,17 +6025,17 @@
    <tile gid="0"/>
    <tile gid="1"/>
    <tile gid="8"/>
-   <tile gid="23"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="6"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="3"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6104,18 +6104,18 @@
    <tile gid="0"/>
    <tile gid="1"/>
    <tile gid="8"/>
-   <tile gid="23"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="13"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6184,18 +6184,18 @@
    <tile gid="2"/>
    <tile gid="8"/>
    <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
+   <tile gid="12"/>
    <tile gid="6"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -9623,14 +9623,13 @@
   <object id="34" name="solid" x="1313.33" y="1122.67" width="124" height="28"/>
   <object id="35" name="solid" x="1473.33" y="1024" width="124" height="30.6667"/>
   <object id="36" name="solid" x="1668" y="961.333" width="602.667" height="28"/>
-  <object id="40" name="solid" x="26" y="994" width="326" height="59"/>
-  <object id="41" name="solid" x="24" y="1051" width="329" height="33"/>
-  <object id="42" name="solid" x="419" y="1154" width="92" height="31"/>
-  <object id="43" name="solid" x="449" y="1119" width="92" height="31"/>
+  <object id="40" name="solid" x="26" y="994" width="326" height="92"/>
+  <object id="42" name="solid" x="419" y="1154" width="441" height="31"/>
+  <object id="43" name="solid" x="449" y="1119" width="410" height="31"/>
   <object id="44" name="solid" x="483" y="1089" width="283" height="31"/>
   <object id="45" name="solid" x="515" y="1055" width="252" height="32"/>
  </objectgroup>
  <objectgroup name="spawns">
-  <object id="37" name="player_spawn" x="231.667" y="1177.67" width="43.6667" height="49.3333"/>
+  <object id="37" name="player_spawn" x="2110.67" y="727.67" width="43.6667" height="49.3333"/>
  </objectgroup>
 </map>

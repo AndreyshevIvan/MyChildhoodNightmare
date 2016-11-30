@@ -12,8 +12,7 @@ const sf::Vector2f ICON_SIZE = { 37 , 45 };
 enum struct MainMenu
 {
 	START = 0,
-	// TODO: fix typo
-	CHENGE_MAP,
+	CHANGE_MAP,
 	DIFFICULT,
 	EXIT,
 };
@@ -33,7 +32,6 @@ struct Menu
 	sf::Text exitButton;
 	sf::Text mainMenuItems[4] = { startButton, chengeLevel, difficultyLevelButton, exitButton };
 	MainMenu currentButton;
-	float buttonsColdown;
 
 	bool InitMenuItems();
 

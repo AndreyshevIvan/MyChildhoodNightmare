@@ -20,11 +20,8 @@ struct Player :Character
 {
 	Weapon weapon = FIREBALL;
 	std::list<Bullet*> bullets;
-	std::list<Bullet*>::iterator bulletsIter;
 	float currentFrame;
 
 	bool InitPlayer(Object const& spawnObj);
-	void Attack(Level const& level);
-	void UpdateBullets(float elapsedTime);
-	void DrawBullets(sf::RenderWindow& window);
+	void Attack();
 };

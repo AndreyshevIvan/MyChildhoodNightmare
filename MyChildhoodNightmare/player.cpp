@@ -7,17 +7,16 @@ bool Player::InitPlayer(Object const& spawnObj)
 		return false;
 	}
 
-	sf::Vector2f spawnPos = { spawnObj.rect.left, spawnObj.rect.top };
+	sf::Vector2f pos = { spawnObj.rect.left, spawnObj.rect.top };
 
-	bodyShape.setTextureRect(sf::IntRect(30, 35, 80, 140));
-	bodyShape.setTexture(&bodyTexture);
+	collisionRect.width = PLAYER_SIZE.x / 2.0f;
+	collisionRect.height = PLAYER_SIZE.y - 10;
+	collisionRect.left = spawnObj.rect.left;
+	collisionRect.top = spawnObj.rect.top;
+
+	bodyShape.setFillColor(sf::Color::Green);
 	bodyShape.setSize(PLAYER_SIZE);
 	bodyShape.setOrigin(PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y);
-
-	collisionShape.setSize({ PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y - 10 });
-	//collisionShape.setFillColor(sf::Color::Red);
-	collisionShape.setOrigin(PLAYER_SIZE.x / 4.0f, PLAYER_SIZE.y - 10);
-	collisionShape.setPosition(spawnPos);
 
 	moveSpeed = PLAYER_MOVE_SPEED;
 	jumpSpeed = 0;
@@ -30,46 +29,26 @@ bool Player::InitPlayer(Object const& spawnObj)
 	return true;
 }
 
-void Player::Attack(Level const& level)
+void Player::Attack()
 {
 	switch (weapon)
 	{
 	case FIREBALL:
 		if (shootColdown > CRY_COLDOWN)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos(), level, orientationStatus));
+			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus)));
 			shootColdown = 0;
 		}
 		break;
+	case MELEE:
+		if (shootColdown > CRY_COLDOWN)
+		{
+			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, 25 }, static_cast<int>(orientationStatus)));
+			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus)));
+			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, -25 }, static_cast<int>(orientationStatus)));
+			shootColdown = 0;
+		}
 	default:
 		break;
-	}
-}
-
-void Player::UpdateBullets(float elapsedTime)
-{
-	for (bulletsIter = bullets.begin(); bulletsIter != bullets.end();)
-	{
-		Bullet* bullet = *bulletsIter;
-		bullet->Update(elapsedTime);
-		if (bullet->IsLife == false)
-		{
-			bulletsIter = bullets.erase(bulletsIter);
-			delete(bullet);
-		}
-		else
-		{
-			bulletsIter++;
-		}
-	}
-}
-
-void Player::DrawBullets(sf::RenderWindow& window)
-{
-	for (bulletsIter = bullets.begin(); bulletsIter != bullets.end();)
-	{
-		Bullet* bullet = *bulletsIter;
-		window.draw(bullet->bodyShape);
-		bulletsIter++;
 	}
 }

@@ -14,5 +14,5 @@ void Character::Jump()
 
 sf::Vector2f Character::GetCharacterPos()
 {
-	return collisionShape.getPosition();
+	return sf::Vector2f( collisionRect.left + collisionRect.width / 4.0f , collisionRect.top + collisionRect.height );
 }

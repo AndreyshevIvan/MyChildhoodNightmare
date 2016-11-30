@@ -294,3 +294,14 @@ void Level::Draw(sf::RenderWindow &window)
             window.draw(layers[layer].tiles[tile]);
 }
 
+float Level::GetTilemapWidth()
+{
+	// return width of tilemap in pixels
+	return static_cast<float>(width * tileWidth);
+}
+
+float Level::GetTilemapHeight()
+{
+	// return height of tilemap in pixels
+	return static_cast<float>(height * tileHeight);
+}

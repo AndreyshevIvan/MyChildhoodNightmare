@@ -15,18 +15,20 @@ const float CRY_COLDOWN = 0.5f;
 struct Bullet
 {
 	sf::RectangleShape bodyShape;
+	sf::FloatRect collisionRect;
 	sf::Vector2f speed;
-	std::vector<Object> mapTiles;
 	int movmentOrientation;
-	bool IsLife;
 
-	Bullet(sf::Vector2f const& startPos, Level level, int const& orientation)
+	Bullet(sf::Vector2f const& startPos, int orientation)
 	{
+		collisionRect.left = startPos.x;
+		collisionRect.top = startPos.y - 50;
+		collisionRect.width = BULLET_SIZE.x;
+		collisionRect.height = BULLET_SIZE.y;
+
 		bodyShape.setSize(BULLET_SIZE);
 		bodyShape.setFillColor(sf::Color::Magenta);
-		bodyShape.setPosition({ startPos.x, startPos.y - 50});
-		IsLife = true;
-		mapTiles = level.GetObjects("solid");
+		bodyShape.setPosition({ collisionRect.left, collisionRect.top });
 		movmentOrientation = orientation;
 	}
 

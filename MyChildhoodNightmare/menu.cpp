@@ -45,7 +45,6 @@ bool Menu::InitMenuItems()
 			mainMenuItems[i].setOutlineColor(FONT_OUTLINE_COLOR);
 		}
 		currentButton = MainMenu::START;
-		buttonsColdown = 0;
 
 		return true;
 	}

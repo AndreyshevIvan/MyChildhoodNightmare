@@ -15,6 +15,7 @@ bool Game::InitGame()
 	}
 
 	mapTiles = level.GetAllObjects();
+	mapSize = { level.GetTilemapWidth(), level.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 	gameStatus = MAIN_MENU;
 
@@ -27,33 +28,29 @@ void Game::SetElapsedTime()
 	clock.restart();
 }
 
-void Game::ControlPlayer(sf::RenderWindow& window)
+void Game::ControlPlayer(sf::RenderWindow& window, sf::Event& event)
 {
-	if (Keyboard::isKeyPressed(Keyboard::Escape))
+	if (event.key.code == sf::Keyboard::Escape)
 	{
 		window.close();
 	}
-	if (Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Space))
+	if (Keyboard::isKeyPressed(Keyboard::Space))
 	{
 		player.Jump();
 	}
-	if (Keyboard::isKeyPressed(Keyboard::A))
+	if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
 	{
 		player.runStatus = RUN_LEFT;
 		player.orientationStatus = LEFT;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::D))
+	if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
 	{
 		player.runStatus = RUN_RIGHT;
 		player.orientationStatus = RIGHT;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::P))
 	{
-		player.Attack(level);
-	}
-	if (Keyboard::isKeyPressed(Keyboard::Escape))
-	{
-		gameStatus = PAUSE;
+		player.Attack();
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Num1))
 	{
@@ -65,7 +62,7 @@ void Game::ControlPlayer(sf::RenderWindow& window)
 	}
 }
 
-void Game::ControlMainMenu(sf::RenderWindow &window)
+void Game::ControlMainMenu(sf::RenderWindow &window, sf::Event& event)
 {
 	if (Keyboard::isKeyPressed(Keyboard::F))
 	{
@@ -75,7 +72,7 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 			gameStatus = PLAY;
 			currentScene = &gameplayScene;
 			break;
-		case  MainMenu::CHENGE_MAP:
+		case  MainMenu::CHANGE_MAP:
 			break;
 		case  MainMenu::DIFFICULT:
 			break;
@@ -86,9 +83,8 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 			break;
 		}
 	}
-	if ((Keyboard::isKeyPressed(Keyboard::W) || Keyboard::isKeyPressed(Keyboard::Up)) && mainMenu.buttonsColdown >= BUTTONS_COLDOWN)
+	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
 	{
-		mainMenu.buttonsColdown = 0;
 		if (mainMenu.currentButton == MainMenu::START)
 		{
 			mainMenu.currentButton = MainMenu::EXIT;
@@ -98,9 +94,8 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 			mainMenu.currentButton = MainMenu((int)mainMenu.currentButton - 1);
 		}
 	}
-	if ((Keyboard::isKeyPressed(Keyboard::S) || Keyboard::isKeyPressed(Keyboard::Down)) && mainMenu.buttonsColdown >= BUTTONS_COLDOWN)
+	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
 	{
-		mainMenu.buttonsColdown = 0;
 		if (mainMenu.currentButton == MainMenu::EXIT)
 		{
 			mainMenu.currentButton = MainMenu::START;
@@ -115,7 +110,7 @@ void Game::ControlMainMenu(sf::RenderWindow &window)
 void Game::UpdatePlayer()
 {
 	UpdateCharacterPos(player);
-	player.UpdateBullets(elapsedTime);
+	UpdateBullets();
 }
 
 void Game::UpdateCharacterPos(Character& character)
@@ -133,11 +128,11 @@ void Game::UpdateCharacterPos(Character& character)
 			movement = -movement;
 		}
 
-		character.collisionShape.move(movement, 0);
+		character.collisionRect.left += movement;
 
-		if (IsCollidesWithLevel(character.collisionShape))
+		if (IsCollidesWithLevel(character.collisionRect))
 		{
-			character.collisionShape.move(-movement, 0);
+			character.collisionRect.left -= movement;
 		}
 	}
 
@@ -154,11 +149,11 @@ void Game::UpdateGravity(Character& character)
 	character.jumpSpeed = character.jumpSpeed + G * elapsedTime;
 	movementY = character.jumpSpeed * elapsedTime;
 
-	character.collisionShape.move(0, movementY);
+	character.collisionRect.top += movementY;
 
-	if (IsCollidesWithLevel(character.collisionShape))
+	if (IsCollidesWithLevel(character.collisionRect))
 	{
-		character.collisionShape.move(0, -movementY);
+		character.collisionRect.top -= movementY;
 		if (movementY > 0)
 		{
 			character.jumpStatus = ON_GROUND;
@@ -171,13 +166,29 @@ void Game::UpdateGravity(Character& character)
 	}
 }
 
-bool Game::IsCollidesWithLevel(sf::RectangleShape& shape)
+void Game::UpdateBullets()
 {
-	auto collisionRect = shape.getGlobalBounds();
+	for (auto bulletsIter = player.bullets.begin(); bulletsIter != player.bullets.end();)
+	{
+		Bullet* bullet = *bulletsIter;
+		bullet->Update(elapsedTime);
+		if (IsCollidesWithLevel(bullet->collisionRect))
+		{
+			bulletsIter = player.bullets.erase(bulletsIter);
+			delete(bullet);
+		}
+		else
+		{
+			bulletsIter++;
+		}
+	}
+}
 
+bool Game::IsCollidesWithLevel(sf::FloatRect& rect)
+{
 	for (unsigned int i = 0; i < mapTiles.size(); i++)
 	{
-		if (collisionRect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
+		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
 		{
 			return true;
 		}
@@ -191,15 +202,38 @@ void Game::UpdateColdowns()
 	{
 		player.shootColdown += elapsedTime;
 	}
-	if (gameStatus == MAIN_MENU && mainMenu.buttonsColdown <= BUTTONS_COLDOWN)
-	{
-		mainMenu.buttonsColdown += elapsedTime;
-	}
 }
 
 void Game::UpdateCamera(sf::RenderWindow& window)
 {
-	camera.setCenter(player.GetCharacterPos());
+	sf::Vector2f cameraCenter = { player.GetCharacterPos().x, player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN };
+	camera.setCenter(cameraCenter);
+	float leftEdgeX = cameraCenter.x - RESOLUTION.x / 2.0f;
+	float rightEdgeX = cameraCenter.x + RESOLUTION.x / 2.0f;
+	float topEdgeY = cameraCenter.y - RESOLUTION.y / 2.0f;
+	float bottomEdgeY = cameraCenter.y + RESOLUTION.y / 2.0f;
+
+	if (leftEdgeX < 0)
+	{
+		camera.setCenter(RESOLUTION.x / 2.0f , cameraCenter.y);
+		cameraCenter = camera.getCenter();
+	}
+	if (rightEdgeX > mapSize.x)
+	{
+		camera.setCenter(mapSize.x - RESOLUTION.x / 2.0f, cameraCenter.y);
+		cameraCenter = camera.getCenter();
+	}
+	if (topEdgeY < 0)
+	{
+		camera.setCenter(cameraCenter.x, RESOLUTION.y / 2.0f);
+		cameraCenter = camera.getCenter();
+	}
+	if (bottomEdgeY > mapSize.y)
+	{
+		camera.setCenter(cameraCenter.x, mapSize.y - RESOLUTION.y / 2.0f);
+		cameraCenter = camera.getCenter();
+	}
+
 	window.setView(camera);
 }
 
@@ -211,5 +245,14 @@ void Game::DrawLevel(sf::RenderWindow& window)
 void Game::DrawCharacter(Character& character, sf::RenderWindow& window)
 {
 	window.draw(character.bodyShape);
-	//window.draw(character.collisionShape);
+}
+
+void Game::DrawPlayerBullets(sf::RenderWindow& window)
+{
+	for (auto bulletsIter = player.bullets.begin(); bulletsIter != player.bullets.end();)
+	{
+		Bullet* bullet = *bulletsIter;
+		window.draw(bullet->bodyShape);
+		bulletsIter++;
+	}
 }
