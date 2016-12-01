@@ -35,7 +35,7 @@ public:
     Object GetObject(std::string name);
     std::vector<Object> GetObjects(std::string name);
     std::vector<Object> GetAllObjects();
-    void Draw(sf::RenderWindow &window);
+    void Draw(sf::RenderWindow &window, sf::FloatRect drawArea);
     sf::Vector2i GetTileSize();
 	float Level::GetTilemapWidth();
 	float Level::GetTilemapHeight();

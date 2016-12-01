@@ -68,7 +68,7 @@ void Update(Game& game)
 
 void Render(sf::RenderWindow& window, Game& game)
 {
-	window.clear(sf::Color(20, 12, 28));
+	window.clear(BACKGROUND_COLOR);
 	game.currentScene->onDraw(window);
 	window.display();
 }
@@ -91,8 +91,8 @@ void InitGamePlayScene(Game& game)
 		game.UpdatePlayer();
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
-		game.UpdateCamera(window);
 		game.DrawLevel(window);
+		game.UpdateCamera(window);
 		game.DrawCharacter(game.player, window);
 		game.DrawPlayerBullets(window);
 	};

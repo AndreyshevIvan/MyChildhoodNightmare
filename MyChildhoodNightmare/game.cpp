@@ -28,6 +28,18 @@ void Game::SetElapsedTime()
 	clock.restart();
 }
 
+bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
+{
+	for (unsigned int i = 0; i < mapTiles.size(); i++)
+	{
+		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void Game::ControlPlayer(sf::RenderWindow& window, sf::Event& event)
 {
 	if (event.key.code == sf::Keyboard::Escape)
@@ -72,8 +84,6 @@ void Game::ControlMainMenu(sf::RenderWindow &window, sf::Event& event)
 			gameStatus = PLAY;
 			currentScene = &gameplayScene;
 			break;
-		case  MainMenu::CHANGE_MAP:
-			break;
 		case  MainMenu::DIFFICULT:
 			break;
 		case  MainMenu::EXIT:
@@ -109,61 +119,8 @@ void Game::ControlMainMenu(sf::RenderWindow &window, sf::Event& event)
 
 void Game::UpdatePlayer()
 {
-	UpdateCharacterPos(player);
+	player.UpdatePos(elapsedTime, mapTiles);
 	UpdateBullets();
-}
-
-void Game::UpdateCharacterPos(Character& character)
-{
-	if (character.runStatus != NOT_RUN)
-	{
-		float movement = character.moveSpeed * elapsedTime;
-
-		if (character.jumpStatus == FLY)
-		{
-			movement *= FLYING_SLOWDOWN;
-		}
-		if (character.runStatus == RUN_LEFT)
-		{
-			movement = -movement;
-		}
-
-		character.collisionRect.left += movement;
-
-		if (IsCollidesWithLevel(character.collisionRect))
-		{
-			character.collisionRect.left -= movement;
-		}
-	}
-
-	UpdateGravity(character);
-
-	character.runStatus = NOT_RUN;
-	character.bodyShape.setPosition(character.GetCharacterPos());
-}
-
-void Game::UpdateGravity(Character& character)
-{
-	float movementY = character.jumpSpeed;
-
-	character.jumpSpeed = character.jumpSpeed + G * elapsedTime;
-	movementY = character.jumpSpeed * elapsedTime;
-
-	character.collisionRect.top += movementY;
-
-	if (IsCollidesWithLevel(character.collisionRect))
-	{
-		character.collisionRect.top -= movementY;
-		if (movementY > 0)
-		{
-			character.jumpStatus = ON_GROUND;
-		}
-		character.jumpSpeed = 0;
-	}
-	else
-	{
-		character.jumpStatus = FLY;
-	}
 }
 
 void Game::UpdateBullets()
@@ -184,18 +141,6 @@ void Game::UpdateBullets()
 	}
 }
 
-bool Game::IsCollidesWithLevel(sf::FloatRect& rect)
-{
-	for (unsigned int i = 0; i < mapTiles.size(); i++)
-	{
-		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 void Game::UpdateColdowns()
 {
 	if (gameStatus == PLAY && player.shootColdown <= MAX_WEAPON_COLDOWN)
@@ -208,27 +153,23 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 {
 	sf::Vector2f cameraCenter = { player.GetCharacterPos().x, player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN };
 	camera.setCenter(cameraCenter);
-	float leftEdgeX = cameraCenter.x - RESOLUTION.x / 2.0f;
-	float rightEdgeX = cameraCenter.x + RESOLUTION.x / 2.0f;
-	float topEdgeY = cameraCenter.y - RESOLUTION.y / 2.0f;
-	float bottomEdgeY = cameraCenter.y + RESOLUTION.y / 2.0f;
 
-	if (leftEdgeX < 0)
+	if (cameraCenter.x - RESOLUTION.x / 2.0f < 0)
 	{
 		camera.setCenter(RESOLUTION.x / 2.0f , cameraCenter.y);
 		cameraCenter = camera.getCenter();
 	}
-	if (rightEdgeX > mapSize.x)
+	if (cameraCenter.x + RESOLUTION.x / 2.0f > mapSize.x)
 	{
 		camera.setCenter(mapSize.x - RESOLUTION.x / 2.0f, cameraCenter.y);
 		cameraCenter = camera.getCenter();
 	}
-	if (topEdgeY < 0)
+	if (cameraCenter.y - RESOLUTION.y / 2.0f < 0)
 	{
 		camera.setCenter(cameraCenter.x, RESOLUTION.y / 2.0f);
 		cameraCenter = camera.getCenter();
 	}
-	if (bottomEdgeY > mapSize.y)
+	if (cameraCenter.y + RESOLUTION.y / 2.0f > mapSize.y)
 	{
 		camera.setCenter(cameraCenter.x, mapSize.y - RESOLUTION.y / 2.0f);
 		cameraCenter = camera.getCenter();
@@ -239,7 +180,10 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 
 void Game::DrawLevel(sf::RenderWindow& window)
 {
-	level.Draw(window);
+	auto camCenter = camera.getCenter();
+	sf::FloatRect cameraArea(camCenter.x - RESOLUTION.x / 2.0f, camCenter.y - RESOLUTION.y / 2.0f, RESOLUTION.x, RESOLUTION.y);
+
+	level.Draw(window, cameraArea);
 }
 
 void Game::DrawCharacter(Character& character, sf::RenderWindow& window)

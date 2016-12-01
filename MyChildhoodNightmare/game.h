@@ -11,9 +11,7 @@
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
-
-const float G = 700;
-const float FLYING_SLOWDOWN = 0.6f;
+const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
 enum GameStatus
 {
@@ -39,6 +37,7 @@ struct Game
 	Player player;
 	Level level;
 	Menu mainMenu;
+	Menu pauseMenu;
 	std::vector<Object> mapTiles;
 	float elapsedTime;
 	sf::Vector2f mapSize;
@@ -51,12 +50,12 @@ struct Game
 
 	void SetElapsedTime();
 
+	bool IsCollidesWithLevel(sf::FloatRect const& rect);
+
 	void ControlPlayer(sf::RenderWindow& window, sf::Event& event);
 	void ControlMainMenu(sf::RenderWindow& window, sf::Event& event);
 
 	void UpdateCamera(sf::RenderWindow& window);
-	void UpdateGravity(Character& character);
-	void UpdateCharacterPos(Character& character);
 	void UpdateColdowns();
 	void UpdatePlayer();
 	void UpdateBullets();
@@ -64,6 +63,4 @@ struct Game
 	void DrawCharacter(Character& character, sf::RenderWindow& window);
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawPlayerBullets(sf::RenderWindow& window);
-
-	bool IsCollidesWithLevel(sf::FloatRect& rect);
 };

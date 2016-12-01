@@ -12,9 +12,15 @@ const sf::Vector2f ICON_SIZE = { 37 , 45 };
 enum struct MainMenu
 {
 	START = 0,
-	CHANGE_MAP,
 	DIFFICULT,
 	EXIT,
+};
+
+enum struct PauseMenu
+{
+	CONTINUE = 0,
+	RESTART,
+	MAIN_MENU,
 };
 
 struct Menu
@@ -27,10 +33,13 @@ struct Menu
 	sf::RectangleShape mainMenuWrapper;
 	sf::RectangleShape mainMenuIcon;
 	sf::Text startButton;
-	sf::Text chengeLevel;
 	sf::Text difficultyLevelButton;
 	sf::Text exitButton;
-	sf::Text mainMenuItems[4] = { startButton, chengeLevel, difficultyLevelButton, exitButton };
+	sf::Text continueButton;
+	sf::Text restartButton;
+	sf::Text goToMainButton;
+	sf::Text mainMenuItems[3] = { startButton, difficultyLevelButton, exitButton };
+	sf::Text pauseMenuItems[3] = { continueButton, restartButton, goToMainButton };
 	MainMenu currentButton;
 
 	bool InitMenuItems();

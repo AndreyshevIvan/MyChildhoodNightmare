@@ -27,14 +27,12 @@ bool Menu::InitMenuItems()
 		mainMenuIcon.setTexture(&mainMenuIconTexture);
 		mainMenuIcon.setOrigin(ICON_SIZE.x, ICON_SIZE.y - ICON_MARGIN);
 
-		sf::Text button1("Defeat fears", gameMenuItemsFont, FONT_SIZE);
+		sf::Text button1("Start", gameMenuItemsFont, FONT_SIZE);
 		mainMenuItems[0] = button1;
-		sf::Text button2("Choose map", gameMenuItemsFont, FONT_SIZE);
-		mainMenuItems[1] = button2;
-		sf::Text button3("Difficulty level", gameMenuItemsFont, FONT_SIZE);
-		mainMenuItems[2] = button3;
-		sf::Text button4("Im scared Leave", gameMenuItemsFont, FONT_SIZE);
-		mainMenuItems[3] = button4;
+		sf::Text button3("Difficult", gameMenuItemsFont, FONT_SIZE);
+		mainMenuItems[1] = button3;
+		sf::Text button4("Leave", gameMenuItemsFont, FONT_SIZE);
+		mainMenuItems[2] = button4;
 
 		for (int i = 0; i < sizeof(mainMenuItems) / sizeof(mainMenuItems[0]); i++)
 		{

@@ -20,7 +20,6 @@ bool Player::InitPlayer(Object const& spawnObj)
 
 	moveSpeed = PLAYER_MOVE_SPEED;
 	jumpSpeed = 0;
-	jumpHeight = PLAYER_JUMP_HEIGHT;
 
 	shootColdown = 0;
 	currentFrame = 0;

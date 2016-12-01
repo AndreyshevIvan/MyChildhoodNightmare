@@ -7,7 +7,7 @@
 const sf::Vector2f PLAYER_SIZE = { 70, 100 };
 const sf::Vector2f PLAYER_SPAWN_POS = { 350 , 700 };
 const float PLAYER_MOVE_SPEED = 250;
-const float PLAYER_JUMP_HEIGHT = 400;
+const float PLAYER_JUMP_SPEED = 400;
 const float PLAYER_START_HEALTH = 300;
 
 enum Weapon
