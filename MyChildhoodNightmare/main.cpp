@@ -97,6 +97,7 @@ void InitGamePlayScene(Game& game)
 		game.player.Draw(window);
 		game.DrawPlayerBullets(window);
 		game.DrawEnemies(window);
+		std::cout << "---" "\n";
 	};
 }
 

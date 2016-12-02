@@ -2,6 +2,7 @@
 
 void Bullet::Update(float elapsedTime)
 {
+	std::cout << "enemy" "\n";
 	if (movmentOrientation == 1)
 	{
 		collisionRect.left -= BULLET_SPEED * elapsedTime, 0;

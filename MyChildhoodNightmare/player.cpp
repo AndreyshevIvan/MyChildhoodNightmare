@@ -27,7 +27,7 @@ bool Player::InitPlayer(Object const& spawnObj)
 	currentFrame = 0;
 	orientationStatus = RIGHT;
 
-	bullets = {};
+	runStatus = NOT_RUN;
 
 	return true;
 }
@@ -53,5 +53,17 @@ void Player::Attack()
 		}
 	default:
 		break;
+	}
+}
+
+
+void Player::Clear()
+{
+
+	for (auto bulletsIt = bullets.begin(); bulletsIt != bullets.end();)
+	{
+		Bullet* bullet = *bulletsIt;
+		bulletsIt = bullets.erase(bulletsIt);
+		delete(bullet);
 	}
 }

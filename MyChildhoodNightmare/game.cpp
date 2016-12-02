@@ -30,6 +30,12 @@ bool Game::InitGame()
 void Game::StartGame()
 {
 	player.InitPlayer(level.GetObject("player_spawn"));
+	for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
+	{
+		Bullet* bullet = *bulletsIt;
+		bulletsIt = player.bullets.erase(bulletsIt);
+		delete(bullet);
+	}
 
 	auto enemiesSpawns = level.GetObjects("enemy_shadow_spawn");
 	for (auto posIt = enemiesSpawns.begin(); posIt != enemiesSpawns.end(); posIt++)
@@ -145,6 +151,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 		{
 		case 0:
 			currentScene = &gameplayScene;
+			StartGame();
 			break;
 		case 1:
 			menu.currentMenu = CurrentMenu::DIFFICULT;
@@ -222,7 +229,6 @@ void Game::UpdateBullets()
 		{
 			Bullet* bullet = *bulletsIt;
 			bullet->Update(elapsedTime);
-			cout << "test" "\n";
 			if (IsCollidesWithLevel(bullet->collisionRect))
 			{
 				bulletsIt = player.bullets.erase(bulletsIt);
