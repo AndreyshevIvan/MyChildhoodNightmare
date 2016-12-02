@@ -7,17 +7,8 @@
 
 const float G = 750;
 const float FLYING_SLOWDOWN = 0.6f;
-
-enum CharacterType
-{
-	PLAYER,
-	FRIEND_BEAR,
-	ENEMY_SHADOW,
-	ENEMY_SPIDER,
-	ENEMY_GOBLIN,
-	ENEMY_CLOWN,
-	BOSS_SISTER,
-};
+const float MIN_HEIGHT_FOR_DEMAGE = 20;
+const float DEMAGE_PER_HEIGHT = 0.8f;
 
 enum ExistenceStatus
 {
@@ -61,8 +52,8 @@ struct Character
 	float weaponDemage;
 	float demage;
 	float health;
-	float adoptedDemage;
 	float shootColdown;
+	float currentFrame;
 
 	sf::Vector2f GetCharacterPos(); 
 	
@@ -71,4 +62,5 @@ struct Character
 	void Jump();
 	void UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
+	void Draw(sf::RenderWindow& window);
 };

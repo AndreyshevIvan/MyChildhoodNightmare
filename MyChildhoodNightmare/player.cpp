@@ -1,13 +1,14 @@
+#include <SFML/Graphics.hpp>
 #include "player.h"
+
+using namespace sf;
 
 bool Player::InitPlayer(Object const& spawnObj)
 {
-	if (!bodyTexture.loadFromFile("resources/p.png"))
+	if (!bodyTexture.loadFromFile("resources/player.png"))
 	{
 		return false;
 	}
-
-	sf::Vector2f pos = { spawnObj.rect.left, spawnObj.rect.top };
 
 	collisionRect.width = PLAYER_SIZE.x / 2.0f;
 	collisionRect.height = PLAYER_SIZE.y - 10;
@@ -20,10 +21,13 @@ bool Player::InitPlayer(Object const& spawnObj)
 
 	moveSpeed = PLAYER_MOVE_SPEED;
 	jumpSpeed = 0;
+	health = PLAYER_START_HEALTH;
 
 	shootColdown = 0;
 	currentFrame = 0;
 	orientationStatus = RIGHT;
+
+	bullets = {};
 
 	return true;
 }

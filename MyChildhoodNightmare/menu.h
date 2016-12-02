@@ -4,47 +4,40 @@
 #include <vector>
 
 const unsigned FONT_SIZE = 70; // 35
+const unsigned FONT_SIZE_MINI = 40; // 35
 const sf::Color FONT_OUTLINE_COLOR = sf::Color(145, 131, 92);
 const sf::Vector2f GAMENAME_SIZE = { 328, 180 };
-const float BUTTONS_COLDOWN = 0.15f;
+const float BUTTONS_COLDOWN = 0.18f;
 const sf::Vector2f ICON_SIZE = { 37 , 45 };
 
-enum struct MainMenu
+enum struct CurrentMenu
 {
 	START = 0,
 	DIFFICULT,
-	EXIT,
-};
-
-enum struct PauseMenu
-{
-	CONTINUE = 0,
-	RESTART,
-	MAIN_MENU,
+	PAUSE,
 };
 
 struct Menu
 {
-	sf::Font gameMenuItemsFont;
+	CurrentMenu currentMenu;
+	size_t currentButton;
+	sf::Font itemsFont;
 	sf::Texture gameNameTexture;
-	sf::Texture mainMenuWrapperTexture;
-	sf::Texture mainMenuIconTexture;
+	sf::Texture wrapperTexture;
+	sf::Texture iconTexture;
 	sf::RectangleShape gameName;
-	sf::RectangleShape mainMenuWrapper;
-	sf::RectangleShape mainMenuIcon;
+	sf::RectangleShape menuWrapper;
+	sf::RectangleShape menuIcon;
 	sf::Text startButton;
-	sf::Text difficultyLevelButton;
-	sf::Text exitButton;
-	sf::Text continueButton;
-	sf::Text restartButton;
-	sf::Text goToMainButton;
-	sf::Text mainMenuItems[3] = { startButton, difficultyLevelButton, exitButton };
-	sf::Text pauseMenuItems[3] = { continueButton, restartButton, goToMainButton };
-	MainMenu currentButton;
+	std::vector<sf::Text> mainMenuItems;
+	std::vector<sf::Text> pauseMenuItems;
+	std::vector<sf::Text> difficultMenuItems;
+	std::vector<std::vector<sf::Text>> allItems;
+	float buttonsColdown;
 
 	bool InitMenuItems();
 
-	void UdateMainMenu();
+	void Update();
 
-	void DrawMainMenu(sf::RenderWindow& window);
+	void Draw(sf::RenderWindow& window);
 };

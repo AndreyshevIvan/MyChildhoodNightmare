@@ -8,19 +8,11 @@
 #include "tinyxml/level.h"
 #include "menu.h"
 #include "player.h"
+#include "enemy_shadow.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
 const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
-
-enum GameStatus
-{
-	MAIN_MENU,
-	CHENGE_LEVEL,
-	PLAY,
-	PAUSE,
-	GAME_OVER
-};
 
 struct GameScene
 {
@@ -33,34 +25,36 @@ struct Game
 {
 	sf::Clock clock;
 	sf::View camera;
-	GameStatus gameStatus;
 	Player player;
+	std::vector<EnemyShadow*> enemyShadows;
 	Level level;
-	Menu mainMenu;
-	Menu pauseMenu;
+	Menu menu;
 	std::vector<Object> mapTiles;
 	float elapsedTime;
 	sf::Vector2f mapSize;
-	GameScene mainMenuScene;
+	GameScene menuScene;
 	GameScene gameplayScene;
 	GameScene pauseScene;
 	GameScene *currentScene = nullptr;
 
 	bool InitGame();
+	void StartGame();
 
 	void SetElapsedTime();
 
 	bool IsCollidesWithLevel(sf::FloatRect const& rect);
 
-	void ControlPlayer(sf::RenderWindow& window, sf::Event& event);
-	void ControlMainMenu(sf::RenderWindow& window, sf::Event& event);
+	void ControlPlayer(sf::Event& event);
+	void ControlMenu(sf::RenderWindow& window, sf::Event& event);
+	void ControlMenuLogic(sf::RenderWindow& window, sf::Event& event);
 
 	void UpdateCamera(sf::RenderWindow& window);
 	void UpdateColdowns();
 	void UpdatePlayer();
 	void UpdateBullets();
+	void UpdateEnemies();
 
-	void DrawCharacter(Character& character, sf::RenderWindow& window);
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawPlayerBullets(sf::RenderWindow& window);
+	void DrawEnemies(sf::RenderWindow& window);
 };

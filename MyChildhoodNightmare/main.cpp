@@ -1,5 +1,3 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include <iostream>
 #include <string>
 #include "game.h"
@@ -8,7 +6,7 @@ static const std::string GAME_NAME = "My Childhood Nightmare";
 
 void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
-void InitMainMenuScene(Game& game);
+void InitMenuScene(Game& game);
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 void HandleEvents(sf::RenderWindow& window, Game& game);
@@ -32,6 +30,7 @@ int main()
 	else
 	{
 		std::cout << "ERROR: FILES NOT FOUND.";
+		system("pause"); 
 		return 1;
 	}
 
@@ -76,38 +75,43 @@ void Render(sf::RenderWindow& window, Game& game)
 void InitScenes(Game& game)
 {
 	InitGamePlayScene(game);
-	InitMainMenuScene(game);
+	InitMenuScene(game);
 
-	game.currentScene = &game.mainMenuScene;
+	game.currentScene = &game.menuScene;
 }
 
 void InitGamePlayScene(Game& game)
 {
 	game.gameplayScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
-		game.ControlPlayer(window, event);
+		window;
+		game.ControlPlayer(event);
 	};
 	game.gameplayScene.onUpdate = [&]() {
 		game.UpdateColdowns();
 		game.UpdatePlayer();
+		game.UpdateEnemies();
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
-		game.DrawLevel(window);
 		game.UpdateCamera(window);
-		game.DrawCharacter(game.player, window);
+		game.DrawLevel(window);
+		game.player.Draw(window);
 		game.DrawPlayerBullets(window);
+		game.DrawEnemies(window);
 	};
 }
 
-void InitMainMenuScene(Game& game)
+void InitMenuScene(Game& game)
 {
-	game.mainMenuScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
-		game.ControlMainMenu(window, event);
+	game.menuScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
+		game.ControlMenu(window, event);
 	};
-	game.mainMenuScene.onUpdate = [&]() {
+	game.menuScene.onUpdate = [&]() {
+		game.camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 		game.UpdateColdowns();
-		game.mainMenu.UdateMainMenu();
+		game.menu.Update();
 	};
-	game.mainMenuScene.onDraw = [&](sf::RenderWindow& window) {
-		game.mainMenu.DrawMainMenu(window);
+	game.menuScene.onDraw = [&](sf::RenderWindow& window) {
+		window.setView(game.camera);
+		game.menu.Draw(window);
 	};
 }

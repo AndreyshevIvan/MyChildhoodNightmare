@@ -9,17 +9,35 @@ bool Game::InitGame()
 	{
 		return false;
 	}
-	if (!player.InitPlayer(level.GetObject("player_spawn")) || !mainMenu.InitMenuItems())
+	if (!player.InitPlayer(level.GetObject("player_spawn")) || !menu.InitMenuItems())
 	{
 		return false;
+	}
+
+	auto enemiesSpawns = level.GetObjects("enemy_shadow_spawn");
+	for (auto posIt = enemiesSpawns.begin(); posIt != enemiesSpawns.end(); posIt++)
+	{
+		enemyShadows.push_back(new EnemyShadow(*posIt));
 	}
 
 	mapTiles = level.GetAllObjects();
 	mapSize = { level.GetTilemapWidth(), level.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
-	gameStatus = MAIN_MENU;
 
 	return true;
+}
+
+void Game::StartGame()
+{
+	player.InitPlayer(level.GetObject("player_spawn"));
+
+	auto enemiesSpawns = level.GetObjects("enemy_shadow_spawn");
+	for (auto posIt = enemiesSpawns.begin(); posIt != enemiesSpawns.end(); posIt++)
+	{
+		enemyShadows.push_back(new EnemyShadow(*posIt));
+	}
+
+	currentScene = &gameplayScene;
 }
 
 void Game::SetElapsedTime()
@@ -40,11 +58,14 @@ bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 	return false;
 }
 
-void Game::ControlPlayer(sf::RenderWindow& window, sf::Event& event)
+void Game::ControlPlayer(sf::Event& event)
 {
-	if (event.key.code == sf::Keyboard::Escape)
+	event;
+	if (Keyboard::isKeyPressed(Keyboard::Escape))
 	{
-		window.close();
+		menu.currentMenu = CurrentMenu::PAUSE;
+		menu.currentButton = 0;
+		currentScene = &menuScene;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Space))
 	{
@@ -60,10 +81,6 @@ void Game::ControlPlayer(sf::RenderWindow& window, sf::Event& event)
 		player.runStatus = RUN_RIGHT;
 		player.orientationStatus = RIGHT;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::P))
-	{
-		player.Attack();
-	}
 	if (Keyboard::isKeyPressed(Keyboard::Num1))
 	{
 		player.weapon = MELEE;
@@ -72,48 +89,112 @@ void Game::ControlPlayer(sf::RenderWindow& window, sf::Event& event)
 	{
 		player.weapon = FIREBALL;
 	}
+	if (Keyboard::isKeyPressed(Keyboard::P))
+	{
+		player.Attack();
+	}
 }
 
-void Game::ControlMainMenu(sf::RenderWindow &window, sf::Event& event)
+void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 {
-	if (Keyboard::isKeyPressed(Keyboard::F))
+	if (Keyboard::isKeyPressed(Keyboard::F) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
-		switch (mainMenu.currentButton)
+		menu.buttonsColdown = 0;
+		ControlMenuLogic(window, event);
+	}
+	else 
+	{
+		auto currMenu = menu.allItems[(size_t)menu.currentMenu];
+		auto maxItem = currMenu.size() - 1;
+
+		if (Keyboard::isKeyPressed(Keyboard::Up) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 		{
-		case  MainMenu::START:
-			gameStatus = PLAY;
+			menu.buttonsColdown = 0;
+			if (menu.currentButton == 0)
+			{
+				menu.currentButton = maxItem;
+			}
+			else
+			{
+				menu.currentButton = menu.currentButton - 1;
+			}
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::Down) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+		{
+			menu.buttonsColdown = 0;
+			if (menu.currentButton == maxItem)
+			{
+				menu.currentButton = 0;
+			}
+			else
+			{
+				menu.currentButton = menu.currentButton + 1;
+			}
+		}
+	}
+}
+
+void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
+{
+	event;
+	switch (menu.currentMenu)
+	{
+	case CurrentMenu::START:
+
+		switch (menu.currentButton)
+		{
+		case 0:
 			currentScene = &gameplayScene;
 			break;
-		case  MainMenu::DIFFICULT:
+		case 1:
+			menu.currentMenu = CurrentMenu::DIFFICULT;
 			break;
-		case  MainMenu::EXIT:
+		case 2:
 			window.close();
 			break;
 		default:
 			break;
 		}
-	}
-	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-	{
-		if (mainMenu.currentButton == MainMenu::START)
+		menu.currentButton = 0;
+		break;
+	case CurrentMenu::DIFFICULT:
+
+		switch (menu.currentButton)
 		{
-			mainMenu.currentButton = MainMenu::EXIT;
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			menu.currentMenu = CurrentMenu::START;
+			break;
+		default:
+			break;
 		}
-		else
+		menu.currentButton = 0;
+		break;
+	case CurrentMenu::PAUSE:
+
+		switch (menu.currentButton)
 		{
-			mainMenu.currentButton = MainMenu((int)mainMenu.currentButton - 1);
+		case 0:
+			currentScene = &gameplayScene;
+			break;
+		case 1:
+			StartGame();
+			break;
+		case 2:
+			menu.currentMenu = CurrentMenu::START;
+			break;
+		default:
+			break;
 		}
-	}
-	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-	{
-		if (mainMenu.currentButton == MainMenu::EXIT)
-		{
-			mainMenu.currentButton = MainMenu::START;
-		}
-		else
-		{
-			mainMenu.currentButton = MainMenu((int)mainMenu.currentButton + 1);
-		}
+		menu.currentButton = 0;
+		break;
+	default:
+		break;
 	}
 }
 
@@ -123,29 +204,66 @@ void Game::UpdatePlayer()
 	UpdateBullets();
 }
 
+void Game::UpdateEnemies()
+{
+	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	{
+		EnemyShadow* enemy = *enemyIt;
+		enemy->UpdatePos(elapsedTime, mapTiles);
+	}
+}
+
 void Game::UpdateBullets()
 {
-	for (auto bulletsIter = player.bullets.begin(); bulletsIter != player.bullets.end();)
+	bool flag = false; // Если последняя пуля сталкивается с врагом, то инкрементируется мёртвый итератор
+	if (!player.bullets.empty())
 	{
-		Bullet* bullet = *bulletsIter;
-		bullet->Update(elapsedTime);
-		if (IsCollidesWithLevel(bullet->collisionRect))
+		for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
 		{
-			bulletsIter = player.bullets.erase(bulletsIter);
-			delete(bullet);
-		}
-		else
-		{
-			bulletsIter++;
+			Bullet* bullet = *bulletsIt;
+			bullet->Update(elapsedTime);
+			cout << "test" "\n";
+			if (IsCollidesWithLevel(bullet->collisionRect))
+			{
+				bulletsIt = player.bullets.erase(bulletsIt);
+				delete(bullet);
+			}
+			else
+			{
+				for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
+				{
+					EnemyShadow* enemy = *enemyIt;
+					if (bullet->collisionRect.intersects(enemy->collisionRect))
+					{
+						bulletsIt = player.bullets.erase(bulletsIt);
+						delete(bullet);
+						enemyIt = enemyShadows.erase(enemyIt);
+						delete(enemy);
+						flag = true;
+					}
+					else
+					{
+						++enemyIt;
+					}
+				}
+				if (!flag)
+				{
+					++bulletsIt;
+				}
+			}
 		}
 	}
 }
 
 void Game::UpdateColdowns()
 {
-	if (gameStatus == PLAY && player.shootColdown <= MAX_WEAPON_COLDOWN)
+	if (player.shootColdown <= MAX_WEAPON_COLDOWN)
 	{
 		player.shootColdown += elapsedTime;
+	}
+	if (menu.buttonsColdown <= BUTTONS_COLDOWN)
+	{
+		menu.buttonsColdown += elapsedTime;
 	}
 }
 
@@ -186,11 +304,6 @@ void Game::DrawLevel(sf::RenderWindow& window)
 	level.Draw(window, cameraArea);
 }
 
-void Game::DrawCharacter(Character& character, sf::RenderWindow& window)
-{
-	window.draw(character.bodyShape);
-}
-
 void Game::DrawPlayerBullets(sf::RenderWindow& window)
 {
 	for (auto bulletsIter = player.bullets.begin(); bulletsIter != player.bullets.end();)
@@ -198,5 +311,14 @@ void Game::DrawPlayerBullets(sf::RenderWindow& window)
 		Bullet* bullet = *bulletsIter;
 		window.draw(bullet->bodyShape);
 		bulletsIter++;
+	}
+}
+
+void Game::DrawEnemies(sf::RenderWindow& window)
+{
+	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	{
+		EnemyShadow* enemy = *enemyIt;
+		enemy->Draw(window);
 	}
 }

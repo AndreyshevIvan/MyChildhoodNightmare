@@ -60,6 +60,10 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 		collisionRect.top -= movementY;
 		if (movementY > 0)
 		{
+			if (movementY > MIN_HEIGHT_FOR_DEMAGE)
+			{
+				health -= movementY * DEMAGE_PER_HEIGHT;
+			}
 			jumpStatus = ON_GROUND;
 		}
 		jumpSpeed = 0;
@@ -80,4 +84,9 @@ bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Objec
 		}
 	}
 	return false;
+}
+
+void Character::Draw(sf::RenderWindow& window)
+{
+	window.draw(bodyShape);
 }
