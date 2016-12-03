@@ -9,7 +9,7 @@ bool Game::InitGame()
 	{
 		return false;
 	}
-	if (!player.InitPlayer(level.GetObject("player_spawn")) || !menu.InitMenuItems())
+	if (!player.InitPlayer(level.GetObject("player_spawn")) || !menu.InitMenuItems() || !interface.Init())
 	{
 		return false;
 	}
@@ -197,16 +197,25 @@ void Game::UpdatePlayer()
 
 void Game::UpdateEnemies()
 {
-	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
 	{
 		EnemyShadow* enemy = *enemyIt;
-		enemy->UpdatePos(elapsedTime, mapTiles);
+		if (enemy->health <= 0)
+		{
+			enemyIt = enemyShadows.erase(enemyIt);
+			delete(enemy);
+		}
+		else
+		{
+			enemy->UpdatePos(elapsedTime, mapTiles);
+			++enemyIt;
+		}
 	}
 }
 
 void Game::UpdateBullets()
 {
-	bool isDeleted = false;
+	bool isBulletDeleted = false;
 
 	for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
 	{
@@ -219,27 +228,22 @@ void Game::UpdateBullets()
 		}
 		else
 		{
-			for (auto enemiesIt = enemyShadows.begin(); enemiesIt != enemyShadows.end();)
+			for (auto enemiesIt = enemyShadows.begin(); enemiesIt != enemyShadows.end();++enemiesIt)
 			{
 				EnemyShadow* enemy = *enemiesIt;
 				if (enemy->collisionRect.intersects(bullet->collisionRect))
 				{
-					enemiesIt = enemyShadows.erase(enemiesIt);
-					delete(enemy);
+					enemy->health -= bullet->demage;
 					bulletsIt = player.bullets.erase(bulletsIt);
 					delete(bullet);
-					isDeleted = true;
-				}
-				else
-				{
-					++enemiesIt;
+					isBulletDeleted = true;
 				}
 			}
-			if (!isDeleted)
+			if (!isBulletDeleted)
 			{
 				++bulletsIt;
 			}
-			isDeleted = false;
+			isBulletDeleted = false;
 		}
 	}
 }
@@ -283,6 +287,12 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 	}
 
 	window.setView(camera);
+}
+
+void Game::UpdatePlayerInterface()
+{
+	interface.UpdateBarsPos(camera.getCenter());
+	interface.UpdatePlayerHP(player.health);
 }
 
 void Game::DrawLevel(sf::RenderWindow& window)

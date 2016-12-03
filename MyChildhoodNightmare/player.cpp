@@ -27,6 +27,7 @@ bool Player::InitPlayer(Object const& spawnObj)
 	currentFrame = 0;
 	orientationStatus = RIGHT;
 
+	demage = 50;
 	runStatus = NOT_RUN;
 
 	return true;
@@ -39,16 +40,16 @@ void Player::Attack()
 	case FIREBALL:
 		if (shootColdown > CRY_COLDOWN)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus)));
+			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus), demage));
 			shootColdown = 0;
 		}
 		break;
 	case MELEE:
 		if (shootColdown > CRY_COLDOWN)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, 25 }, static_cast<int>(orientationStatus)));
-			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus)));
-			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, -25 }, static_cast<int>(orientationStatus)));
+			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, 25 }, static_cast<int>(orientationStatus), demage));
+			bullets.push_back(new Bullet(GetCharacterPos(), static_cast<int>(orientationStatus), demage));
+			bullets.push_back(new Bullet(GetCharacterPos() - sf::Vector2f{ 0, -25 }, static_cast<int>(orientationStatus), demage));
 			shootColdown = 0;
 		}
 	default:

@@ -62,7 +62,7 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 		{
 			if (movementY > MIN_HEIGHT_FOR_DEMAGE)
 			{
-				health -= movementY * DEMAGE_PER_HEIGHT;
+				health -= movementY * DEMAGE_PER_HEIGHT;;
 			}
 			jumpStatus = ON_GROUND;
 		}

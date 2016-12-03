@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "player.h"
 #include "enemy_shadow.h"
+#include "interface.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
@@ -29,6 +30,7 @@ struct Game
 	std::vector<EnemyShadow*> enemyShadows;
 	Level level;
 	Menu menu;
+	PlayerInterface interface;
 	std::vector<Object> mapTiles;
 	float elapsedTime;
 	sf::Vector2f mapSize;
@@ -54,6 +56,7 @@ struct Game
 	void UpdatePlayer();
 	void UpdateBullets();
 	void UpdateEnemies();
+	void UpdatePlayerInterface();
 
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawPlayerBullets(sf::RenderWindow& window);

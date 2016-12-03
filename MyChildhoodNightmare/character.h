@@ -7,7 +7,7 @@
 
 const float G = 750;
 const float FLYING_SLOWDOWN = 0.6f;
-const float MIN_HEIGHT_FOR_DEMAGE = 20;
+const float MIN_HEIGHT_FOR_DEMAGE = 16;
 const float DEMAGE_PER_HEIGHT = 0.8f;
 
 enum ExistenceStatus

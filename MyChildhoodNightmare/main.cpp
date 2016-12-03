@@ -30,7 +30,7 @@ int main()
 	else
 	{
 		std::cout << "ERROR: FILES NOT FOUND.";
-		system("pause"); 
+		system("pause");
 		return 1;
 	}
 
@@ -87,6 +87,7 @@ void InitGamePlayScene(Game& game)
 		game.ControlPlayer(event);
 	};
 	game.gameplayScene.onUpdate = [&]() {
+		game.UpdatePlayerInterface();
 		game.UpdateColdowns();
 		game.UpdatePlayer();
 		game.UpdateEnemies();
@@ -94,6 +95,7 @@ void InitGamePlayScene(Game& game)
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
 		game.UpdateCamera(window);
 		game.DrawLevel(window);
+		game.interface.Draw(window);
 		game.player.Draw(window);
 		game.DrawPlayerBullets(window);
 		game.DrawEnemies(window);

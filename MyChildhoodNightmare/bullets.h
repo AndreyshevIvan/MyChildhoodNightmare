@@ -18,8 +18,9 @@ struct Bullet
 	sf::FloatRect collisionRect;
 	sf::Vector2f speed;
 	int movmentOrientation;
+	float demage;
 
-	Bullet(sf::Vector2f const& startPos, int orientation)
+	Bullet(sf::Vector2f const& startPos, int orientation, float dmg)
 	{
 		collisionRect.left = startPos.x;
 		collisionRect.top = startPos.y - 50;
@@ -30,6 +31,8 @@ struct Bullet
 		bodyShape.setFillColor(sf::Color::Magenta);
 		bodyShape.setPosition({ collisionRect.left, collisionRect.top });
 		movmentOrientation = orientation;
+
+		demage = dmg;
 	}
 
 	void Update(float elapsedTime);
