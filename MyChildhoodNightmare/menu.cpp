@@ -12,8 +12,9 @@ bool Menu::InitMenuItems()
 {
 	if (gameNameTexture.loadFromFile("resources/GameName.png") &&
 		itemsFont.loadFromFile("resources/nightmarealley.ttf") &&
-		wrapperTexture.loadFromFile("resources/wrapper_768p.png") &&
-		iconTexture.loadFromFile("resources/menuIconFace2.png"))
+		mainWrapperTexture.loadFromFile("resources/wrapper_768p.png") &&
+		iconTexture.loadFromFile("resources/menuIconFace2.png") &&
+		pauseWrapperTexture.loadFromFile("resources/pauseMenu.png"))
 	{
 		gameName.setSize(GAMENAME_SIZE);
 		gameName.setOrigin(GAMENAME_SIZE.x / 2.0f, GAMENAME_SIZE.y);
@@ -21,8 +22,11 @@ bool Menu::InitMenuItems()
 		gameName.setPosition(GAMENAME_POS);
 
 		menuWrapper.setSize(RESOLUTION);
-		menuWrapper.setTexture(&wrapperTexture);
-		menuWrapper.setPosition(0,0);
+		menuWrapper.setTexture(&mainWrapperTexture);
+
+		pauseWrapper.setSize(PAUSE_MENU_SIZE);
+		pauseWrapper.setOrigin( PAUSE_MENU_SIZE.x / 2.0f, PAUSE_MENU_SIZE.y / 2.0f );
+		pauseWrapper.setTexture(&pauseWrapperTexture);
 
 		menuIcon.setSize(ICON_SIZE);
 		menuIcon.setTexture(&iconTexture);
@@ -79,23 +83,61 @@ bool Menu::InitMenuItems()
 
 void Menu::Update()
 {
+
 	auto currItem = allItems[(size_t)currentMenu][currentButton];
 	auto menuItemWidth = currItem.getGlobalBounds().width;
 	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y - ICON_VERTICAL_MARGIN;
-	float currIonMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
+	float currIconMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
 
-	menuIcon.setPosition({ RESOLUTION.x / 2.0f - currIonMargin , menuItemCenterY });
+	if (currentMenu == CurrentMenu::PAUSE)
+	{
+		float margin = MENU_TOP_MARGIN;
+		for (auto itemsIt = allItems[(size_t)currentMenu].begin(); itemsIt != allItems[(size_t)currentMenu].end(); itemsIt++)
+		{
+			itemsIt->setPosition(pausePos.x, pausePos.y - RESOLUTION.y / 2.0f + margin);
+			margin += MENU_ITEMS_MARGIN;
+		}
+
+		menuIcon.setPosition({ pausePos.x - currIconMargin , menuItemCenterY });
+	}
+	else
+	{
+		menuIcon.setPosition({ RESOLUTION.x / 2.0f - currIconMargin , menuItemCenterY });
+	}
+}
+
+void Menu::Select(size_t selectMenuId, size_t selectButtonId)
+{
+	for (size_t item = 0; item < allItems[selectMenuId].size() - 1; item++)
+	{
+		if (item != selectButtonId)
+		{
+			allItems[selectMenuId][item].setFillColor(UNSELECTED_ITEM_COLOR);
+		}
+		else
+		{
+			allItems[selectMenuId][item].setFillColor(ITEM_COLOR);
+		}
+	}
 }
 
 void Menu::Draw(sf::RenderWindow& window)
 {
-	auto currMenu = allItems[(size_t)currentMenu];
-
-	window.draw(menuWrapper);
-	for (auto itemIt = currMenu.begin(); itemIt != currMenu.end(); itemIt++)
+	if (currentMenu == CurrentMenu::PAUSE)
 	{
-		window.draw(*itemIt);
+		pauseWrapper.setPosition(pausePos);
+		window.draw(pauseWrapper);
 	}
-	window.draw(gameName);
+	else
+	{
+		window.draw(menuWrapper);
+		window.draw(gameName);
+	}
+
+	auto currMenu = allItems[(size_t)currentMenu];
+	for (auto itemsIt = currMenu.begin(); itemsIt != currMenu.end(); itemsIt++)
+	{
+		window.draw(*itemsIt);
+	}
 	window.draw(menuIcon);
 }

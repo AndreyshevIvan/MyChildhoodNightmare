@@ -14,6 +14,13 @@ const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
 const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
+enum struct Difficult
+{
+	EASY = 0,
+	NORMAL,
+	HARD,
+};
+
 struct GameScene
 {
 	std::function<void(sf::RenderWindow& window, sf::Event& event)> toHandle;
@@ -36,6 +43,7 @@ struct Game
 	GameScene gameplayScene;
 	GameScene pauseScene;
 	GameScene *currentScene = nullptr;
+	Difficult difficult;
 
 	bool InitGame();
 	void StartGame();

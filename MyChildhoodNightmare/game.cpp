@@ -24,26 +24,15 @@ bool Game::InitGame()
 	mapSize = { level.GetTilemapWidth(), level.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
+	difficult = Difficult::EASY;
+	menu.Select((size_t)CurrentMenu::DIFFICULT, (size_t)difficult);
+
 	return true;
 }
 
 void Game::StartGame()
 {
-	player.InitPlayer(level.GetObject("player_spawn"));
-	for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
-	{
-		Bullet* bullet = *bulletsIt;
-		bulletsIt = player.bullets.erase(bulletsIt);
-		delete(bullet);
-	}
 
-	auto enemiesSpawns = level.GetObjects("enemy_shadow_spawn");
-	for (auto posIt = enemiesSpawns.begin(); posIt != enemiesSpawns.end(); posIt++)
-	{
-		enemyShadows.push_back(new EnemyShadow(*posIt));
-	}
-
-	currentScene = &gameplayScene;
 }
 
 void Game::SetElapsedTime()
@@ -67,74 +56,88 @@ bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 void Game::ControlPlayer(sf::Event& event)
 {
 	event;
-	if (Keyboard::isKeyPressed(Keyboard::Escape))
+	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.currentMenu = CurrentMenu::PAUSE;
 		menu.currentButton = 0;
+		menu.buttonsColdown = 0;
+		menu.pausePos = camera.getCenter();
 		currentScene = &menuScene;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Space))
+	else
 	{
-		player.Jump();
-	}
-	if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
-	{
-		player.runStatus = RUN_LEFT;
-		player.orientationStatus = LEFT;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
-	{
-		player.runStatus = RUN_RIGHT;
-		player.orientationStatus = RIGHT;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::Num1))
-	{
-		player.weapon = MELEE;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::Num2))
-	{
-		player.weapon = FIREBALL;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::P))
-	{
-		player.Attack();
+		if (Keyboard::isKeyPressed(Keyboard::Space))
+		{
+			player.Jump();
+		}
+		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
+		{
+			player.runStatus = RUN_LEFT;
+			player.orientationStatus = LEFT;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
+		{
+			player.runStatus = RUN_RIGHT;
+			player.orientationStatus = RIGHT;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Num1))
+		{
+			player.weapon = MELEE;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Num2))
+		{
+			player.weapon = FIREBALL;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::P))
+		{
+			player.Attack();
+		}
 	}
 }
 
 void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 {
-	if (Keyboard::isKeyPressed(Keyboard::F) && menu.buttonsColdown >= BUTTONS_COLDOWN)
-	{
-		menu.buttonsColdown = 0;
-		ControlMenuLogic(window, event);
-	}
-	else 
-	{
-		auto currMenu = menu.allItems[(size_t)menu.currentMenu];
-		auto maxItem = currMenu.size() - 1;
 
-		if (Keyboard::isKeyPressed(Keyboard::Up) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN && menu.currentMenu == CurrentMenu::PAUSE)
+	{
+		currentScene = &gameplayScene;
+		menu.buttonsColdown = 0;
+	}
+	else
+	{
+		if (Keyboard::isKeyPressed(Keyboard::F) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 		{
 			menu.buttonsColdown = 0;
-			if (menu.currentButton == 0)
-			{
-				menu.currentButton = maxItem;
-			}
-			else
-			{
-				menu.currentButton = menu.currentButton - 1;
-			}
+			ControlMenuLogic(window, event);
 		}
-		else if (Keyboard::isKeyPressed(Keyboard::Down) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+		else
 		{
-			menu.buttonsColdown = 0;
-			if (menu.currentButton == maxItem)
+			auto currMenu = menu.allItems[(size_t)menu.currentMenu];
+			auto maxItem = currMenu.size() - 1;
+
+			if (Keyboard::isKeyPressed(Keyboard::Up) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
-				menu.currentButton = 0;
+				menu.buttonsColdown = 0;
+				if (menu.currentButton == 0)
+				{
+					menu.currentButton = maxItem;
+				}
+				else
+				{
+					menu.currentButton = menu.currentButton - 1;
+				}
 			}
-			else
+			else if (Keyboard::isKeyPressed(Keyboard::Down) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
-				menu.currentButton = menu.currentButton + 1;
+				menu.buttonsColdown = 0;
+				if (menu.currentButton == maxItem)
+				{
+					menu.currentButton = 0;
+				}
+				else
+				{
+					menu.currentButton = menu.currentButton + 1;
+				}
 			}
 		}
 	}
@@ -151,7 +154,6 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 		{
 		case 0:
 			currentScene = &gameplayScene;
-			StartGame();
 			break;
 		case 1:
 			menu.currentMenu = CurrentMenu::DIFFICULT;
@@ -169,19 +171,24 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 		switch (menu.currentButton)
 		{
 		case 0:
+			difficult = Difficult::EASY;
 			break;
 		case 1:
+			difficult = Difficult::NORMAL;
 			break;
 		case 2:
+			difficult = Difficult::HARD;
 			break;
 		case 3:
 			menu.currentMenu = CurrentMenu::START;
+			menu.currentButton = 0;
 			break;
 		default:
 			break;
 		}
-		menu.currentButton = 0;
+		menu.Select((size_t)CurrentMenu::DIFFICULT, (size_t)difficult);
 		break;
+
 	case CurrentMenu::PAUSE:
 
 		switch (menu.currentButton)
@@ -190,10 +197,10 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 			currentScene = &gameplayScene;
 			break;
 		case 1:
-			StartGame();
 			break;
 		case 2:
 			menu.currentMenu = CurrentMenu::START;
+			StartGame();
 			break;
 		default:
 			break;

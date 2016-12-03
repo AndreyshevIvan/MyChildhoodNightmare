@@ -97,7 +97,6 @@ void InitGamePlayScene(Game& game)
 		game.player.Draw(window);
 		game.DrawPlayerBullets(window);
 		game.DrawEnemies(window);
-		std::cout << "---" "\n";
 	};
 }
 
@@ -112,6 +111,10 @@ void InitMenuScene(Game& game)
 		game.menu.Update();
 	};
 	game.menuScene.onDraw = [&](sf::RenderWindow& window) {
+		if (game.menu.currentMenu == CurrentMenu::PAUSE)
+		{
+			game.gameplayScene.onDraw(window);
+		}
 		window.setView(game.camera);
 		game.menu.Draw(window);
 	};
