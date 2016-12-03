@@ -17,6 +17,7 @@ EnemyShadow::EnemyShadow(Object const& spawnObj)
 	moveSpeed = ENEMY_SHADOW_MOVE_SPEED;
 	jumpSpeed = 0;
 	health = ENEMY_SHADOW_START_HEALTH;
+	demage = 12;
 
 	shootColdown = 0;
 	currentFrame = 0;

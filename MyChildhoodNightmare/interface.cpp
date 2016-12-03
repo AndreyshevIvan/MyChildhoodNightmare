@@ -60,6 +60,5 @@ string PlayerInterface::IntToStr(int number)
 		result = char(digit + '0') + result;
 	}
 
-	cout << result << "\n";
 	return result;
 }

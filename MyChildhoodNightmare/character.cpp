@@ -74,6 +74,14 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 	}
 }
 
+void Character::CheckHealth()
+{
+	if (health < 0)
+	{
+		existStatus = DEAD;
+	}
+}
+
 bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles)
 {
 	for (unsigned int i = 0; i < mapTiles.size(); i++)

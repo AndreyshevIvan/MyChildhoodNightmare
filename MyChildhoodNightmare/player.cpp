@@ -23,14 +23,35 @@ bool Player::InitPlayer(Object const& spawnObj)
 	jumpSpeed = 0;
 	health = PLAYER_START_HEALTH;
 
+	enjuredColdown = 0;
 	shootColdown = 0;
 	currentFrame = 0;
 	orientationStatus = RIGHT;
 
-	demage = 50;
+	demage = 30;
 	runStatus = NOT_RUN;
+	existStatus = LIVE;
 
 	return true;
+}
+
+void Player::UpdateStatuses()
+{
+	if (existStatus == LIVE)
+	{
+		if (enjuredColdown < INJURED_COLDOWN)
+		{
+			bodyShape.setFillColor(sf::Color::Red);
+		}
+		else
+		{
+			bodyShape.setFillColor(sf::Color::Green);
+		}
+	}
+	else
+	{
+		bodyShape.setFillColor(sf::Color::Blue);
+	}
 }
 
 void Player::Attack()

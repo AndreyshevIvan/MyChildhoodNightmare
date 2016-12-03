@@ -54,7 +54,8 @@ struct Game
 	void UpdateCamera(sf::RenderWindow& window);
 	void UpdateColdowns();
 	void UpdatePlayer();
-	void UpdateBullets();
+	void CheckCollidesWithEnemy();
+	void UpdatePlayerBullets();
 	void UpdateEnemies();
 	void UpdatePlayerInterface();
 

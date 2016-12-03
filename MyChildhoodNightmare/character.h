@@ -12,7 +12,6 @@ const float DEMAGE_PER_HEIGHT = 0.8f;
 
 enum ExistenceStatus
 {
-	NOT_SPAWNED,
 	LIVE,
 	DEAD,
 };
@@ -62,5 +61,6 @@ struct Character
 	void Jump();
 	void UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
+	void CheckHealth();
 	void Draw(sf::RenderWindow& window);
 };

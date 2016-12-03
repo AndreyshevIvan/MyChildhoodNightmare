@@ -10,6 +10,12 @@ const sf::Vector2f HEALTH_BAR_SIZE = { 180, 70 };
 const int PLAYER_HP_FONT_SIZE = 50;
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 0 };
 
+struct DmgAnnouncement
+{
+	sf::RectangleShape shape;
+	sf::Text dmg;
+};
+
 struct PlayerInterface
 {
 	sf::RectangleShape playerHealthBar;

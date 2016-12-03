@@ -192,28 +192,13 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 void Game::UpdatePlayer()
 {
 	player.UpdatePos(elapsedTime, mapTiles);
-	UpdateBullets();
+	CheckCollidesWithEnemy();
+	player.CheckHealth();
+	player.UpdateStatuses();
+	UpdatePlayerBullets();
 }
 
-void Game::UpdateEnemies()
-{
-	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
-	{
-		EnemyShadow* enemy = *enemyIt;
-		if (enemy->health <= 0)
-		{
-			enemyIt = enemyShadows.erase(enemyIt);
-			delete(enemy);
-		}
-		else
-		{
-			enemy->UpdatePos(elapsedTime, mapTiles);
-			++enemyIt;
-		}
-	}
-}
-
-void Game::UpdateBullets()
+void Game::UpdatePlayerBullets()
 {
 	bool isBulletDeleted = false;
 
@@ -248,6 +233,40 @@ void Game::UpdateBullets()
 	}
 }
 
+void Game::CheckCollidesWithEnemy()
+{
+	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	{
+		EnemyShadow* enemy = *enemyIt;
+		if (enemy->collisionRect.intersects(player.collisionRect))
+		{
+			if (player.enjuredColdown >= INJURED_COLDOWN)
+			{
+				player.health -= enemy->demage;
+				player.enjuredColdown = 0;
+			}
+		}
+	}
+}
+
+void Game::UpdateEnemies()
+{
+	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
+	{
+		EnemyShadow* enemy = *enemyIt;
+		if (enemy->health <= 0)
+		{
+			enemyIt = enemyShadows.erase(enemyIt);
+			delete(enemy);
+		}
+		else
+		{
+			enemy->UpdatePos(elapsedTime, mapTiles);
+			++enemyIt;
+		}
+	}
+}
+
 void Game::UpdateColdowns()
 {
 	if (player.shootColdown <= MAX_WEAPON_COLDOWN)
@@ -257,6 +276,10 @@ void Game::UpdateColdowns()
 	if (menu.buttonsColdown <= BUTTONS_COLDOWN)
 	{
 		menu.buttonsColdown += elapsedTime;
+	}
+	if (player.enjuredColdown <= INJURED_COLDOWN)
+	{
+		player.enjuredColdown += elapsedTime;
 	}
 }
 
