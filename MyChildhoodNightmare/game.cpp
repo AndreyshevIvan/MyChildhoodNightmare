@@ -25,7 +25,8 @@ bool Game::InitGame()
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
 	difficult = Difficult::EASY;
-	menu.Select((size_t)CurrentMenu::DIFFICULT, (size_t)difficult);
+	menu.Select(CurrentMenu::DIFFICULT, difficult);
+	menu.SetMenu(CurrentMenu::START, camera.getCenter());
 
 	return true;
 }
@@ -58,10 +59,7 @@ void Game::ControlPlayer(sf::Event& event)
 	event;
 	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
-		menu.currentMenu = CurrentMenu::PAUSE;
-		menu.currentButton = 0;
-		menu.buttonsColdown = 0;
-		menu.pausePos = camera.getCenter();
+		menu.SetMenu(CurrentMenu::PAUSE, camera.getCenter());
 		currentScene = &menuScene;
 	}
 	else
@@ -100,8 +98,8 @@ void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 
 	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN && menu.currentMenu == CurrentMenu::PAUSE)
 	{
-		currentScene = &gameplayScene;
 		menu.buttonsColdown = 0;
+		currentScene = &gameplayScene;
 	}
 	else
 	{
@@ -112,32 +110,13 @@ void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 		}
 		else
 		{
-			auto currMenu = menu.allItems[(size_t)menu.currentMenu];
-			auto maxItem = currMenu.size() - 1;
-
 			if (Keyboard::isKeyPressed(Keyboard::Up) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
-				menu.buttonsColdown = 0;
-				if (menu.currentButton == 0)
-				{
-					menu.currentButton = maxItem;
-				}
-				else
-				{
-					menu.currentButton = menu.currentButton - 1;
-				}
+				menu.SwitchButtonUp();
 			}
 			else if (Keyboard::isKeyPressed(Keyboard::Down) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
-				menu.buttonsColdown = 0;
-				if (menu.currentButton == maxItem)
-				{
-					menu.currentButton = 0;
-				}
-				else
-				{
-					menu.currentButton = menu.currentButton + 1;
-				}
+				menu.SwitchButtonDown();
 			}
 		}
 	}
@@ -156,7 +135,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 			currentScene = &gameplayScene;
 			break;
 		case 1:
-			menu.currentMenu = CurrentMenu::DIFFICULT;
+			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
 			break;
 		case 2:
 			window.close();
@@ -180,13 +159,12 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 			difficult = Difficult::HARD;
 			break;
 		case 3:
-			menu.currentMenu = CurrentMenu::START;
-			menu.currentButton = 0;
+			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			break;
 		default:
 			break;
 		}
-		menu.Select((size_t)CurrentMenu::DIFFICULT, (size_t)difficult);
+		menu.Select(CurrentMenu::DIFFICULT, difficult);
 		break;
 
 	case CurrentMenu::PAUSE:
@@ -199,13 +177,12 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 		case 1:
 			break;
 		case 2:
-			menu.currentMenu = CurrentMenu::START;
+			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			StartGame();
 			break;
 		default:
 			break;
 		}
-		menu.currentButton = 0;
 		break;
 	default:
 		break;
@@ -229,41 +206,40 @@ void Game::UpdateEnemies()
 
 void Game::UpdateBullets()
 {
-	bool flag = false; // Если последняя пуля сталкивается с врагом, то инкрементируется мёртвый итератор
-	if (!player.bullets.empty())
+	bool isDeleted = false;
+
+	for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
 	{
-		for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
+		Bullet* bullet = *bulletsIt;
+		bullet->Update(elapsedTime);
+		if (IsCollidesWithLevel(bullet->collisionRect))
 		{
-			Bullet* bullet = *bulletsIt;
-			bullet->Update(elapsedTime);
-			if (IsCollidesWithLevel(bullet->collisionRect))
+			bulletsIt = player.bullets.erase(bulletsIt);
+			delete(bullet);
+		}
+		else
+		{
+			for (auto enemiesIt = enemyShadows.begin(); enemiesIt != enemyShadows.end();)
 			{
-				bulletsIt = player.bullets.erase(bulletsIt);
-				delete(bullet);
-			}
-			else
-			{
-				for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
+				EnemyShadow* enemy = *enemiesIt;
+				if (enemy->collisionRect.intersects(bullet->collisionRect))
 				{
-					EnemyShadow* enemy = *enemyIt;
-					if (bullet->collisionRect.intersects(enemy->collisionRect))
-					{
-						bulletsIt = player.bullets.erase(bulletsIt);
-						delete(bullet);
-						enemyIt = enemyShadows.erase(enemyIt);
-						delete(enemy);
-						flag = true;
-					}
-					else
-					{
-						++enemyIt;
-					}
+					enemiesIt = enemyShadows.erase(enemiesIt);
+					delete(enemy);
+					bulletsIt = player.bullets.erase(bulletsIt);
+					delete(bullet);
+					isDeleted = true;
 				}
-				if (!flag)
+				else
 				{
-					++bulletsIt;
+					++enemiesIt;
 				}
 			}
+			if (!isDeleted)
+			{
+				++bulletsIt;
+			}
+			isDeleted = false;
 		}
 	}
 }

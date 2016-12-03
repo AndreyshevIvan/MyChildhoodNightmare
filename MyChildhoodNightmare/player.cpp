@@ -55,15 +55,3 @@ void Player::Attack()
 		break;
 	}
 }
-
-
-void Player::Clear()
-{
-
-	for (auto bulletsIt = bullets.begin(); bulletsIt != bullets.end();)
-	{
-		Bullet* bullet = *bulletsIt;
-		bulletsIt = bullets.erase(bulletsIt);
-		delete(bullet);
-	}
-}

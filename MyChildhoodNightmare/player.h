@@ -20,5 +20,4 @@ struct Player :Character
 
 	bool InitPlayer(Object const& spawnObj);
 	void Attack();
-	void Clear();
 };

@@ -106,7 +106,6 @@ void InitMenuScene(Game& game)
 		game.ControlMenu(window, event);
 	};
 	game.menuScene.onUpdate = [&]() {
-		game.camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 		game.UpdateColdowns();
 		game.menu.Update();
 	};

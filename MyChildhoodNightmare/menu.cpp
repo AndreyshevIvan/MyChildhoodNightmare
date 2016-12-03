@@ -2,7 +2,6 @@
 #include <iostream>
 
 static const sf::Vector2f RESOLUTION = { 1366, 768 };
-const sf::Vector2f GAMENAME_POS = { RESOLUTION.x / 2.0f, 220 };
 const float ICON_HORIZONTAL_MARGIN = 35;
 const float ICON_VERTICAL_MARGIN = 3;
 const float MENU_TOP_MARGIN = 400;
@@ -19,14 +18,6 @@ bool Menu::InitMenuItems()
 		gameName.setSize(GAMENAME_SIZE);
 		gameName.setOrigin(GAMENAME_SIZE.x / 2.0f, GAMENAME_SIZE.y);
 		gameName.setTexture(&gameNameTexture);
-		gameName.setPosition(GAMENAME_POS);
-
-		menuWrapper.setSize(RESOLUTION);
-		menuWrapper.setTexture(&mainWrapperTexture);
-
-		pauseWrapper.setSize(PAUSE_MENU_SIZE);
-		pauseWrapper.setOrigin( PAUSE_MENU_SIZE.x / 2.0f, PAUSE_MENU_SIZE.y / 2.0f );
-		pauseWrapper.setTexture(&pauseWrapperTexture);
 
 		menuIcon.setSize(ICON_SIZE);
 		menuIcon.setTexture(&iconTexture);
@@ -46,9 +37,9 @@ bool Menu::InitMenuItems()
 		};
 
 		pauseMenuItems = {
-			sf::Text("Continue", itemsFont, FONT_SIZE),
-			sf::Text("Restart", itemsFont, FONT_SIZE),
-			sf::Text("Main menu", itemsFont, FONT_SIZE)
+			sf::Text("Continue", itemsFont, FONT_SIZE_MEDIUM),
+			sf::Text("Restart", itemsFont, FONT_SIZE_MEDIUM),
+			sf::Text("Main menu", itemsFont, FONT_SIZE_MEDIUM)
 		};
 
 		allItems = {
@@ -59,21 +50,11 @@ bool Menu::InitMenuItems()
 
 		for (auto menuIt = allItems.begin(); menuIt != allItems.end(); menuIt++)
 		{
-			float margin = MENU_TOP_MARGIN;
 			for (auto itemsIt = menuIt->begin(); itemsIt != menuIt->end(); itemsIt++)
 			{
-				float textCenterX = itemsIt->getGlobalBounds().width / 2.0f;
-				float textCenterY = itemsIt->getGlobalBounds().height / 2.0f;
-				itemsIt->setOrigin(textCenterX, textCenterY);
-				itemsIt->setPosition(RESOLUTION.x / 2.0f, margin);
-				itemsIt->setOutlineColor(FONT_OUTLINE_COLOR);
-				margin += MENU_ITEMS_MARGIN;
+				itemsIt->setOrigin(itemsIt->getGlobalBounds().width / 2.0f, itemsIt->getGlobalBounds().height / 2.0f);
 			}
 		}
-
-		currentMenu = CurrentMenu::START;
-		currentButton = 0;
-		buttonsColdown = 0;
 
 		return true;
 	}
@@ -81,33 +62,57 @@ bool Menu::InitMenuItems()
 	return false;
 }
 
-void Menu::Update()
+void Menu::SetMenu(CurrentMenu menu, sf::Vector2f const& point)
 {
+	currentMenu = menu;
+	currentButton = 0;
+	buttonsColdown = 0;
+	menuPos = point;
 
-	auto currItem = allItems[(size_t)currentMenu][currentButton];
-	auto menuItemWidth = currItem.getGlobalBounds().width;
-	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y - ICON_VERTICAL_MARGIN;
-	float currIconMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
-
-	if (currentMenu == CurrentMenu::PAUSE)
+	if (menu != CurrentMenu::PAUSE)
 	{
-		float margin = MENU_TOP_MARGIN;
-		for (auto itemsIt = allItems[(size_t)currentMenu].begin(); itemsIt != allItems[(size_t)currentMenu].end(); itemsIt++)
-		{
-			itemsIt->setPosition(pausePos.x, pausePos.y - RESOLUTION.y / 2.0f + margin);
-			margin += MENU_ITEMS_MARGIN;
-		}
-
-		menuIcon.setPosition({ pausePos.x - currIconMargin , menuItemCenterY });
+		gameName.setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + GAMENAME_POS_Y);
 	}
-	else
+
+	float margin = MENU_TOP_MARGIN;
+	for (auto itemsIt = allItems[(size_t)currentMenu].begin(); itemsIt != allItems[(size_t)currentMenu].end(); itemsIt++)
 	{
-		menuIcon.setPosition({ RESOLUTION.x / 2.0f - currIconMargin , menuItemCenterY });
+		itemsIt->setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + margin);
+		margin += MENU_ITEMS_MARGIN;
 	}
 }
 
-void Menu::Select(size_t selectMenuId, size_t selectButtonId)
+void Menu::Update()
 {
+	auto currItem = allItems[(size_t)currentMenu][currentButton];
+	auto menuItemWidth = currItem.getGlobalBounds().width;
+	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y;
+	float currIconMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
+
+	menuIcon.setPosition({ menuPos.x - currIconMargin , menuItemCenterY - ICON_VERTICAL_MARGIN });
+
+	if (currentMenu == CurrentMenu::PAUSE)
+	{
+		menuWrapper.setSize(PAUSE_MENU_SIZE);
+		menuWrapper.setTextureRect(sf::IntRect(0, 0, (int)PAUSE_MENU_SIZE.x, (int)PAUSE_MENU_SIZE.y));
+		menuWrapper.setTexture(&pauseWrapperTexture);
+	}
+	else
+	{
+		menuWrapper.setSize(RESOLUTION);
+		menuWrapper.setTextureRect(sf::IntRect(0, 0, (int)RESOLUTION.x, (int)RESOLUTION.y));
+		menuWrapper.setTexture(&mainWrapperTexture);
+	}
+
+	menuWrapper.setOrigin(menuWrapper.getGlobalBounds().width / 2.0f, menuWrapper.getGlobalBounds().height / 2.0f);
+	menuWrapper.setPosition(menuPos);
+}
+
+void Menu::Select(CurrentMenu selectMenu, Difficult selectButton)
+{
+	size_t selectMenuId = (size_t)selectMenu;
+	size_t selectButtonId = (size_t)selectButton;
+
 	for (size_t item = 0; item < allItems[selectMenuId].size() - 1; item++)
 	{
 		if (item != selectButtonId)
@@ -121,16 +126,45 @@ void Menu::Select(size_t selectMenuId, size_t selectButtonId)
 	}
 }
 
-void Menu::Draw(sf::RenderWindow& window)
+void Menu::SwitchButtonUp()
 {
-	if (currentMenu == CurrentMenu::PAUSE)
+	auto currMenu = allItems[(size_t)currentMenu];
+	auto maxItem = currMenu.size() - 1;
+
+	buttonsColdown = 0;
+	if (currentButton == 0)
 	{
-		pauseWrapper.setPosition(pausePos);
-		window.draw(pauseWrapper);
+		currentButton = maxItem;
 	}
 	else
 	{
-		window.draw(menuWrapper);
+		currentButton = currentButton - 1;
+	}
+}
+
+void Menu::SwitchButtonDown()
+{
+	auto currMenu = allItems[(size_t)currentMenu];
+	auto maxItem = currMenu.size() - 1;
+
+	buttonsColdown = 0;
+	if (currentButton == maxItem)
+	{
+		currentButton = 0;
+	}
+	else
+	{
+		currentButton = currentButton + 1;
+	}
+}
+
+
+void Menu::Draw(sf::RenderWindow& window)
+{
+	window.draw(menuWrapper);
+
+	if (currentMenu != CurrentMenu::PAUSE)
+	{
 		window.draw(gameName);
 	}
 
