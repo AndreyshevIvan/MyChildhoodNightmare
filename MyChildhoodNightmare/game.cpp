@@ -9,7 +9,11 @@ bool Game::InitGame()
 	{
 		return false;
 	}
-	if (!player.InitPlayer(level.GetObject("player_spawn")) || !menu.InitMenuItems() || !interface.Init())
+	if (
+		!player.InitPlayer(level.GetObject("player_spawn")) ||
+		!menu.InitMenuItems() ||
+		!interface.Init()
+		)
 	{
 		return false;
 	}
@@ -42,9 +46,20 @@ void Game::SetElapsedTime()
 	clock.restart();
 }
 
+sf::FloatRect Game::GetCameraArea()
+{
+	auto camCenter = camera.getCenter();
+	sf::FloatRect cameraArea(
+		camCenter.x - RESOLUTION.x / 2.0f,
+		camCenter.y - RESOLUTION.y / 2.0f, RESOLUTION.x, RESOLUTION.y
+	);
+	
+	return cameraArea;
+}
+
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	for (unsigned int i = 0; i < mapTiles.size(); i++)
+	for (unsigned i = 0; i < mapTiles.size(); i++)
 	{
 		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
 		{
@@ -95,26 +110,38 @@ void Game::ControlPlayer(sf::Event& event)
 
 void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 {
-
-	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN && menu.currentMenu == CurrentMenu::PAUSE)
+	if (
+		Keyboard::isKeyPressed(Keyboard::Escape) &&
+		menu.buttonsColdown >= BUTTONS_COLDOWN &&
+		menu.currentMenu == CurrentMenu::PAUSE
+		)
 	{
 		menu.buttonsColdown = 0;
 		currentScene = &gameplayScene;
 	}
 	else
 	{
-		if (Keyboard::isKeyPressed(Keyboard::F) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+		if (
+			Keyboard::isKeyPressed(Keyboard::F) &&
+			menu.buttonsColdown >= BUTTONS_COLDOWN
+			)
 		{
 			menu.buttonsColdown = 0;
 			ControlMenuLogic(window, event);
 		}
 		else
 		{
-			if (Keyboard::isKeyPressed(Keyboard::Up) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+			if (
+				Keyboard::isKeyPressed(Keyboard::Up) &&
+				menu.buttonsColdown >= BUTTONS_COLDOWN
+				)
 			{
 				menu.SwitchButtonUp();
 			}
-			else if (Keyboard::isKeyPressed(Keyboard::Down) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+			else if (
+				Keyboard::isKeyPressed(Keyboard::Down) &&
+				menu.buttonsColdown >= BUTTONS_COLDOWN
+				)
 			{
 				menu.SwitchButtonDown();
 			}
@@ -192,58 +219,56 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 void Game::UpdatePlayer()
 {
 	player.UpdatePos(elapsedTime, mapTiles);
-	CheckCollidesWithEnemy();
 	player.CheckHealth();
 	player.UpdateStatuses();
-	UpdatePlayerBullets();
 }
 
-void Game::UpdatePlayerBullets()
+void Game::UpdateBullets()
 {
-	bool isBulletDeleted = false;
-
-	for (auto bulletsIt = player.bullets.begin(); bulletsIt != player.bullets.end();)
+	for (auto it = player.bullets.begin(); it != player.bullets.end();)
 	{
-		Bullet* bullet = *bulletsIt;
+		Bullet* bullet = *it;
 		bullet->Update(elapsedTime);
-		if (IsCollidesWithLevel(bullet->collisionRect))
+		if (
+			IsCollidesWithLevel(bullet->collisionRect) ||
+			!bullet->isLive
+			)
 		{
-			bulletsIt = player.bullets.erase(bulletsIt);
+			it = player.bullets.erase(it);
 			delete(bullet);
 		}
 		else
 		{
-			for (auto enemiesIt = enemyShadows.begin(); enemiesIt != enemyShadows.end();++enemiesIt)
-			{
-				EnemyShadow* enemy = *enemiesIt;
-				if (enemy->collisionRect.intersects(bullet->collisionRect))
-				{
-					enemy->health -= bullet->demage;
-					bulletsIt = player.bullets.erase(bulletsIt);
-					delete(bullet);
-					isBulletDeleted = true;
-				}
-			}
-			if (!isBulletDeleted)
-			{
-				++bulletsIt;
-			}
-			isBulletDeleted = false;
+			++it;
 		}
 	}
 }
 
-void Game::CheckCollidesWithEnemy()
+void Game::CheckEntitiesCollides()
 {
-	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	for (auto it = enemyShadows.begin(); it != enemyShadows.end(); it++)
 	{
-		EnemyShadow* enemy = *enemyIt;
+		EnemyShadow* enemy = *it;
 		if (enemy->collisionRect.intersects(player.collisionRect))
 		{
-			if (player.enjuredColdown >= INJURED_COLDOWN)
+			if (player.injuredColdown >= INJURED_COLDOWN)
 			{
 				player.health -= enemy->demage;
-				player.enjuredColdown = 0;
+				player.injuredColdown = 0;
+			}
+		}
+	}
+
+	for (auto bullIt = player.bullets.begin(); bullIt != player.bullets.end(); bullIt++)
+	{
+		Bullet* bullet = *bullIt;
+		for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+		{
+			EnemyShadow* enemy = *enemyIt;
+			if (enemy->collisionRect.intersects(bullet->collisionRect))
+			{
+				enemy->health -= bullet->demage;
+				bullet->isLive = false;
 			}
 		}
 	}
@@ -251,18 +276,18 @@ void Game::CheckCollidesWithEnemy()
 
 void Game::UpdateEnemies()
 {
-	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end();)
+	for (auto it = enemyShadows.begin(); it != enemyShadows.end();)
 	{
-		EnemyShadow* enemy = *enemyIt;
+		EnemyShadow* enemy = *it;
 		if (enemy->health <= 0)
 		{
-			enemyIt = enemyShadows.erase(enemyIt);
+			it = enemyShadows.erase(it);
 			delete(enemy);
 		}
 		else
 		{
 			enemy->UpdatePos(elapsedTime, mapTiles);
-			++enemyIt;
+			++it;
 		}
 	}
 }
@@ -277,42 +302,46 @@ void Game::UpdateColdowns()
 	{
 		menu.buttonsColdown += elapsedTime;
 	}
-	if (player.enjuredColdown <= INJURED_COLDOWN)
+	if (player.injuredColdown <= INJURED_COLDOWN)
 	{
-		player.enjuredColdown += elapsedTime;
+		player.injuredColdown += elapsedTime;
 	}
 }
 
 void Game::UpdateCamera(sf::RenderWindow& window)
 {
-	sf::Vector2f cameraCenter = { player.GetCharacterPos().x, player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN };
+	sf::Vector2f halfWindow = { RESOLUTION.x / 2.0f , RESOLUTION.y / 2.0f };
+	sf::Vector2f cameraCenter = {
+		player.GetCharacterPos().x,
+		player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN
+	};
 	camera.setCenter(cameraCenter);
 
-	if (cameraCenter.x - RESOLUTION.x / 2.0f < 0)
+	if (cameraCenter.x - halfWindow.x < 0)
 	{
-		camera.setCenter(RESOLUTION.x / 2.0f , cameraCenter.y);
+		camera.setCenter(halfWindow.x, cameraCenter.y);
 		cameraCenter = camera.getCenter();
 	}
-	if (cameraCenter.x + RESOLUTION.x / 2.0f > mapSize.x)
+	if (cameraCenter.x + halfWindow.x > mapSize.x)
 	{
-		camera.setCenter(mapSize.x - RESOLUTION.x / 2.0f, cameraCenter.y);
+		camera.setCenter(mapSize.x - halfWindow.x, cameraCenter.y);
 		cameraCenter = camera.getCenter();
 	}
-	if (cameraCenter.y - RESOLUTION.y / 2.0f < 0)
+	if (cameraCenter.y - halfWindow.y < 0)
 	{
-		camera.setCenter(cameraCenter.x, RESOLUTION.y / 2.0f);
+		camera.setCenter(cameraCenter.x, halfWindow.y);
 		cameraCenter = camera.getCenter();
 	}
-	if (cameraCenter.y + RESOLUTION.y / 2.0f > mapSize.y)
+	if (cameraCenter.y + halfWindow.y > mapSize.y)
 	{
-		camera.setCenter(cameraCenter.x, mapSize.y - RESOLUTION.y / 2.0f);
+		camera.setCenter(cameraCenter.x, mapSize.y - halfWindow.y);
 		cameraCenter = camera.getCenter();
 	}
 
 	window.setView(camera);
 }
 
-void Game::UpdatePlayerInterface()
+void Game::UpdateInterface()
 {
 	interface.UpdateBarsPos(camera.getCenter());
 	interface.UpdatePlayerHP(player.health);
@@ -320,27 +349,29 @@ void Game::UpdatePlayerInterface()
 
 void Game::DrawLevel(sf::RenderWindow& window)
 {
-	auto camCenter = camera.getCenter();
-	sf::FloatRect cameraArea(camCenter.x - RESOLUTION.x / 2.0f, camCenter.y - RESOLUTION.y / 2.0f, RESOLUTION.x, RESOLUTION.y);
-
-	level.Draw(window, cameraArea);
+	level.Draw(window, GetCameraArea());
 }
 
 void Game::DrawPlayerBullets(sf::RenderWindow& window)
 {
-	for (auto bulletsIter = player.bullets.begin(); bulletsIter != player.bullets.end();)
+	for (auto it = player.bullets.begin(); it != player.bullets.end(); it++)
 	{
-		Bullet* bullet = *bulletsIter;
-		window.draw(bullet->bodyShape);
-		bulletsIter++;
+		Bullet* bullet = *it;
+		if (GetCameraArea().intersects(bullet->collisionRect))
+		{
+			window.draw(bullet->bodyShape);
+		}
 	}
 }
 
 void Game::DrawEnemies(sf::RenderWindow& window)
 {
-	for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+	for (auto it = enemyShadows.begin(); it != enemyShadows.end(); it++)
 	{
-		EnemyShadow* enemy = *enemyIt;
-		enemy->Draw(window);
+		EnemyShadow* enemy = *it;
+		if (GetCameraArea().intersects(enemy->collisionRect))
+		{
+			enemy->Draw(window);
+		}
 	}
 }

@@ -87,10 +87,12 @@ void InitGamePlayScene(Game& game)
 		game.ControlPlayer(event);
 	};
 	game.gameplayScene.onUpdate = [&]() {
-		game.UpdatePlayerInterface();
+		game.UpdateInterface();
 		game.UpdateColdowns();
 		game.UpdatePlayer();
 		game.UpdateEnemies();
+		game.UpdateBullets();
+		game.CheckEntitiesCollides();
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
 		game.UpdateCamera(window);

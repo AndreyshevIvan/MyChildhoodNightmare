@@ -24,9 +24,16 @@ bool PlayerInterface::Init()
 
 void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 {
-	sf::Vector2f playerHPPos = { cameraPos.x - HEALTH_BAR_POS.x, cameraPos.y - HEALTH_BAR_POS.y };
+	sf::Vector2f playerHPPos = {
+		cameraPos.x - HEALTH_BAR_POS.x,
+		cameraPos.y - HEALTH_BAR_POS.y
+	};
 	playerHealthBar.setPosition(playerHPPos);
-	playerHealth.setPosition(playerHPPos.x + PLAYER_HP_MARGIN.x , playerHPPos.y + PLAYER_HP_MARGIN.y);
+	playerHealth.setPosition
+	(
+		playerHPPos.x + PLAYER_HP_MARGIN.x,
+		playerHPPos.y + PLAYER_HP_MARGIN.y
+	);
 }
 
 void PlayerInterface::UpdatePlayerHP(float health)
@@ -48,7 +55,7 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerHealth);
 }
 
-string PlayerInterface::IntToStr(int number)
+string IntToStr(int number)
 {
 	string result = "";
 

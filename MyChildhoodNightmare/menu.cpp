@@ -3,7 +3,6 @@
 
 static const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float ICON_HORIZONTAL_MARGIN = 35;
-const float ICON_VERTICAL_MARGIN = 3;
 const float MENU_TOP_MARGIN = 400;
 const float MENU_ITEMS_MARGIN = 60;
 
@@ -48,11 +47,14 @@ bool Menu::InitMenuItems()
 			pauseMenuItems
 		};
 
-		for (auto menuIt = allItems.begin(); menuIt != allItems.end(); menuIt++)
+		for (auto it = allItems.begin(); it != allItems.end(); it++)
 		{
-			for (auto itemsIt = menuIt->begin(); itemsIt != menuIt->end(); itemsIt++)
+			for (auto itemsIt = it->begin(); itemsIt != it->end(); itemsIt++)
 			{
-				itemsIt->setOrigin(itemsIt->getGlobalBounds().width / 2.0f, itemsIt->getGlobalBounds().height / 2.0f);
+				itemsIt->setOrigin(
+					itemsIt->getGlobalBounds().width / 2.0f, 
+					itemsIt->getGlobalBounds().height / 2.0f
+				);
 			}
 		}
 
@@ -62,7 +64,7 @@ bool Menu::InitMenuItems()
 	return false;
 }
 
-void Menu::SetMenu(CurrentMenu menu, sf::Vector2f const& point)
+void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& point)
 {
 	currentMenu = menu;
 	currentButton = 0;
@@ -71,25 +73,32 @@ void Menu::SetMenu(CurrentMenu menu, sf::Vector2f const& point)
 
 	if (menu != CurrentMenu::PAUSE)
 	{
-		gameName.setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + GAMENAME_POS_Y);
+		gameName.setPosition(
+			menuPos.x,
+			menuPos.y - RESOLUTION.y / 2.0f + GAMENAME_POS_Y
+		);
 	}
 
 	float margin = MENU_TOP_MARGIN;
-	for (auto itemsIt = allItems[(size_t)currentMenu].begin(); itemsIt != allItems[(size_t)currentMenu].end(); itemsIt++)
+	auto currMenu = static_cast<size_t>(currentMenu);
+
+	for (auto it = allItems[currMenu].begin(); it != allItems[currMenu].end(); it++)
 	{
-		itemsIt->setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + margin);
+		it->setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + margin);
 		margin += MENU_ITEMS_MARGIN;
 	}
 }
 
 void Menu::Update()
 {
-	auto currItem = allItems[(size_t)currentMenu][currentButton];
+	auto currMenu = static_cast<size_t>(currentMenu);
+	auto currItem = allItems[currMenu][currentButton];
+
 	auto menuItemWidth = currItem.getGlobalBounds().width;
 	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y;
 	float currIconMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
 
-	menuIcon.setPosition({ menuPos.x - currIconMargin , menuItemCenterY - ICON_VERTICAL_MARGIN });
+	menuIcon.setPosition({ menuPos.x - currIconMargin , menuItemCenterY });
 
 	if (currentMenu == CurrentMenu::PAUSE)
 	{
@@ -104,24 +113,27 @@ void Menu::Update()
 		menuWrapper.setTexture(&mainWrapperTexture);
 	}
 
-	menuWrapper.setOrigin(menuWrapper.getGlobalBounds().width / 2.0f, menuWrapper.getGlobalBounds().height / 2.0f);
+	menuWrapper.setOrigin(
+		menuWrapper.getGlobalBounds().width / 2.0f,
+		menuWrapper.getGlobalBounds().height / 2.0f
+	);
 	menuWrapper.setPosition(menuPos);
 }
 
-void Menu::Select(CurrentMenu selectMenu, Difficult selectButton)
+void Menu::Select(CurrentMenu const& selectMenu, Difficult const& selectButton)
 {
-	size_t selectMenuId = (size_t)selectMenu;
-	size_t selectButtonId = (size_t)selectButton;
+	size_t selectMenuId = static_cast<size_t>(selectMenu);
+	size_t selectButtonId = static_cast<size_t>(selectButton);
 
-	for (size_t item = 0; item < allItems[selectMenuId].size() - 1; item++)
+	for (size_t it = 0; it < allItems[selectMenuId].size() - 1; it++)
 	{
-		if (item != selectButtonId)
+		if (it != selectButtonId)
 		{
-			allItems[selectMenuId][item].setFillColor(UNSELECTED_ITEM_COLOR);
+			allItems[selectMenuId][it].setFillColor(UNSELECTED_ITEM_COLOR);
 		}
 		else
 		{
-			allItems[selectMenuId][item].setFillColor(ITEM_COLOR);
+			allItems[selectMenuId][it].setFillColor(ITEM_COLOR);
 		}
 	}
 }
@@ -169,9 +181,9 @@ void Menu::Draw(sf::RenderWindow& window)
 	}
 
 	auto currMenu = allItems[(size_t)currentMenu];
-	for (auto itemsIt = currMenu.begin(); itemsIt != currMenu.end(); itemsIt++)
+	for (auto it = currMenu.begin(); it != currMenu.end(); it++)
 	{
-		window.draw(*itemsIt);
+		window.draw(*it);
 	}
 	window.draw(menuIcon);
 }

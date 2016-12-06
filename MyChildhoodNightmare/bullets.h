@@ -19,6 +19,7 @@ struct Bullet
 	sf::Vector2f speed;
 	int movmentOrientation;
 	float demage;
+	bool isLive = true;
 
 	Bullet(sf::Vector2f const& startPos, int orientation, float dmg)
 	{

@@ -44,6 +44,7 @@ struct Game
 	void StartGame();
 
 	void SetElapsedTime();
+	sf::FloatRect GetCameraArea();
 
 	bool IsCollidesWithLevel(sf::FloatRect const& rect);
 
@@ -54,10 +55,11 @@ struct Game
 	void UpdateCamera(sf::RenderWindow& window);
 	void UpdateColdowns();
 	void UpdatePlayer();
-	void CheckCollidesWithEnemy();
-	void UpdatePlayerBullets();
+	void UpdateBullets();
 	void UpdateEnemies();
-	void UpdatePlayerInterface();
+	void UpdateInterface();
+
+	void CheckEntitiesCollides();
 
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawPlayerBullets(sf::RenderWindow& window);

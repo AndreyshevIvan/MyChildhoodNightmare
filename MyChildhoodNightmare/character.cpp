@@ -8,13 +8,18 @@ void Character::Jump()
 {
 	if (jumpStatus == ON_GROUND)
 	{
-		jumpSpeed = -400;
+		jumpSpeed = -CHARACTERS_JUMP_SPEED;
 	}
 }
 
 sf::Vector2f Character::GetCharacterPos()
 {
-	return sf::Vector2f( collisionRect.left + collisionRect.width / 4.0f , collisionRect.top + collisionRect.height );
+	sf::Vector2f position(
+		collisionRect.left + collisionRect.width / 4.0f,
+		collisionRect.top + collisionRect.height
+	);
+
+	return position;
 }
 
 void Character::UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles)
@@ -60,10 +65,6 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 		collisionRect.top -= movementY;
 		if (movementY > 0)
 		{
-			if (movementY > MIN_HEIGHT_FOR_DEMAGE)
-			{
-				health -= movementY * DEMAGE_PER_HEIGHT;;
-			}
 			jumpStatus = ON_GROUND;
 		}
 		jumpSpeed = 0;
@@ -84,7 +85,7 @@ void Character::CheckHealth()
 
 bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles)
 {
-	for (unsigned int i = 0; i < mapTiles.size(); i++)
+	for (unsigned i = 0; i < mapTiles.size(); i++)
 	{
 		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
 		{

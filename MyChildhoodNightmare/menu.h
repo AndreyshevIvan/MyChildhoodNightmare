@@ -28,7 +28,6 @@ enum struct Difficult
 	HARD,
 };
 
-
 struct Menu
 {
 	CurrentMenu currentMenu;
@@ -51,10 +50,10 @@ struct Menu
 
 	bool InitMenuItems();
 
-	void SetMenu(CurrentMenu menu, sf::Vector2f const& point);
+	void SetMenu(CurrentMenu const& menu, sf::Vector2f const& point);
 
 	void Update();
-	void Select(CurrentMenu selectMenu, Difficult selectButton);
+	void Select(CurrentMenu const& selectMenu, Difficult const& selectButton);
 	void SwitchButtonUp();
 	void SwitchButtonDown();
 

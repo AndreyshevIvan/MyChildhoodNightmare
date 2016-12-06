@@ -9,6 +9,7 @@ const float G = 750;
 const float FLYING_SLOWDOWN = 0.6f;
 const float MIN_HEIGHT_FOR_DEMAGE = 16;
 const float DEMAGE_PER_HEIGHT = 0.8f;
+const float CHARACTERS_JUMP_SPEED = 400;
 
 enum ExistenceStatus
 {
@@ -54,7 +55,7 @@ struct Character
 	float shootColdown;
 	float currentFrame;
 
-	sf::Vector2f GetCharacterPos(); 
+	sf::Vector2f GetCharacterPos();
 	
 	bool IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles);
 

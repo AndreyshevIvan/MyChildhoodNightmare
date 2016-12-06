@@ -25,10 +25,10 @@ struct PlayerInterface
 
 	bool Init();
 
-	std::string IntToStr(int number);
-
 	void UpdateBarsPos(sf::Vector2f const& cameraPos);
 	void UpdatePlayerHP(float health);
 
 	void Draw(sf::RenderWindow& window);
 };
+
+std::string IntToStr(int number);

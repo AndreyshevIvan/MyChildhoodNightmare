@@ -8,6 +8,4 @@ const float ENEMY_SHADOW_START_HEALTH = 200;
 struct EnemyShadow :Character
 {
 	EnemyShadow(Object const& spawnObj);
-
-
 };
