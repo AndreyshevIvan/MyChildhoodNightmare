@@ -28,7 +28,9 @@ struct Game
 	sf::View camera;
 	Player player;
 	std::vector<EnemyShadow*> enemyShadows;
-	Level level;
+	Level* currentLevel;
+	Level level_1;
+	Level level_2;
 	Menu menu;
 	PlayerInterface interface;
 	std::vector<Object> mapTiles;
@@ -42,6 +44,7 @@ struct Game
 
 	bool InitGame();
 	void StartGame();
+	void SpawnEntities();
 
 	void SetElapsedTime();
 	sf::FloatRect GetCameraArea();
@@ -62,6 +65,6 @@ struct Game
 	void CheckEntitiesCollides();
 
 	void DrawLevel(sf::RenderWindow& window);
-	void DrawPlayerBullets(sf::RenderWindow& window);
+	void DrawBullets(sf::RenderWindow& window);
 	void DrawEnemies(sf::RenderWindow& window);
 };

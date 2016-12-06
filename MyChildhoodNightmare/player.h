@@ -16,10 +16,10 @@ enum Weapon
 struct Player :Character
 {
 	Weapon weapon = FIREBALL;
-	std::vector<Bullet*> bullets;
 	float injuredColdown;
 
-	bool InitPlayer(Object const& spawnObj);
+	bool InitPlayer();
+	void SpawnPlayer(Object const& spawnObj);
 	
 	void Attack();
 	void UpdateStatuses();

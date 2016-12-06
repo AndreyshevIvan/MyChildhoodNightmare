@@ -47,6 +47,8 @@ struct Character
 	ExistenceStatus existStatus;
 	OrientationStatus orientationStatus;
 
+	std::vector<Bullet*> bullets;
+
 	float moveSpeed;
 	float jumpSpeed;
 	float weaponDemage;
@@ -55,13 +57,19 @@ struct Character
 	float shootColdown;
 	float currentFrame;
 
+	void Spawn(Object const& spawnObj);
+
 	sf::Vector2f GetCharacterPos();
 	
 	bool IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles);
 
 	void Jump();
+
 	void UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
-	void CheckHealth();
+	void UpdateHealthStatus();
+
 	void Draw(sf::RenderWindow& window);
+
+	void Clear();
 };

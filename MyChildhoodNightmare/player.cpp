@@ -3,7 +3,7 @@
 
 using namespace sf;
 
-bool Player::InitPlayer(Object const& spawnObj)
+bool Player::InitPlayer()
 {
 	if (!bodyTexture.loadFromFile("resources/player.png"))
 	{
@@ -12,8 +12,6 @@ bool Player::InitPlayer(Object const& spawnObj)
 
 	collisionRect.width = PLAYER_SIZE.x / 2.0f;
 	collisionRect.height = PLAYER_SIZE.y - 10;
-	collisionRect.left = spawnObj.rect.left;
-	collisionRect.top = spawnObj.rect.top;
 
 	bodyShape.setFillColor(sf::Color::Green);
 	bodyShape.setSize(PLAYER_SIZE);
@@ -31,6 +29,8 @@ bool Player::InitPlayer(Object const& spawnObj)
 	demage = 30;
 	runStatus = NOT_RUN;
 	existStatus = LIVE;
+
+	bullets.clear();
 
 	return true;
 }

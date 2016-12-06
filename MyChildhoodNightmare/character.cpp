@@ -4,6 +4,12 @@
 using namespace std;
 using namespace sf;
 
+void Character::Spawn(Object const& spawnObj)
+{
+	collisionRect.left = spawnObj.rect.left;
+	collisionRect.top = spawnObj.rect.top;
+}
+
 void Character::Jump()
 {
 	if (jumpStatus == ON_GROUND)
@@ -75,7 +81,7 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 	}
 }
 
-void Character::CheckHealth()
+void Character::UpdateHealthStatus()
 {
 	if (health < 0)
 	{
@@ -98,4 +104,14 @@ bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Objec
 void Character::Draw(sf::RenderWindow& window)
 {
 	window.draw(bodyShape);
+}
+
+void Character::Clear()
+{
+	for (auto it = bullets.begin(); it != bullets.end();)
+	{
+		Bullet* bullet = *it;
+		it = bullets.erase(it);
+		delete(bullet);
+	}
 }

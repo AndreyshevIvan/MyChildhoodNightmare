@@ -5,12 +5,15 @@ using namespace sf;
 
 bool Game::InitGame()
 {
-	if (!level.LoadFromFile("resources/firstTileset.tmx"))
+	if (
+		!level_1.LoadFromFile("resources/firstTileset.tmx") &&
+		!level_2.LoadFromFile("resources/secondTileset.tmx")
+		)
 	{
 		return false;
 	}
 	if (
-		!player.InitPlayer(level.GetObject("player_spawn")) ||
+		!player.InitPlayer() ||
 		!menu.InitMenuItems() ||
 		!interface.Init()
 		)
@@ -18,14 +21,10 @@ bool Game::InitGame()
 		return false;
 	}
 
-	auto enemiesSpawns = level.GetObjects("enemy_shadow_spawn");
-	for (auto posIt = enemiesSpawns.begin(); posIt != enemiesSpawns.end(); posIt++)
-	{
-		enemyShadows.push_back(new EnemyShadow(*posIt));
-	}
+	currentLevel = &level_1;
 
-	mapTiles = level.GetAllObjects();
-	mapSize = { level.GetTilemapWidth(), level.GetTilemapHeight() };
+	mapTiles = level_1.GetAllObjects();
+	mapSize = { level_1.GetTilemapWidth(), level_1.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
 	difficult = Difficult::EASY;
@@ -37,7 +36,28 @@ bool Game::InitGame()
 
 void Game::StartGame()
 {
+	for (auto it = enemyShadows.begin(); it != enemyShadows.end();)
+	{
+		EnemyShadow* enemy = *it;
+		it = enemyShadows.erase(it);
+		delete(enemy);
+	}
+	player.Clear();
+	player.InitPlayer();
 
+	SpawnEntities();
+	currentScene = &gameplayScene;
+}
+
+void Game::SpawnEntities()
+{
+	player.Spawn(currentLevel->GetObject("player_spawn"));
+
+	auto enemiesSpawns = level_1.GetObjects("enemy_shadow_spawn");
+	for (auto it = enemiesSpawns.begin(); it != enemiesSpawns.end(); it++)
+	{
+		enemyShadows.push_back(new EnemyShadow(*it));
+	}
 }
 
 void Game::SetElapsedTime()
@@ -159,7 +179,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 		switch (menu.currentButton)
 		{
 		case 0:
-			currentScene = &gameplayScene;
+			StartGame();
 			break;
 		case 1:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -202,10 +222,10 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 			currentScene = &gameplayScene;
 			break;
 		case 1:
+			StartGame();
 			break;
 		case 2:
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
-			StartGame();
 			break;
 		default:
 			break;
@@ -219,7 +239,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
 void Game::UpdatePlayer()
 {
 	player.UpdatePos(elapsedTime, mapTiles);
-	player.CheckHealth();
+	player.UpdateHealthStatus();
 	player.UpdateStatuses();
 }
 
@@ -349,10 +369,10 @@ void Game::UpdateInterface()
 
 void Game::DrawLevel(sf::RenderWindow& window)
 {
-	level.Draw(window, GetCameraArea());
+	level_1.Draw(window, GetCameraArea());
 }
 
-void Game::DrawPlayerBullets(sf::RenderWindow& window)
+void Game::DrawBullets(sf::RenderWindow& window)
 {
 	for (auto it = player.bullets.begin(); it != player.bullets.end(); it++)
 	{
