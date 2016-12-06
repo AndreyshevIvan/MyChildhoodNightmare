@@ -19,9 +19,10 @@ struct Bullet
 	sf::Vector2f speed;
 	int movmentOrientation;
 	float demage;
+	float angle;
 	bool isLive = true;
 
-	Bullet(sf::Vector2f const& startPos, int orientation, float dmg)
+	Bullet(sf::Vector2f const& startPos, float demage, float angle, int orientation)
 	{
 		collisionRect.left = startPos.x;
 		collisionRect.top = startPos.y - 50;
@@ -33,7 +34,8 @@ struct Bullet
 		bodyShape.setPosition({ collisionRect.left, collisionRect.top });
 		movmentOrientation = orientation;
 
-		demage = dmg;
+		this->angle = angle;
+		this->demage = demage;
 	}
 
 	void Update(float elapsedTime);

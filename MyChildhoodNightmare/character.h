@@ -53,6 +53,7 @@ struct Character
 	float jumpSpeed;
 	float weaponDemage;
 	float demage;
+	float bulletsAngle;
 	float health;
 	float shootColdown;
 	float currentFrame;

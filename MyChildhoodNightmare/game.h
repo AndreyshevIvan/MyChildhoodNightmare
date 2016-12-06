@@ -17,7 +17,7 @@ const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
 struct GameScene
 {
-	std::function<void(sf::RenderWindow& window, sf::Event& event)> toHandle;
+	std::function<void(sf::RenderWindow& window)> toHandle;
 	std::function<void()> onUpdate;
 	std::function<void(sf::RenderWindow& window)> onDraw;
 };
@@ -51,9 +51,9 @@ struct Game
 
 	bool IsCollidesWithLevel(sf::FloatRect const& rect);
 
-	void ControlPlayer(sf::Event& event);
-	void ControlMenu(sf::RenderWindow& window, sf::Event& event);
-	void ControlMenuLogic(sf::RenderWindow& window, sf::Event& event);
+	void ControlPlayer();
+	void ControlMenu(sf::RenderWindow& window);
+	void ControlMenuLogic(sf::RenderWindow& window);
 
 	void UpdateCamera(sf::RenderWindow& window);
 	void UpdateColdowns();

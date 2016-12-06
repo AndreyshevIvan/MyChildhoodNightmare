@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="80" height="40" tilewidth="32" tileheight="32" nextobjectid="51">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="80" height="40" tilewidth="32" tileheight="32" nextobjectid="77">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="100" columns="10">
   <image source="tileset.png" width="320" height="320"/>
  </tileset>
@@ -9631,9 +9631,34 @@
   <object id="48" name="solid" x="2244" y="864" width="124" height="61"/>
   <object id="49" name="solid" x="2305" y="770" width="128" height="59"/>
   <object id="50" name="solid" x="1347" y="1122" width="60" height="27"/>
+  <object id="51" name="enemy_shadow_spawn" x="571.5" y="760.5" width="31" height="53"/>
+  <object id="52" name="enemy_shadow_spawn" x="1557.5" y="692.5" width="31" height="53"/>
+  <object id="53" name="enemy_shadow_spawn" x="1212.5" y="801.5" width="31" height="53"/>
+  <object id="54" name="enemy_shadow_spawn" x="307.5" y="723.5" width="31" height="53"/>
+  <object id="55" name="enemy_shadow_spawn" x="2390.5" y="601.5" width="31" height="53"/>
+  <object id="56" name="enemy_shadow_spawn" x="2236.5" y="685.5" width="31" height="53"/>
+  <object id="58" name="enemy_shadow_spawn" x="1757.5" y="1070.5" width="31" height="53"/>
+  <object id="59" name="enemy_shadow_spawn" x="2185.5" y="1064.5" width="31" height="53"/>
+  <object id="60" name="enemy_shadow_spawn" x="1767.5" y="470.5" width="31" height="53"/>
+  <object id="61" name="enemy_shadow_spawn" x="802.5" y="475.5" width="31" height="53"/>
+  <object id="62" name="enemy_shadow_spawn" x="1006.5" y="501.5" width="31" height="53"/>
+  <object id="63" name="enemy_shadow_spawn" x="1210.5" y="455.5" width="31" height="53"/>
+  <object id="64" name="enemy_shadow_spawn" x="1312.5" y="523.5" width="31" height="53"/>
+  <object id="65" name="enemy_shadow_spawn" x="949.5" y="746.5" width="31" height="53"/>
+  <object id="66" name="enemy_shadow_spawn" x="735.5" y="615.5" width="31" height="53"/>
+  <object id="67" name="enemy_shadow_spawn" x="630.5" y="504.5" width="31" height="53"/>
+  <object id="68" name="enemy_shadow_spawn" x="519.5" y="562.5" width="31" height="53"/>
+  <object id="69" name="enemy_shadow_spawn" x="748.5" y="818.5" width="31" height="53"/>
+  <object id="70" name="enemy_shadow_spawn" x="1013.5" y="924.5" width="31" height="53"/>
+  <object id="71" name="enemy_shadow_spawn" x="1272.5" y="622.5" width="31" height="53"/>
+  <object id="72" name="enemy_shadow_spawn" x="979.5" y="525.5" width="31" height="53"/>
+  <object id="73" name="enemy_shadow_spawn" x="758.5" y="549.5" width="31" height="53"/>
+  <object id="74" name="enemy_shadow_spawn" x="963.5" y="384.5" width="31" height="53"/>
+  <object id="75" name="enemy_shadow_spawn" x="1125.5" y="526.5" width="31" height="53"/>
+  <object id="76" name="enemy_shadow_spawn" x="1124.5" y="706.5" width="31" height="53"/>
  </objectgroup>
  <objectgroup name="spawns">
-  <object id="37" name="player_spawn" x="2069.67" y="828.67" width="43.6667" height="49.3333"/>
-  <object id="46" name="enemy_shadow_spawn" x="1205" y="918" width="31" height="53"/>
+  <object id="37" name="player_spawn" x="2048.67" y="819.67" width="43.6667" height="49.3333"/>
+  <object id="46" name="enemy_shadow_spawn" x="261" y="1098" width="31" height="53"/>
  </objectgroup>
 </map>

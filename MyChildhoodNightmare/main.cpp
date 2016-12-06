@@ -46,7 +46,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		HandleEvents(window, game);
 		Update(game);
 		Render(window, game);
-		std::cout << "FPS : " << 1 / game.elapsedTime << "\n";
+		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 
@@ -58,7 +58,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	game.currentScene->toHandle(window, event);
+	game.currentScene->toHandle(window);
 }
 
 void Update(Game& game)
@@ -83,12 +83,11 @@ void InitScenes(Game& game)
 
 void InitGamePlayScene(Game& game)
 {
-	game.gameplayScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
+	game.gameplayScene.toHandle = [&](sf::RenderWindow& window) {
 		window;
-		game.ControlPlayer(event);
+		game.ControlPlayer();
 	};
 	game.gameplayScene.onUpdate = [&]() {
-		game.UpdateInterface();
 		game.UpdateColdowns();
 		game.UpdatePlayer();
 		game.UpdateEnemies();
@@ -97,6 +96,7 @@ void InitGamePlayScene(Game& game)
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
 		game.UpdateCamera(window);
+		game.UpdateInterface();
 		game.DrawLevel(window);
 		game.interface.Draw(window);
 		game.player.Draw(window);
@@ -107,8 +107,8 @@ void InitGamePlayScene(Game& game)
 
 void InitMenuScene(Game& game)
 {
-	game.menuScene.toHandle = [&](sf::RenderWindow& window, sf::Event& event) {
-		game.ControlMenu(window, event);
+	game.menuScene.toHandle = [&](sf::RenderWindow& window) {
+		game.ControlMenu(window);
 	};
 	game.menuScene.onUpdate = [&]() {
 		game.UpdateColdowns();

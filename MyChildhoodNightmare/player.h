@@ -5,6 +5,7 @@ const sf::Vector2f PLAYER_SIZE = { 70, 100 };
 const sf::Vector2f PLAYER_SPAWN_POS = { 350 , 700 };
 const float PLAYER_MOVE_SPEED = 250;
 const float PLAYER_START_HEALTH = 100;
+const float PLAYER_BULLETS_ANGLE = 0.2f;
 const float INJURED_COLDOWN = 1.5;
 
 enum Weapon
@@ -19,7 +20,6 @@ struct Player :Character
 	float injuredColdown;
 
 	bool InitPlayer();
-	void SpawnPlayer(Object const& spawnObj);
 	
 	void Attack();
 	void UpdateStatuses();

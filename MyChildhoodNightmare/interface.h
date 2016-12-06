@@ -8,7 +8,7 @@
 const sf::Vector2f HEALTH_BAR_POS = { 580, 320 };
 const sf::Vector2f HEALTH_BAR_SIZE = { 180, 70 };
 const int PLAYER_HP_FONT_SIZE = 50;
-const sf::Vector2f PLAYER_HP_MARGIN = { 80, 0 };
+const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 
 struct DmgAnnouncement
 {

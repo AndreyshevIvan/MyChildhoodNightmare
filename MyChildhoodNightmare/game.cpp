@@ -42,6 +42,7 @@ void Game::StartGame()
 		it = enemyShadows.erase(it);
 		delete(enemy);
 	}
+
 	player.Clear();
 	player.InitPlayer();
 
@@ -89,10 +90,12 @@ bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 	return false;
 }
 
-void Game::ControlPlayer(sf::Event& event)
+void Game::ControlPlayer()
 {
-	event;
-	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN)
+	if (
+		Keyboard::isKeyPressed(Keyboard::Escape) &&
+		menu.buttonsColdown >= BUTTONS_COLDOWN
+		)
 	{
 		menu.SetMenu(CurrentMenu::PAUSE, camera.getCenter());
 		currentScene = &menuScene;
@@ -103,12 +106,18 @@ void Game::ControlPlayer(sf::Event& event)
 		{
 			player.Jump();
 		}
-		if (Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
+		if (
+			Keyboard::isKeyPressed(Keyboard::A) ||
+			Keyboard::isKeyPressed(Keyboard::Left)
+			)
 		{
 			player.runStatus = RUN_LEFT;
 			player.orientationStatus = LEFT;
 		}
-		if (Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
+		if (
+			Keyboard::isKeyPressed(Keyboard::D) ||
+			Keyboard::isKeyPressed(Keyboard::Right)
+			)
 		{
 			player.runStatus = RUN_RIGHT;
 			player.orientationStatus = RIGHT;
@@ -128,7 +137,7 @@ void Game::ControlPlayer(sf::Event& event)
 	}
 }
 
-void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
+void Game::ControlMenu(sf::RenderWindow& window)
 {
 	if (
 		Keyboard::isKeyPressed(Keyboard::Escape) &&
@@ -147,7 +156,7 @@ void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 			)
 		{
 			menu.buttonsColdown = 0;
-			ControlMenuLogic(window, event);
+			ControlMenuLogic(window);
 		}
 		else
 		{
@@ -169,9 +178,8 @@ void Game::ControlMenu(sf::RenderWindow& window, sf::Event& event)
 	}
 }
 
-void Game::ControlMenuLogic(sf::RenderWindow& window, sf::Event& event)
+void Game::ControlMenuLogic(sf::RenderWindow& window)
 {
-	event;
 	switch (menu.currentMenu)
 	{
 	case CurrentMenu::START:
