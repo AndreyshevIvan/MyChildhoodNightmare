@@ -18,6 +18,7 @@ struct Player :Character
 {
 	Weapon weapon = FIREBALL;
 	float injuredColdown;
+	unsigned points;
 
 	bool InitPlayer();
 	

@@ -5,7 +5,7 @@ using namespace sf;
 
 bool PlayerInterface::Init()
 {
-	if (!playerHealthBarTexture.loadFromFile("resources/healthBar.png"))
+	if (!playerHealthBarTexture.loadFromFile("resources/playerBar.png"))
 	{
 		return false;
 	}
@@ -16,7 +16,7 @@ bool PlayerInterface::Init()
 
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 
-	playerHealthBar.setSize(HEALTH_BAR_SIZE);
+	playerHealthBar.setSize(PLAYER_BAR_SIZE);
 	playerHealthBar.setTexture(&playerHealthBarTexture);
 
 	return true;
@@ -24,10 +24,7 @@ bool PlayerInterface::Init()
 
 void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 {
-	sf::Vector2f playerHPPos = {
-		cameraPos.x - HEALTH_BAR_POS.x,
-		cameraPos.y - HEALTH_BAR_POS.y
-	};
+	sf::Vector2f playerHPPos = cameraPos + PLAYER_BAR_POS;
 	playerHealthBar.setPosition(playerHPPos);
 	playerHealth.setPosition
 	(

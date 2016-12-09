@@ -8,7 +8,6 @@
 #include "tinyxml/level.h"
 #include "menu.h"
 #include "player.h"
-#include "enemy_shadow.h"
 #include "interface.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
@@ -27,7 +26,7 @@ struct Game
 	sf::Clock clock;
 	sf::View camera;
 	Player player;
-	std::vector<EnemyShadow*> enemyShadows;
+	std::vector<Character*> enemies;
 	Level* currentLevel;
 	Level level_1;
 	Level level_2;

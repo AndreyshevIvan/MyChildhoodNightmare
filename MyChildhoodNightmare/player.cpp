@@ -30,6 +30,7 @@ bool Player::InitPlayer()
 	bulletsAngle = PLAYER_BULLETS_ANGLE;
 	runStatus = NOT_RUN;
 	existStatus = LIVE;
+	points = 0;
 
 	bullets.clear();
 

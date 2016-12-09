@@ -36,10 +36,10 @@ bool Game::InitGame()
 
 void Game::StartGame()
 {
-	for (auto it = enemyShadows.begin(); it != enemyShadows.end();)
+	for (auto it = enemies.begin(); it != enemies.end();)
 	{
-		EnemyShadow* enemy = *it;
-		it = enemyShadows.erase(it);
+		Character* enemy = *it;
+		it = enemies.erase(it);
 		delete(enemy);
 	}
 
@@ -52,13 +52,22 @@ void Game::StartGame()
 
 void Game::SpawnEntities()
 {
-	player.Spawn(currentLevel->GetObject("player_spawn"));
+	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
+	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
 
-	auto enemiesSpawns = level_1.GetObjects("enemy_shadow_spawn");
-	for (auto it = enemiesSpawns.begin(); it != enemiesSpawns.end(); it++)
+	for (auto it = shadowsSpawns.begin(); it != shadowsSpawns.end(); it++)
 	{
-		enemyShadows.push_back(new EnemyShadow(*it));
+		enemies.push_back(new Character(it->rect, SHADOW));
 	}
+
+	for (auto it = clownsSpawns.begin(); it != clownsSpawns.end(); it++)
+	{
+		enemies.push_back(new Character(it->rect, CLOWN));
+	}
+
+	cout << "size : " << enemies.size();
+
+	player.Spawn(currentLevel->GetObject("player_spawn"));
 }
 
 void Game::SetElapsedTime()
@@ -274,9 +283,9 @@ void Game::UpdateBullets()
 
 void Game::CheckEntitiesCollides()
 {
-	for (auto it = enemyShadows.begin(); it != enemyShadows.end(); it++)
+	for (auto it = enemies.begin(); it != enemies.end(); it++)
 	{
-		EnemyShadow* enemy = *it;
+		Character* enemy = *it;
 		if (enemy->collisionRect.intersects(player.collisionRect))
 		{
 			if (player.injuredColdown >= INJURED_COLDOWN)
@@ -290,12 +299,17 @@ void Game::CheckEntitiesCollides()
 	for (auto bullIt = player.bullets.begin(); bullIt != player.bullets.end(); bullIt++)
 	{
 		Bullet* bullet = *bullIt;
-		for (auto enemyIt = enemyShadows.begin(); enemyIt != enemyShadows.end(); enemyIt++)
+		for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
 		{
-			EnemyShadow* enemy = *enemyIt;
+			Character* enemy = *enemyIt;
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
 				enemy->health -= bullet->demage;
+				if (enemy->health <= 0)
+				{
+					player.points += POINTS_FOR_KILL_SHADOW;
+				}
+
 				bullet->isLive = false;
 			}
 		}
@@ -304,12 +318,12 @@ void Game::CheckEntitiesCollides()
 
 void Game::UpdateEnemies()
 {
-	for (auto it = enemyShadows.begin(); it != enemyShadows.end();)
+	for (auto it = enemies.begin(); it != enemies.end();)
 	{
-		EnemyShadow* enemy = *it;
+		Character* enemy = *it;
 		if (enemy->health <= 0)
 		{
-			it = enemyShadows.erase(it);
+			it = enemies.erase(it);
 			delete(enemy);
 		}
 		else
@@ -377,7 +391,7 @@ void Game::UpdateInterface()
 
 void Game::DrawLevel(sf::RenderWindow& window)
 {
-	level_1.Draw(window, GetCameraArea());
+	currentLevel->Draw(window, GetCameraArea());
 }
 
 void Game::DrawBullets(sf::RenderWindow& window)
@@ -394,12 +408,9 @@ void Game::DrawBullets(sf::RenderWindow& window)
 
 void Game::DrawEnemies(sf::RenderWindow& window)
 {
-	for (auto it = enemyShadows.begin(); it != enemyShadows.end(); it++)
+	for (auto it = enemies.begin(); it != enemies.end(); it++)
 	{
-		EnemyShadow* enemy = *it;
-		if (GetCameraArea().intersects(enemy->collisionRect))
-		{
-			enemy->Draw(window);
-		}
+		Character* enemy = *it;
+		enemy->Draw(window);
 	}
 }

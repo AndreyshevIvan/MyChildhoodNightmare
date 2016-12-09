@@ -11,6 +11,27 @@ const float MIN_HEIGHT_FOR_DEMAGE = 16;
 const float DEMAGE_PER_HEIGHT = 0.8f;
 const float CHARACTERS_JUMP_SPEED = 400;
 
+const std::string ENEMY_SHADOW_SPAWN_NAME = "enemy_shadow_spawn";
+const sf::Vector2f ENEMY_SHADOW_SIZE = { 60 , 100 };
+const float ENEMY_SHADOW_START_HEALTH = 100;
+const float ENEMY_SHADOW_MOVE_SPEED = 100;
+const unsigned POINTS_FOR_KILL_SHADOW = 30;
+
+const std::string ENEMY_CLOWN_SPAWN_NAME = "enemy_clown_spawn";
+const sf::Vector2f ENEMY_CLOWN_SIZE = { 60 , 100 };
+const float ENEMY_CLOWN_START_HEALTH = 100;
+const float ENEMY_CLOWN_MOVE_SPEED = 100;
+const unsigned POINTS_FOR_KILL_CLOWN = 30;
+
+//TODO: Паттерны фабрика и прототип
+
+enum CharacterType
+{
+	NONE,
+	SHADOW,
+	CLOWN,
+};
+
 enum ExistenceStatus
 {
 	LIVE,
@@ -38,10 +59,16 @@ enum OrientationStatus
 
 struct Character
 {
+	Character::Character(sf::FloatRect const& posRect = sf::FloatRect(0, 0, 0, 0), CharacterType const& type = NONE);
+
+	void CreateShadow();
+	void CreateClown();
+
 	sf::Texture bodyTexture;
 	sf::RectangleShape bodyShape;
 	sf::FloatRect collisionRect;
 
+	CharacterType charecterType = NONE;
 	MovementStatus runStatus;
 	JumpingStatus jumpStatus;
 	ExistenceStatus existStatus;
