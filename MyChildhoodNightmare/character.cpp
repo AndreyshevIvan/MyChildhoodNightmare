@@ -10,16 +10,18 @@ Character::Character(sf::FloatRect const& posRect, CharacterType const& type)
 	{
 	case SHADOW:
 		this->CreateShadow();
+		cout << "shadow" "\n";
 		break;
 	case CLOWN:
 		this->CreateClown();
+		cout << "clown" "\n";
 		break;
 	default:
 		break;
 	}
 
-	collisionRect.top = posRect.left;
-	collisionRect.left = posRect.top;
+	collisionRect.top = posRect.top;
+	collisionRect.left = posRect.left;
 
 	shootColdown = 0;
 	currentFrame = 0;

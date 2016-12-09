@@ -321,6 +321,7 @@ void Game::UpdateEnemies()
 	for (auto it = enemies.begin(); it != enemies.end();)
 	{
 		Character* enemy = *it;
+		cout << "pos : " << enemy->collisionRect.left << " " << enemy->collisionRect.top << "\n";
 		if (enemy->health <= 0)
 		{
 			it = enemies.erase(it);
