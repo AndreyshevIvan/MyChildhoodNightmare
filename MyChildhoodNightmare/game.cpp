@@ -134,7 +134,7 @@ void Game::ControlPlayer()
 			player.runStatus = RUN_RIGHT;
 			player.orientationStatus = RIGHT;
 		}
-		if (Keyboard::isKeyPressed(Keyboard::E) && buttonColdown >= BUTTONS_COLDOWN)
+		if (Keyboard::isKeyPressed(Keyboard::O) && buttonColdown >= BUTTONS_COLDOWN)
 		{
 			buttonColdown = 0;
 			player.SwitchWeapon();

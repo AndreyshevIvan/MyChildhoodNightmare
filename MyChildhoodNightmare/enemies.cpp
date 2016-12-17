@@ -38,6 +38,7 @@ Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
 void Enemy::CreateShadow()
 {
 	enemyType = EnemyType::SHADOW;
+	enemyActivity = EnemyActivity::IDLE;
 
 	bodyTexture.loadFromFile("resources/enemyShadow.png");
 	bodyShape.setTexture(&bodyTexture);
@@ -57,6 +58,8 @@ void Enemy::CreateShadow()
 void Enemy::CreateClown()
 {
 	enemyType = EnemyType::CLOWN;
+	enemyActivity = EnemyActivity::IDLE;
+
 	bodyTexture.loadFromFile("resources/enemyClown.png");
 	bodyShape.setTexture(&bodyTexture);
 
@@ -70,35 +73,17 @@ void Enemy::CreateClown()
 	jumpSpeed = 0;
 	health = CLOWN_START_HEALTH;
 	demage = 12;
+
+	Pursuit = [&](Player& player) {
+		player;
+	};
 }
 
 void Enemy::UpdateAI(Player& player, Level& level)
 {
-	if (enemyType == EnemyType::CLOWN)
-	{
-		if (enemyActivity == EnemyActivity::IDLE)
-		{
-
-		}
-		else if (enemyActivity == EnemyActivity::PURSUIT)
-		{
-			UpdateClownAim(player);
-		}
-	}
-	else if (enemyType == EnemyType::SHADOW)
-	{
-
-		if (enemyActivity == EnemyActivity::IDLE)
-		{
-
-		}
-		else if (enemyActivity == EnemyActivity::PURSUIT)
-		{
-
-		}
-	}
+	UpdatePositionStatus(level);
+	player;
 	UpdateHands();
-	UpdateStatus(level);
 }
 
 void Enemy::UpdateClownAim(Player& player)
@@ -106,18 +91,11 @@ void Enemy::UpdateClownAim(Player& player)
 	if (abs(this->GetCharacterPos().x - player.GetCharacterPos().x) < CLOWN_MAX_TARGET_RANGE_X && 
 		abs(this->GetCharacterPos().x - player.GetCharacterPos().x) > CLOWN_MIN_TARGET_RANGE_X)
 	{
-		if (this->GetCharacterPos().x > player.GetCharacterPos().x)
-		{
-			this->runStatus = MovementStatus::RUN_LEFT;
-		}
-		if (this->GetCharacterPos().x < player.GetCharacterPos().x)
-		{
-			this->runStatus = MovementStatus::RUN_RIGHT;
-		}
+		
 	}
 }
 
-void Enemy::UpdateStatus(Level& level)
+void Enemy::UpdatePositionStatus(Level& level)
 {
 	auto solids = level.GetObjects("solid");
 

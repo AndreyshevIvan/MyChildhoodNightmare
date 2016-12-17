@@ -9,15 +9,16 @@ const float HAND_MARGIN_X = 10;
 const std::string SHADOW_SPAWN_NAME = "enemy_shadow_spawn";
 const sf::Vector2f SHADOW_SIZE = { 60 , 100 };
 const float SHADOW_START_HEALTH = 100;
-const float SHADOW_MOVE_SPEED = 100;
+const float SHADOW_MOVE_SPEED = 200;
 const unsigned POINTS_FOR_KILL_SHADOW = 30;
+const float SHADOW_MIN_TARGET_RANGE_X = 30;
+const float SHADOW_MAX_TARGET_RANGE_X = 500;
 
 const std::string CLOWN_SPAWN_NAME = "enemy_clown_spawn";
 const sf::Vector2f CLOWN_SIZE = { 60 , 100 };
 const float CLOWN_START_HEALTH = 100;
 const float CLOWN_MOVE_SPEED = 200;
-const unsigned POINTS_FOR_KILL_CLOWN = 30;
-const float CLOWN_MIN_TARGET_RANGE_X = 30;
+const float CLOWN_MIN_TARGET_RANGE_X = 100;
 const float CLOWN_MAX_TARGET_RANGE_X = 400;
 
 enum struct EnemyType
@@ -53,10 +54,13 @@ struct Enemy : Character
 	EnemyType enemyType = EnemyType::NONE;
 	EnemyActivity enemyActivity = EnemyActivity::IDLE;
 
+	std::function<void()> Idle;
+	std::function<void(Player& player)> Pursuit;
+
 	void UpdateAI(Player& player, Level& level);
 	void UpdateClownAim(Player& player);
 	void UpdateHands();
-	void UpdateStatus(Level& level);
+	void UpdatePositionStatus(Level& level);
 
 	void Draw(sf::RenderWindow& window) override;
 };
