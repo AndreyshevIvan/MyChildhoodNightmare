@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include "player.h"
 
 using namespace sf;
@@ -27,10 +26,10 @@ bool Player::InitPlayer()
 	orientationStatus = RIGHT;
 
 	demage = 30;
-	bulletsAngle = PLAYER_BULLETS_ANGLE;
 	runStatus = NOT_RUN;
 	existStatus = LIVE;
 	points = 0;
+	ammo = { 0, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 
 	bullets.clear();
 
@@ -56,28 +55,55 @@ void Player::UpdateStatuses()
 	}
 }
 
+void Player::SwitchWeapon()
+{
+	int currWeapon = static_cast<int>(currentWeapon);
+
+	if (currentWeapon == Weapon(2))
+	{
+		currentWeapon = Weapon(0);
+	}
+	else
+	{
+		currentWeapon = Weapon(currWeapon + 1);
+	}
+}
+
 void Player::Attack()
 {
-	if (shootColdown > CRY_COLDOWN)
+	int orientationId = static_cast<int>(orientationStatus);
+	switch (currentWeapon)
 	{
-		int orientationId = static_cast<int>(orientationStatus);
-		Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
-		Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
-
-		switch (weapon)
+	case Weapon::MELEE:
+		if (shootColdown > MELEE_COLDOWN)
 		{
-		case FIREBALL:
-			bullets.push_back(new Bullet(GetCharacterPos(), demage, 0, orientationId));
-			break;
-		case MELEE:
-			bullets.push_back(new Bullet(topBullPos, demage, bulletsAngle, orientationId));
-			bullets.push_back(new Bullet(GetCharacterPos(), demage, 0, orientationId));
-			bullets.push_back(new Bullet(bottomBullPos, demage, -bulletsAngle, orientationId));
-			break;
-		default:
-			break;
+			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId));
+			shootColdown = 0;
 		}
+		break;
+	case Weapon::SHOOTGUN:
+		if (shootColdown > SHOOTGUN_COLDOWN && ammo[(int)currentWeapon] > 0)
+		{
+			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
+			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
 
-		shootColdown = 0;
+			bullets.push_back(new Bullet(topBullPos, demage, orientationId));
+			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId));
+			bullets.push_back(new Bullet(bottomBullPos, demage, orientationId));
+			ammo[(int)currentWeapon]--;
+			shootColdown = 0;
+		}
+		break;
+	case Weapon::AK:
+		if (shootColdown > AK_COLDOWN && ammo[(int)currentWeapon] > 0)
+		{
+			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId));
+			ammo[(int)currentWeapon]--;
+			shootColdown = 0;
+		}
+		break;
+	default:
+		break;
 	}
+
 }

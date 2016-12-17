@@ -1,0 +1,12 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
+#include <cmath>
+#include <functional>
+#include <list>
+#include <iostream>
+#include "tinyxml/level.h"
+#include <string>
+#include <vector>
+#include <math.h>

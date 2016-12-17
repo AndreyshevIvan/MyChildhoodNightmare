@@ -5,23 +5,18 @@ using namespace sf;
 
 bool Game::InitGame()
 {
-	if (
-		!level_1.LoadFromFile("resources/firstTileset.tmx") &&
-		!level_2.LoadFromFile("resources/secondTileset.tmx")
-		)
-	{
-		return false;
-	}
-	if (
-		!player.InitPlayer() ||
-		!menu.InitMenuItems() ||
-		!interface.Init()
-		)
+	if (!level_1.LoadFromFile("resources/firstTileset.tmx") &&
+		!level_2.LoadFromFile("resources/secondTileset.tmx"))
 	{
 		return false;
 	}
 
 	currentLevel = &level_1;
+
+	if (!player.InitPlayer() || !menu.InitMenuItems() || !interface.Init())
+	{
+		return false;
+	}
 
 	mapTiles = level_1.GetAllObjects();
 	mapSize = { level_1.GetTilemapWidth(), level_1.GetTilemapHeight() };
@@ -30,6 +25,8 @@ bool Game::InitGame()
 	difficult = Difficult::EASY;
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
 	menu.SetMenu(CurrentMenu::START, camera.getCenter());
+
+	buttonColdown = 0;
 
 	return true;
 }
@@ -57,15 +54,13 @@ void Game::SpawnEntities()
 
 	for (auto it = shadowsSpawns.begin(); it != shadowsSpawns.end(); it++)
 	{
-		enemies.push_back(new Character(it->rect, SHADOW));
+		enemies.push_back(new Enemy(it->rect, EnemyType::SHADOW));
 	}
 
 	for (auto it = clownsSpawns.begin(); it != clownsSpawns.end(); it++)
 	{
-		enemies.push_back(new Character(it->rect, CLOWN));
+		enemies.push_back(new Enemy(it->rect, EnemyType::CLOWN));
 	}
-
-	cout << "size : " << enemies.size();
 
 	player.Spawn(currentLevel->GetObject("player_spawn"));
 }
@@ -101,10 +96,7 @@ bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 
 void Game::ControlPlayer()
 {
-	if (
-		Keyboard::isKeyPressed(Keyboard::Escape) &&
-		menu.buttonsColdown >= BUTTONS_COLDOWN
-		)
+	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.SetMenu(CurrentMenu::PAUSE, camera.getCenter());
 		currentScene = &menuScene;
@@ -131,13 +123,10 @@ void Game::ControlPlayer()
 			player.runStatus = RUN_RIGHT;
 			player.orientationStatus = RIGHT;
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Num1))
+		if (Keyboard::isKeyPressed(Keyboard::E) && buttonColdown >= BUTTONS_COLDOWN)
 		{
-			player.weapon = MELEE;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Num2))
-		{
-			player.weapon = FIREBALL;
+			buttonColdown = 0;
+			player.SwitchWeapon();
 		}
 		if (Keyboard::isKeyPressed(Keyboard::P))
 		{
@@ -266,10 +255,7 @@ void Game::UpdateBullets()
 	{
 		Bullet* bullet = *it;
 		bullet->Update(elapsedTime);
-		if (
-			IsCollidesWithLevel(bullet->collisionRect) ||
-			!bullet->isLive
-			)
+		if (IsCollidesWithLevel(bullet->collisionRect) || !bullet->isLive)
 		{
 			it = player.bullets.erase(it);
 			delete(bullet);
@@ -320,8 +306,7 @@ void Game::UpdateEnemies()
 {
 	for (auto it = enemies.begin(); it != enemies.end();)
 	{
-		Character* enemy = *it;
-		cout << "pos : " << enemy->collisionRect.left << " " << enemy->collisionRect.top << "\n";
+		Enemy* enemy = *it;
 		if (enemy->health <= 0)
 		{
 			it = enemies.erase(it);
@@ -330,6 +315,7 @@ void Game::UpdateEnemies()
 		else
 		{
 			enemy->UpdatePos(elapsedTime, mapTiles);
+			enemy->UpdateAI(player, *currentLevel);
 			++it;
 		}
 	}
@@ -348,6 +334,11 @@ void Game::UpdateColdowns()
 	if (player.injuredColdown <= INJURED_COLDOWN)
 	{
 		player.injuredColdown += elapsedTime;
+	}
+	if (buttonColdown <= BUTTONS_COLDOWN)
+	{
+		buttonColdown += elapsedTime;
+		cout << buttonColdown << "\n";
 	}
 }
 
@@ -386,8 +377,11 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 
 void Game::UpdateInterface()
 {
+	int weaponId = int(player.currentWeapon);
+
 	interface.UpdateBarsPos(camera.getCenter());
 	interface.UpdatePlayerHP(player.health);
+	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
 }
 
 void Game::DrawLevel(sf::RenderWindow& window)

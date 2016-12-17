@@ -4,71 +4,6 @@
 using namespace std;
 using namespace sf;
 
-Character::Character(sf::FloatRect const& posRect, CharacterType const& type)
-{
-	switch (type)
-	{
-	case SHADOW:
-		this->CreateShadow();
-		cout << "shadow" "\n";
-		break;
-	case CLOWN:
-		this->CreateClown();
-		cout << "clown" "\n";
-		break;
-	default:
-		break;
-	}
-
-	collisionRect.top = posRect.top;
-	collisionRect.left = posRect.left;
-
-	shootColdown = 0;
-	currentFrame = 0;
-	orientationStatus = RIGHT;
-	runStatus = NOT_RUN;
-	jumpSpeed = 0;
-}
-
-void Character::CreateShadow()
-{
-	charecterType = SHADOW;
-	cout << "create one shadow" "\n";
-
-	bodyTexture.loadFromFile("resources/enemyShadow.png");
-	bodyShape.setTexture(&bodyTexture);
-
-	collisionRect.width = ENEMY_SHADOW_SIZE.x / 2.0f;
-	collisionRect.height = ENEMY_SHADOW_SIZE.y - 10;
-
-	bodyShape.setSize(ENEMY_SHADOW_SIZE);
-	bodyShape.setTexture(&bodyTexture);
-	bodyShape.setOrigin(ENEMY_SHADOW_SIZE.x / 2.0f, ENEMY_SHADOW_SIZE.y);
-
-	moveSpeed = ENEMY_SHADOW_MOVE_SPEED;
-	health = ENEMY_SHADOW_START_HEALTH;
-	demage = 12;
-}
-
-void Character::CreateClown()
-{
-	cout << "create one clown" "\n";
-	charecterType = CLOWN;
-	bodyTexture.loadFromFile("resources/enemyClown.png");
-	bodyShape.setTexture(&bodyTexture);
-
-	collisionRect.width = ENEMY_CLOWN_SIZE.x / 2.0f;
-	collisionRect.height = ENEMY_CLOWN_SIZE.y - 10;
-
-	bodyShape.setSize(ENEMY_CLOWN_SIZE);
-	bodyShape.setOrigin(ENEMY_CLOWN_SIZE.x / 2.0f, ENEMY_CLOWN_SIZE.y);
-
-	moveSpeed = ENEMY_CLOWN_MOVE_SPEED;
-	jumpSpeed = 0;
-	health = ENEMY_CLOWN_START_HEALTH;
-	demage = 12;
-}
-
 void Character::Spawn(Object const& spawnObj)
 {
 	collisionRect.left = spawnObj.rect.left;
@@ -154,7 +89,7 @@ void Character::UpdateHealthStatus()
 	}
 }
 
-bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles)
+bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& mapTiles)
 {
 	for (unsigned i = 0; i < mapTiles.size(); i++)
 	{
@@ -166,7 +101,7 @@ bool Character::IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Objec
 	return false;
 }
 
-void Character::Draw(sf::RenderWindow& window)
+void Character::Draw(RenderWindow& window)
 {
 	window.draw(bodyShape);
 }

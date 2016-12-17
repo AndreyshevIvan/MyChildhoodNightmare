@@ -19,7 +19,6 @@ int main()
 	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
 	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
-
 	Game game;
 
 	if (game.InitGame())
@@ -47,7 +46,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 

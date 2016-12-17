@@ -1,7 +1,5 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <vector>
+#include "stdafx.h"
 
 const unsigned FONT_SIZE = 70; // 35
 const unsigned FONT_SIZE_MEDIUM = 55;

@@ -1,16 +1,13 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <list>
-#include <iostream>
-#include "tinyxml/level.h"
+#include "stdafx.h"
 
 const float BULLET_SPEED = 700;
 const sf::Vector2f BULLET_SIZE = { 30, 8 };
+
 const float MAX_WEAPON_COLDOWN = 1;
-const float PISTOL_COLDOWN = 0.3f;
+const float MELEE_COLDOWN = 0.5f;
+const float SHOOTGUN_COLDOWN = 0.3f;
 const float AK_COLDOWN = 0.08f;
-const float CRY_COLDOWN = 0.5f;
 
 struct Bullet
 {
@@ -19,10 +16,9 @@ struct Bullet
 	sf::Vector2f speed;
 	int movmentOrientation;
 	float demage;
-	float angle;
 	bool isLive = true;
 
-	Bullet(sf::Vector2f const& startPos, float demage, float angle, int orientation)
+	Bullet(sf::Vector2f const& startPos, float demage, int orientation)
 	{
 		collisionRect.left = startPos.x;
 		collisionRect.top = startPos.y - 50;
@@ -34,7 +30,6 @@ struct Bullet
 		bodyShape.setPosition({ collisionRect.left, collisionRect.top });
 		movmentOrientation = orientation;
 
-		this->angle = angle;
 		this->demage = demage;
 	}
 

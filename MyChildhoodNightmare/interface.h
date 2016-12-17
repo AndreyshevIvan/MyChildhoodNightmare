@@ -1,34 +1,38 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <string>
-#include <cstdlib>
-#include <iostream>
+#include "stdafx.h"
 
 const sf::Vector2f PLAYER_BAR_POS = { -620, -330 };
-const sf::Vector2f PLAYER_BAR_SIZE = { 180, 140 };
-const int PLAYER_HP_FONT_SIZE = 50;
-const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
-const sf::Vector2f POINTS_BAR_SIZE = { 80, 2 };
-const sf::Vector2f PLAYER_POINTS_MARGIN = { 80, 2 };
 
-struct DmgAnnouncement
-{
-	sf::RectangleShape shape;
-	sf::Text dmg;
-};
+const sf::Vector2f PLAYER_HEALTH_BAR_SIZE = { 180, 70 };
+const sf::Vector2f PLAYER_WEAPON_BAR_SIZE = { 110, 80 };
+
+const int PLAYER_HP_FONT_SIZE = 50;
+const int PLAYER_AMMO_FONT_SIZE = 28;
+
+const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
+const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y };
+const sf::Vector2f PLAYER_AMMO_MARGIN = { 90, 120 };
 
 struct PlayerInterface
 {
+	sf::Font font;
+
 	sf::RectangleShape playerHealthBar;
 	sf::Texture playerHealthBarTexture;
 	sf::Text playerHealth;
-	sf::Font font;
+
+	sf::RectangleShape playerWeaponBar;
+	sf::Texture playerMeleeBarTexture;
+	sf::Texture playerShootgunBarTexture;
+	sf::Texture playerAkBarTexture;
+	sf::Text playerWeapon;
+	sf::Text playerAmmo; 
 
 	bool Init();
 
 	void UpdateBarsPos(sf::Vector2f const& cameraPos);
 	void UpdatePlayerHP(float health);
+	void UpdatePlayerWeapon(int weapon, int ammo = 0);
 
 	void Draw(sf::RenderWindow& window);
 };

@@ -1,14 +1,9 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <iostream>
-#include <cmath>
-#include <functional>
-
-#include "tinyxml/level.h"
+#include "stdafx.h"
 #include "menu.h"
 #include "player.h"
 #include "interface.h"
+#include "enemies.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
@@ -23,23 +18,28 @@ struct GameScene
 
 struct Game
 {
-	sf::Clock clock;
 	sf::View camera;
+	sf::Clock clock;
+	float elapsedTime;
+	float buttonColdown;
+
 	Player player;
-	std::vector<Character*> enemies;
+	std::vector<Enemy*> enemies;
+
+	std::vector<Object> mapTiles;
+	sf::Vector2f mapSize;
 	Level* currentLevel;
 	Level level_1;
 	Level level_2;
+
 	Menu menu;
 	PlayerInterface interface;
-	std::vector<Object> mapTiles;
-	float elapsedTime;
-	sf::Vector2f mapSize;
+	Difficult difficult;
+
 	GameScene menuScene;
 	GameScene gameplayScene;
 	GameScene pauseScene;
 	GameScene *currentScene = nullptr;
-	Difficult difficult;
 
 	bool InitGame();
 	void StartGame();
