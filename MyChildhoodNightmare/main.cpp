@@ -46,7 +46,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 
@@ -69,6 +69,7 @@ void Update(Game& game)
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(BACKGROUND_COLOR);
+	window.draw(game.background_level_1);
 	game.currentScene->onDraw(window);
 	window.display();
 }
@@ -92,6 +93,7 @@ void InitGamePlayScene(Game& game)
 		game.UpdatePlayer();
 		game.UpdateEnemies();
 		game.UpdateBullets();
+		game.UpdateBackground();
 		game.CheckEntitiesCollides();
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {

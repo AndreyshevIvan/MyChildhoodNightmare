@@ -85,6 +85,10 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 		string ammoStr = IntToStr(ammo);
 		playerAmmo.setString(ammoStr);
 	}
+	else if (ammo < 0)
+	{
+		playerAmmo.setString("");
+	}
 	else
 	{
 		playerAmmo.setString("0");

@@ -11,7 +11,7 @@ const int PLAYER_AMMO_FONT_SIZE = 28;
 
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y };
-const sf::Vector2f PLAYER_AMMO_MARGIN = { 90, 120 };
+const sf::Vector2f PLAYER_AMMO_MARGIN = { 88, 121 };
 
 struct PlayerInterface
 {

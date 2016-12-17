@@ -5,8 +5,8 @@ using namespace sf;
 
 bool Game::InitGame()
 {
-	if (!level_1.LoadFromFile("resources/firstTileset.tmx") &&
-		!level_2.LoadFromFile("resources/secondTileset.tmx"))
+	if (!level_1.LoadFromFile("resources/firstTileset.tmx") ||
+		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png"))
 	{
 		return false;
 	}
@@ -25,6 +25,17 @@ bool Game::InitGame()
 	difficult = Difficult::EASY;
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
 	menu.SetMenu(CurrentMenu::START, camera.getCenter());
+
+	background_level_1.setTexture(&backgroundTexture_level_1);
+	const sf::Vector2f BACKGROUND_LVL_1_SIZE = {
+		static_cast<float>(backgroundTexture_level_1.getSize().x),
+		static_cast<float>(backgroundTexture_level_1.getSize().y)
+	};
+	background_level_1.setSize(BACKGROUND_LVL_1_SIZE);
+	background_level_1.setOrigin(
+		background_level_1.getGlobalBounds().width / 2.0f,
+		background_level_1.getGlobalBounds().height / 2.0f
+	);
 
 	buttonColdown = 0;
 
@@ -338,7 +349,6 @@ void Game::UpdateColdowns()
 	if (buttonColdown <= BUTTONS_COLDOWN)
 	{
 		buttonColdown += elapsedTime;
-		cout << buttonColdown << "\n";
 	}
 }
 
@@ -382,6 +392,20 @@ void Game::UpdateInterface()
 	interface.UpdateBarsPos(camera.getCenter());
 	interface.UpdatePlayerHP(player.health);
 	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
+}
+
+void Game::UpdateBackground()
+{
+	float bgPosX_Percent = (camera.getCenter().x - RESOLUTION.x / 2.0f) / (currentLevel->GetTilemapWidth() - RESOLUTION.x);
+	float bgPosY_Percent = (camera.getCenter().y - RESOLUTION.y / 2.0f) / (currentLevel->GetTilemapHeight() - RESOLUTION.y);
+
+	float bgAllowedWidthX = currentLevel->GetTilemapWidth() - background_level_1.getSize().x;
+	float bgAllowedWidthY = currentLevel->GetTilemapHeight() - background_level_1.getSize().y;
+
+	float bgPosX_Pixel = background_level_1.getSize().x / 2.0f + bgPosX_Percent * bgAllowedWidthX;
+	float bgPosY_Pixel = background_level_1.getSize().y / 2.0f + bgPosY_Percent * bgAllowedWidthY;
+
+	background_level_1.setPosition(bgPosX_Pixel, bgPosY_Pixel);
 }
 
 void Game::DrawLevel(sf::RenderWindow& window)

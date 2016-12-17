@@ -29,7 +29,7 @@ bool Player::InitPlayer()
 	runStatus = NOT_RUN;
 	existStatus = LIVE;
 	points = 0;
-	ammo = { 0, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
+	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 
 	bullets.clear();
 

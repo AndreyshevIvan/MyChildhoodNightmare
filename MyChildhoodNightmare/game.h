@@ -31,6 +31,8 @@ struct Game
 	Level* currentLevel;
 	Level level_1;
 	Level level_2;
+	sf::RectangleShape background_level_1;
+	sf::Texture backgroundTexture_level_1;
 
 	Menu menu;
 	PlayerInterface interface;
@@ -60,6 +62,7 @@ struct Game
 	void UpdateBullets();
 	void UpdateEnemies();
 	void UpdateInterface();
+	void UpdateBackground();
 
 	void CheckEntitiesCollides();
 

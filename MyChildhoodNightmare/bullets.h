@@ -5,9 +5,9 @@ const float BULLET_SPEED = 700;
 const sf::Vector2f BULLET_SIZE = { 30, 8 };
 
 const float MAX_WEAPON_COLDOWN = 1;
-const float MELEE_COLDOWN = 0.5f;
-const float SHOOTGUN_COLDOWN = 0.3f;
-const float AK_COLDOWN = 0.08f;
+const float MELEE_COLDOWN = 0.4f;
+const float SHOOTGUN_COLDOWN = 0.5f;
+const float AK_COLDOWN = 0.1f;
 
 struct Bullet
 {
