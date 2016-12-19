@@ -18,7 +18,7 @@ bool Game::InitGame()
 		return false;
 	}
 
-	mapTiles = level_1.GetAllObjects();
+	objects = level_1.GetAllObjects();
 	mapSize = { level_1.GetTilemapWidth(), level_1.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
@@ -95,9 +95,9 @@ sf::FloatRect Game::GetCameraArea()
 
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	for (unsigned i = 0; i < mapTiles.size(); i++)
+	for (unsigned i = 0; i < objects.size(); i++)
 	{
-		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
+		if (rect.intersects(objects[i].rect) && objects[i].name == "solid")
 		{
 			return true;
 		}
@@ -255,7 +255,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 
 void Game::UpdatePlayer()
 {
-	player.UpdatePos(elapsedTime, mapTiles);
+	player.UpdatePos(elapsedTime, objects);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
 }
@@ -302,10 +302,6 @@ void Game::CheckEntitiesCollides()
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
 				enemy->health -= bullet->demage;
-				if (enemy->health <= 0)
-				{
-					player.points += POINTS_FOR_KILL_SHADOW;
-				}
 
 				bullet->isLive = false;
 			}
@@ -318,15 +314,14 @@ void Game::UpdateEnemies()
 	for (auto it = enemies.begin(); it != enemies.end();)
 	{
 		Enemy* enemy = *it;
-		if (enemy->health <= 0)
+		enemy->Update(elapsedTime, player, objects);
+		if (enemy->existStatus != ExistenceStatus::LIVE)
 		{
 			it = enemies.erase(it);
 			delete(enemy);
 		}
 		else
 		{
-			enemy->UpdatePos(elapsedTime, mapTiles);
-			enemy->UpdateAI(player, *currentLevel);
 			++it;
 		}
 	}

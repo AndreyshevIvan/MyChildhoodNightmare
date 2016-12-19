@@ -29,7 +29,6 @@ struct Player : Character
 {
 	Weapon currentWeapon = Weapon::MELEE;
 	float injuredColdown;
-	unsigned points;
 	std::vector<int> ammo;
 
 	bool InitPlayer();

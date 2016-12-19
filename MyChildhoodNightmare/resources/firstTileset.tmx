@@ -38419,7 +38419,6 @@
   <object id="30" name="solid" x="-3.0303" y="1185.82" width="2569.7" height="103.03"/>
   <object id="32" name="solid" x="2091.52" y="339.576" width="3040.79" height="69.697"/>
   <object id="33" name="solid" x="-45.4545" y="-78.7879" width="74.3637" height="1360.61"/>
-  <object id="70" name="enemy_shadow_spawn" x="766.833" y="418.5" width="31" height="53"/>
   <object id="92" name="solid" x="26" y="706" width="841.333" height="188"/>
   <object id="93" name="solid" x="28" y="645.333" width="223.333" height="60.6667"/>
   <object id="101" name="solid" x="322" y="164" width="635.333" height="88.6667"/>
@@ -38469,18 +38468,7 @@
   <object id="166" name="solid" x="5092.6" y="796.151" width="30.79" height="199.697"/>
  </objectgroup>
  <objectgroup name="spawns">
-  <object id="80" name="enemy_clown_spawn" x="1192" y="427.333" width="32" height="52"/>
-  <object id="99" name="player_spawn" x="308" y="582" width="28" height="36"/>
-  <object id="120" name="enemy_clown_spawn" x="672" y="366" width="32" height="52"/>
-  <object id="121" name="enemy_clown_spawn" x="1900" y="486" width="32" height="52"/>
-  <object id="122" name="enemy_clown_spawn" x="1420.67" y="448" width="32" height="52"/>
-  <object id="123" name="enemy_clown_spawn" x="943.333" y="383.333" width="32" height="52"/>
-  <object id="131" name="enemy_clown_spawn" x="1649.33" y="418" width="32" height="52"/>
-  <object id="132" name="enemy_clown_spawn" x="482.667" y="443.333" width="32" height="52"/>
-  <object id="135" name="enemy_shadow_spawn" x="1024.5" y="525.5" width="31" height="53"/>
-  <object id="136" name="enemy_shadow_spawn" x="1329.83" y="461.5" width="31" height="53"/>
-  <object id="137" name="enemy_shadow_spawn" x="1556.5" y="412.167" width="31" height="53"/>
-  <object id="138" name="enemy_shadow_spawn" x="555.167" y="338.833" width="31" height="53"/>
-  <object id="139" name="enemy_shadow_spawn" x="368.5" y="325.5" width="31" height="53"/>
+  <object id="99" name="player_spawn" x="324" y="460" width="28" height="36"/>
+  <object id="137" name="enemy_shadow_spawn" x="1128.5" y="466.167" width="31" height="53"/>
  </objectgroup>
 </map>

@@ -26,7 +26,7 @@ struct Game
 	Player player;
 	std::vector<Enemy*> enemies;
 
-	std::vector<Object> mapTiles;
+	std::vector<Object> objects;
 	sf::Vector2f mapSize;
 	Level* currentLevel;
 	Level level_1;

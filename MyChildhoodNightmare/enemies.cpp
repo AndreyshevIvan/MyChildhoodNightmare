@@ -25,92 +25,120 @@ Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
 	handRightMiddle.setSize(HAND_SIZE);
 	handRightBottom.setSize(HAND_SIZE);
 
+	bodyShape.setTexture(&bodyTexture);
+	const sf::Vector2f BODY_SIZE = {
+		static_cast<float>(bodyTexture.getSize().x),
+		static_cast<float>(bodyTexture.getSize().y)
+	};
+
+	bodyShape.setSize(BODY_SIZE);
+	bodyShape.setOrigin(BODY_SIZE.x / 2.0f, BODY_SIZE.y);
+
+	collisionRect.width = bodyShape.getSize().x / 2.0f;
+	collisionRect.height = bodyShape.getSize().y - 10;
 	collisionRect.top = posRect.top;
 	collisionRect.left = posRect.left;
-
-	shootColdown = 0;
-	currentFrame = 0;
-	orientationStatus = RIGHT;
-	runStatus = NOT_RUN;
-	jumpSpeed = 0;
 }
 
 void Enemy::CreateShadow()
 {
 	enemyType = EnemyType::SHADOW;
-	enemyActivity = EnemyActivity::IDLE;
 
 	bodyTexture.loadFromFile("resources/enemyShadow.png");
-	bodyShape.setTexture(&bodyTexture);
-
-	collisionRect.width = SHADOW_SIZE.x / 2.0f;
-	collisionRect.height = SHADOW_SIZE.y - 10;
-
-	bodyShape.setSize(SHADOW_SIZE);
-	bodyShape.setTexture(&bodyTexture);
-	bodyShape.setOrigin(SHADOW_SIZE.x / 2.0f, SHADOW_SIZE.y);
 
 	moveSpeed = SHADOW_MOVE_SPEED;
 	health = SHADOW_START_HEALTH;
 	demage = 12;
+
+	Pursuit = [&](Player const& player) {
+		ShadowPursuit(player);
+		UpdateHands();
+	};
+
+	Idle = [&]() {
+	};
 }
 
 void Enemy::CreateClown()
 {
 	enemyType = EnemyType::CLOWN;
-	enemyActivity = EnemyActivity::IDLE;
 
 	bodyTexture.loadFromFile("resources/enemyClown.png");
-	bodyShape.setTexture(&bodyTexture);
-
-	collisionRect.width = CLOWN_SIZE.x / 2.0f;
-	collisionRect.height = CLOWN_SIZE.y - 10;
-
-	bodyShape.setSize(CLOWN_SIZE);
-	bodyShape.setOrigin(CLOWN_SIZE.x / 2.0f, CLOWN_SIZE.y);
 
 	moveSpeed = CLOWN_MOVE_SPEED;
-	jumpSpeed = 0;
 	health = CLOWN_START_HEALTH;
 	demage = 12;
-
-	Pursuit = [&](Player& player) {
-		player;
-	};
 }
 
-void Enemy::UpdateAI(Player& player, Level& level)
+void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> const& objects)
 {
-	UpdatePositionStatus(level);
-	player;
-	UpdateHands();
-}
+	UpdateHealthStatus();
+	UpdateActivityStatus(player);
 
-void Enemy::UpdateClownAim(Player& player)
-{
-	if (abs(this->GetCharacterPos().x - player.GetCharacterPos().x) < CLOWN_MAX_TARGET_RANGE_X && 
-		abs(this->GetCharacterPos().x - player.GetCharacterPos().x) > CLOWN_MIN_TARGET_RANGE_X)
+	if (this->activityStatus == EnemyActivity::PURSUIT)
 	{
-		
+		this->Pursuit(player);
+	}
+	else
+	{
+		this->Idle();
+	}
+
+	LookGround(objects);
+	UpdatePos(elapsedTime, objects);
+}
+
+void Enemy::UpdateAI()
+{
+}
+
+void Enemy::UpdateActivityStatus(Player const& player)
+{
+	float rangeX = this->GetCharacterPos().x - player.GetCharacterPos().x;
+	float rangeY = this->GetCharacterPos().y - player.GetCharacterPos().y;
+
+	if (sqrt(rangeX * rangeX + rangeY * rangeY) <= MAX_TARGET_RANGE)
+	{
+		this->activityStatus = EnemyActivity::PURSUIT;
+	}
+	else
+	{
+		this->activityStatus = EnemyActivity::IDLE;
 	}
 }
 
-void Enemy::UpdatePositionStatus(Level& level)
+void Enemy::ShadowPursuit(Player const& player)
 {
-	auto solids = level.GetObjects("solid");
+	float enemyPosX = this->GetCharacterPos().x;
+	float playerPosX = player.GetCharacterPos().x;
 
+	if (abs(enemyPosX - playerPosX) >= MIN_TARGET_RANGE)
+	{
+		if (enemyPosX <= playerPosX)
+		{
+			this->runStatus = MovementStatus::RUN_RIGHT;
+		}
+		else
+		{
+			this->runStatus = MovementStatus::RUN_LEFT;
+		}
+	}
+}
+
+void Enemy::LookGround(std::vector<Object> const& objects)
+{
 	if (runStatus == MovementStatus::RUN_LEFT)
 	{
-		if (!IsCollidesWithLevel(handLeftBottom.getGlobalBounds(), solids) ||
-			IsCollidesWithLevel(handLeftMiddle.getGlobalBounds(), solids))
+		if (!IsCollidesWithLevel(handLeftBottom.getGlobalBounds(), objects) ||
+			IsCollidesWithLevel(handLeftMiddle.getGlobalBounds(), objects))
 		{
 			Jump();
 		}
 	}
 	else if (runStatus == MovementStatus::RUN_RIGHT)
 	{
-		if (!IsCollidesWithLevel(handRightBottom.getGlobalBounds(), solids) ||
-			IsCollidesWithLevel(handRightMiddle.getGlobalBounds(), solids))
+		if (!IsCollidesWithLevel(handRightBottom.getGlobalBounds(), objects) ||
+			IsCollidesWithLevel(handRightMiddle.getGlobalBounds(), objects))
 		{
 			Jump();
 		}
@@ -141,5 +169,6 @@ void Enemy::Draw(sf::RenderWindow& window)
 	window.draw(handRightTop);
 	window.draw(handRightMiddle);
 	window.draw(handRightBottom);
+
 	window.draw(bodyShape);
 }

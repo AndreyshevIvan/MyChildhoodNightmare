@@ -40,25 +40,25 @@ struct Character
 	sf::RectangleShape bodyShape;
 	sf::FloatRect collisionRect;
 
-	MovementStatus runStatus;
+	MovementStatus runStatus = MovementStatus::NOT_RUN;
 	JumpingStatus jumpStatus;
-	ExistenceStatus existStatus;
-	OrientationStatus orientationStatus;
+	ExistenceStatus existStatus = ExistenceStatus::LIVE;
+	OrientationStatus orientationStatus = OrientationStatus::RIGHT;
 
 	std::vector<Bullet*> bullets;
 
 	float moveSpeed;
-	float jumpSpeed;
+	float jumpSpeed = 0;
 	float weaponDemage;
 	float demage;
 	float bulletsAngle;
 	float health;
-	float shootColdown;
-	float currentFrame;
+	float shootColdown = 0;
+	float currentFrame = 0;
 
 	void Spawn(Object const& spawnObj);
 
-	sf::Vector2f GetCharacterPos();
+	sf::Vector2f GetCharacterPos() const;
 	
 	bool IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles);
 

@@ -18,7 +18,7 @@ void Character::Jump()
 	}
 }
 
-sf::Vector2f Character::GetCharacterPos()
+sf::Vector2f Character::GetCharacterPos() const
 {
 	sf::Vector2f position(
 		collisionRect.left + collisionRect.width / 4.0f,
@@ -83,9 +83,9 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 
 void Character::UpdateHealthStatus()
 {
-	if (health < 0)
+	if (health <= 0)
 	{
-		existStatus = DEAD;
+		existStatus = ExistenceStatus::DEAD;
 	}
 }
 
