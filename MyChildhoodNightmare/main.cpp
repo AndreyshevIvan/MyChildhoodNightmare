@@ -19,6 +19,8 @@ int main()
 	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
 	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
+	srand(static_cast<unsigned>(time(NULL)));
+
 	Game game;
 
 	if (game.InitGame())
@@ -104,6 +106,7 @@ void InitGamePlayScene(Game& game)
 		game.player.Draw(window);
 		game.DrawBullets(window);
 		game.DrawEnemies(window);
+		game.DrawBonuses(window);
 	};
 }
 

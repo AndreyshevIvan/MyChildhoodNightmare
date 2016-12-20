@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "bullets.h"
+#include "bonus.h"
 
 const float G = 750;
 const float FLYING_SLOWDOWN = 0.6f;

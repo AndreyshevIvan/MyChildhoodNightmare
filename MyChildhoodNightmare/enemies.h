@@ -5,18 +5,20 @@
 
 const sf::Vector2f HAND_SIZE = { 3, 3 };
 const float HAND_MARGIN_X = 10;
-const float MAX_TARGET_RANGE = 300;
+const float MAX_TARGET_RANGE = 500;
 const float MIN_TARGET_RANGE = 30;
+const float MAX_IDLE_WALKING_COLDOWN = 1.75;
 
 const std::string SHADOW_SPAWN_NAME = "enemy_shadow_spawn";
-const sf::Vector2f SHADOW_SIZE = { 50 , 100 };
 const float SHADOW_START_HEALTH = 100;
 const float SHADOW_MOVE_SPEED = 200;
+const float SHADOW_IDLE_MOVE_SPEED = 75;
+const float SHADOW_DEMAGE = 9;
 
 const std::string CLOWN_SPAWN_NAME = "enemy_clown_spawn";
-const sf::Vector2f CLOWN_SIZE = { 55 , 100 };
 const float CLOWN_START_HEALTH = 100;
 const float CLOWN_MOVE_SPEED = 200;
+const float CLOWN_TOUCH_DEMAGE = 6;
 
 enum struct EnemyType
 {
@@ -39,7 +41,9 @@ struct Enemy : Character
 	void CreateClown();
 
 	sf::FloatRect position;
-	float targetRange;
+	
+	float idleWalkingColdown = 0;
+	MovementStatus idleMovement;
 
 	sf::RectangleShape handLeftTop;
 	sf::RectangleShape handLeftMiddle;

@@ -201,7 +201,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		case 1:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
 			break;
-		case 2:
+		case 2:	
 			window.close();
 			break;
 		default:
@@ -298,11 +298,11 @@ void Game::CheckEntitiesCollides()
 		Bullet* bullet = *bullIt;
 		for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
 		{
-			Character* enemy = *enemyIt;
+			Enemy* enemy = *enemyIt;
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
 				enemy->health -= bullet->demage;
-
+				enemy->activityStatus = EnemyActivity::PURSUIT;
 				bullet->isLive = false;
 			}
 		}
@@ -317,8 +317,29 @@ void Game::UpdateEnemies()
 		enemy->Update(elapsedTime, player, objects);
 		if (enemy->existStatus != ExistenceStatus::LIVE)
 		{
+			if (rand() % 10 < 4)
+			{
+				bonuses.push_back(new Bonus(enemy->GetCharacterPos()));
+			}
 			it = enemies.erase(it);
 			delete(enemy);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void Game::UpdateBonuses()
+{
+	for (auto it = bonuses.begin(); it != bonuses.end();)
+	{
+		Bonus* bonus = *it;
+		if (bonus->collisionShape.intersects(player.collisionRect))
+		{
+			it = bonuses.erase(it);
+			delete(bonus);
 		}
 		else
 		{
@@ -344,6 +365,14 @@ void Game::UpdateColdowns()
 	if (buttonColdown <= BUTTONS_COLDOWN)
 	{
 		buttonColdown += elapsedTime;
+	}
+	for (auto it = enemies.begin(); it != enemies.end(); it++)
+	{
+		Enemy* enemy = *it;
+		if (enemy->idleWalkingColdown <= MAX_IDLE_WALKING_COLDOWN)
+		{
+			enemy->idleWalkingColdown += elapsedTime;
+		}
 	}
 }
 
@@ -426,5 +455,14 @@ void Game::DrawEnemies(sf::RenderWindow& window)
 	{
 		Character* enemy = *it;
 		enemy->Draw(window);
+	}
+}
+
+void Game::DrawBonuses(sf::RenderWindow& window)
+{
+	for (auto it = bonuses.begin(); it != bonuses.end(); it++)
+	{
+		Bonus* bonus = *it;
+		bonus->Draw(window);
 	}
 }

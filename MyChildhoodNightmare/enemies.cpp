@@ -25,6 +25,9 @@ Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
 	handRightMiddle.setSize(HAND_SIZE);
 	handRightBottom.setSize(HAND_SIZE);
 
+	int directionId = rand() % 2;
+	idleMovement = MovementStatus(directionId);
+
 	bodyShape.setTexture(&bodyTexture);
 	const sf::Vector2f BODY_SIZE = {
 		static_cast<float>(bodyTexture.getSize().x),
@@ -46,16 +49,29 @@ void Enemy::CreateShadow()
 
 	bodyTexture.loadFromFile("resources/enemyShadow.png");
 
-	moveSpeed = SHADOW_MOVE_SPEED;
 	health = SHADOW_START_HEALTH;
-	demage = 12;
+	demage = SHADOW_DEMAGE;
 
 	Pursuit = [&](Player const& player) {
+		moveSpeed = SHADOW_MOVE_SPEED;
 		ShadowPursuit(player);
-		UpdateHands();
 	};
 
 	Idle = [&]() {
+		runStatus = idleMovement;
+		moveSpeed = SHADOW_IDLE_MOVE_SPEED;
+		if (idleWalkingColdown >= MAX_IDLE_WALKING_COLDOWN)
+		{
+			if (idleMovement == MovementStatus::RUN_LEFT)
+			{
+				idleMovement = MovementStatus::RUN_RIGHT;
+			}
+			else
+			{
+				idleMovement = MovementStatus::RUN_LEFT;
+			}
+			idleWalkingColdown = 0;
+		}
 	};
 }
 
@@ -67,7 +83,7 @@ void Enemy::CreateClown()
 
 	moveSpeed = CLOWN_MOVE_SPEED;
 	health = CLOWN_START_HEALTH;
-	demage = 12;
+	demage = CLOWN_TOUCH_DEMAGE;
 }
 
 void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> const& objects)
@@ -86,6 +102,7 @@ void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> 
 
 	LookGround(objects);
 	UpdatePos(elapsedTime, objects);
+	UpdateHands();
 }
 
 void Enemy::UpdateAI()
@@ -100,10 +117,6 @@ void Enemy::UpdateActivityStatus(Player const& player)
 	if (sqrt(rangeX * rangeX + rangeY * rangeY) <= MAX_TARGET_RANGE)
 	{
 		this->activityStatus = EnemyActivity::PURSUIT;
-	}
-	else
-	{
-		this->activityStatus = EnemyActivity::IDLE;
 	}
 }
 

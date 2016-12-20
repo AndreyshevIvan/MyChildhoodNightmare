@@ -23,7 +23,7 @@ bool Player::InitPlayer()
 	injuredColdown = INJURED_COLDOWN;
 
 	demage = 30;
-	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
+	ammo = { -1, START_SHOOTGUN_AMMO, START_AK_AMMO };
 
 	bullets.clear();
 

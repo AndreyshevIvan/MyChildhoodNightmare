@@ -4,6 +4,7 @@
 #include "player.h"
 #include "interface.h"
 #include "enemies.h"
+#include "bonus.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
@@ -25,6 +26,7 @@ struct Game
 
 	Player player;
 	std::vector<Enemy*> enemies;
+	std::vector<Bonus*> bonuses;
 
 	std::vector<Object> objects;
 	sf::Vector2f mapSize;
@@ -63,10 +65,12 @@ struct Game
 	void UpdateEnemies();
 	void UpdateInterface();
 	void UpdateBackground();
+	void UpdateBonuses();
 
 	void CheckEntitiesCollides();
 
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawBullets(sf::RenderWindow& window);
 	void DrawEnemies(sf::RenderWindow& window);
+	void DrawBonuses(sf::RenderWindow& window);
 };

@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bonus.cpp" />
     <ClCompile Include="bullets.cpp" />
     <ClCompile Include="enemies.cpp" />
     <ClCompile Include="game.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bonus.h" />
     <ClInclude Include="bullets.h" />
     <ClInclude Include="enemies.h" />
     <ClInclude Include="game.h" />
