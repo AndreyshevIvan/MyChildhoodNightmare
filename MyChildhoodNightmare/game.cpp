@@ -6,6 +6,7 @@ using namespace sf;
 bool Game::InitGame()
 {
 	if (!level_1.LoadFromFile("resources/firstTileset.tmx") ||
+		!level_2.LoadFromFile("resources/secondTileset.tmx") ||
 		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png"))
 	{
 		return false;
@@ -18,7 +19,6 @@ bool Game::InitGame()
 		return false;
 	}
 
-	objects = level_1.GetAllObjects();
 	mapSize = { level_1.GetTilemapWidth(), level_1.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
@@ -51,6 +51,7 @@ void Game::StartGame()
 		delete(enemy);
 	}
 
+	objects = currentLevel->GetAllObjects();
 	player.Clear();
 	player.InitPlayer();
 
@@ -62,6 +63,7 @@ void Game::SpawnEntities()
 {
 	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
+	std::vector<Object> birdsSpawns = currentLevel->GetObjects("enemy_bird_spawn");
 
 	for (auto it = shadowsSpawns.begin(); it != shadowsSpawns.end(); it++)
 	{
@@ -71,6 +73,11 @@ void Game::SpawnEntities()
 	for (auto it = clownsSpawns.begin(); it != clownsSpawns.end(); it++)
 	{
 		enemies.push_back(new Enemy(it->rect, EnemyType::CLOWN));
+	}
+
+	for (auto it = birdsSpawns.begin(); it != birdsSpawns.end(); it++)
+	{
+		enemies.push_back(new Enemy(it->rect, EnemyType::BIRD));
 	}
 
 	player.Spawn(currentLevel->GetObject("player_spawn"));
@@ -258,6 +265,14 @@ void Game::UpdatePlayer()
 	player.UpdatePos(elapsedTime, objects);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
+
+	auto nextLevel = currentLevel->GetObject("level2");
+
+	if (player.collisionRect.intersects(nextLevel.rect))
+	{
+		currentLevel = &level_2;
+		StartGame();
+	}
 }
 
 void Game::UpdateBullets()
@@ -276,23 +291,89 @@ void Game::UpdateBullets()
 			++it;
 		}
 	}
+
+	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+	{
+		Enemy* enemy = *enemyIt;
+		if (enemy->enemyType == EnemyType::CLOWN)
+		{
+			for (auto enemyBulletsIt = enemy->bullets.begin(); enemyBulletsIt != enemy->bullets.end();)
+			{
+				Bullet* enemyBullet = *enemyBulletsIt;
+				enemyBullet->Update(elapsedTime);
+				if (IsCollidesWithLevel(enemyBullet->collisionRect) || !enemyBullet->isLive)
+				{
+					enemyBulletsIt = enemy->bullets.erase(enemyBulletsIt);
+					delete(enemyBullet);
+				}
+				else
+				{
+					++enemyBulletsIt;
+				}
+			}
+		}
+	}
 }
 
 void Game::CheckEntitiesCollides()
 {
-	for (auto it = enemies.begin(); it != enemies.end(); it++)
+	EnemyPlayerCollides();
+	PlayerBulletsEnemyCollides();
+	EnemyBulletsPlayerCollides();
+	BonusesPlayerCollides();
+	PlayerLawaCollides();
+}
+
+void Game::EnemyBulletsPlayerCollides()
+{
+	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
 	{
-		Character* enemy = *it;
-		if (enemy->collisionRect.intersects(player.collisionRect))
+		Enemy* enemy = *enemyIt;
+		for (auto bullIt = enemy->bullets.begin(); bullIt != enemy->bullets.end(); bullIt++)
 		{
-			if (player.injuredColdown >= INJURED_COLDOWN)
+			Bullet* bullet = *bullIt;
+			if (player.collisionRect.intersects(bullet->collisionRect))
 			{
-				player.health -= enemy->demage;
-				player.injuredColdown = 0;
+				player.health -= bullet->demage;
+				bullet->isLive = false;
 			}
 		}
 	}
+}
 
+void Game::PlayerLawaCollides()
+{
+	auto lawa = currentLevel->GetObjects("lawa");
+
+	for (auto it = lawa.begin(); it != lawa.end(); it++)
+	{
+		if (it->rect.intersects(player.collisionRect))
+		{
+			player.existStatus = ExistenceStatus::DEAD;
+		}
+	}
+}
+
+void Game::BonusesPlayerCollides()
+{
+	for (auto it = bonuses.begin(); it != bonuses.end();)
+	{
+		Bonus* bonus = *it;
+		if (bonus->collisionRect.intersects(player.collisionRect))
+		{
+			player.AddEffect(*bonus);
+			it = bonuses.erase(it);
+			delete(bonus);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void Game::PlayerBulletsEnemyCollides()
+{
 	for (auto bullIt = player.bullets.begin(); bullIt != player.bullets.end(); bullIt++)
 	{
 		Bullet* bullet = *bullIt;
@@ -309,6 +390,22 @@ void Game::CheckEntitiesCollides()
 	}
 }
 
+void Game::EnemyPlayerCollides()
+{
+	for (auto it = enemies.begin(); it != enemies.end(); it++)
+	{
+		Character* enemy = *it;
+		if (enemy->collisionRect.intersects(player.collisionRect))
+		{
+			if (player.injuredColdown >= INJURED_COLDOWN)
+			{
+				player.health -= enemy->demage;
+				player.injuredColdown = 0;
+			}
+		}
+	}
+}
+
 void Game::UpdateEnemies()
 {
 	for (auto it = enemies.begin(); it != enemies.end();)
@@ -317,7 +414,7 @@ void Game::UpdateEnemies()
 		enemy->Update(elapsedTime, player, objects);
 		if (enemy->existStatus != ExistenceStatus::LIVE)
 		{
-			if (rand() % 10 < 4)
+			if (rand() % 100 < BONUS_PROBABILITY)
 			{
 				bonuses.push_back(new Bonus(enemy->GetCharacterPos()));
 			}
@@ -336,7 +433,7 @@ void Game::UpdateBonuses()
 	for (auto it = bonuses.begin(); it != bonuses.end();)
 	{
 		Bonus* bonus = *it;
-		if (bonus->collisionShape.intersects(player.collisionRect))
+		if (bonus->collisionRect.intersects(player.collisionRect))
 		{
 			it = bonuses.erase(it);
 			delete(bonus);
@@ -372,6 +469,10 @@ void Game::UpdateColdowns()
 		if (enemy->idleWalkingColdown <= MAX_IDLE_WALKING_COLDOWN)
 		{
 			enemy->idleWalkingColdown += elapsedTime;
+		}
+		if (enemy->shootColdown <= CLOWN_SHOOT_COLDOWN)
+		{
+			enemy->shootColdown += elapsedTime;
 		}
 	}
 }
@@ -439,12 +540,25 @@ void Game::DrawLevel(sf::RenderWindow& window)
 
 void Game::DrawBullets(sf::RenderWindow& window)
 {
-	for (auto it = player.bullets.begin(); it != player.bullets.end(); it++)
+	for (auto playerBulletsIt = player.bullets.begin(); playerBulletsIt != player.bullets.end(); playerBulletsIt++)
 	{
-		Bullet* bullet = *it;
+		Bullet* bullet = *playerBulletsIt;
 		if (GetCameraArea().intersects(bullet->collisionRect))
 		{
 			window.draw(bullet->bodyShape);
+		}
+	}
+	
+	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+	{
+		Enemy* enemy = *enemyIt;
+		for (auto enemyBulletsIt = enemy->bullets.begin(); enemyBulletsIt != enemy->bullets.end(); enemyBulletsIt++)
+		{
+			Bullet* bullet = *enemyBulletsIt;
+			if (GetCameraArea().intersects(bullet->collisionRect))
+			{
+				window.draw(bullet->bodyShape);
+			}
 		}
 	}
 }

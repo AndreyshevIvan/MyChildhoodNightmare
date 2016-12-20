@@ -2,7 +2,8 @@
 #include "stdafx.h"
 
 const int SPELL_COUNT = 4;
-const int BONUS_COUNT = 4;
+const int BONUS_COUNT = 3;
+const int BONUS_PROBABILITY = 70;
 
 enum struct SpellType
 {
@@ -17,7 +18,6 @@ enum struct BonusType
 	AMMO,
 	HEALTH,
 	SPELL,
-	RANDOM,
 };
 
 struct Bonus
@@ -26,7 +26,7 @@ struct Bonus
 
 	sf::RectangleShape bodyShape;
 	sf::Texture bonusTexture;
-	sf::FloatRect collisionShape;
+	sf::FloatRect collisionRect;
 
 	SpellType spellType = SpellType::NONE;
 	BonusType bonusType;

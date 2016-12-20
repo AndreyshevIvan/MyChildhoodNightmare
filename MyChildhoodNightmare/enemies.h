@@ -5,26 +5,33 @@
 
 const sf::Vector2f HAND_SIZE = { 3, 3 };
 const float HAND_MARGIN_X = 10;
-const float MAX_TARGET_RANGE = 500;
-const float MIN_TARGET_RANGE = 30;
 const float MAX_IDLE_WALKING_COLDOWN = 1.75;
 
-const std::string SHADOW_SPAWN_NAME = "enemy_shadow_spawn";
 const float SHADOW_START_HEALTH = 100;
 const float SHADOW_MOVE_SPEED = 200;
 const float SHADOW_IDLE_MOVE_SPEED = 75;
 const float SHADOW_DEMAGE = 9;
+const float SHADOW_MIN_TARGET_RANGE = 20;
+const float SHADOW_MAX_TARGET_RANGE = 200;
 
-const std::string CLOWN_SPAWN_NAME = "enemy_clown_spawn";
 const float CLOWN_START_HEALTH = 100;
-const float CLOWN_MOVE_SPEED = 200;
+const float CLOWN_MOVE_SPEED = 0;
 const float CLOWN_TOUCH_DEMAGE = 6;
+const float CLOWN_MIN_TARGET_RANGE = 600;
+const float CLOWN_BULLET_DEMAGE = 2;
+const float CLOWN_SHOOT_COLDOWN = 0.2f;
+const float CLOWN_SHOOT_SERIES_COLDOWN = 1.2f;
+
+const float BIRD_START_HEALTH = 100;
+const float BIRD_MOVE_SPEED = 150;
+const float BIRD_DEMAGE = 6;
 
 enum struct EnemyType
 {
 	NONE,
 	SHADOW,
 	CLOWN,
+	BIRD,
 };
 
 enum struct EnemyActivity 
@@ -39,6 +46,7 @@ struct Enemy : Character
 
 	void CreateShadow();
 	void CreateClown();
+	void CreateBird();
 
 	sf::FloatRect position;
 	
@@ -60,11 +68,15 @@ struct Enemy : Character
 	std::function<void(Player const& player)> Pursuit;
 
 	void Update(float elapsedTime, Player const& player, std::vector<Object> const& objects);
-	void ShadowPursuit(Player const& player);
 	void UpdateHands();
 	void LookGround(std::vector<Object> const& objects);
 	void UpdateActivityStatus(Player const& player);
 	void UpdateAI();
+	void BirdPursuite(float elapsedTime, std::vector<Object> const& mapTiles);
+
+	void ShadowPursuit(Player const& player);
+
+	void ClownShoot(Player const& player);
 
 	void Draw(sf::RenderWindow& window) override;
 };

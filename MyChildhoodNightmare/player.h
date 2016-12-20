@@ -37,5 +37,7 @@ struct Player : Character
 	void SwitchWeapon();
 	
 	void Attack();
+	void AddEffect(Bonus const& bonus);
+
 	void UpdateStatuses();
 };

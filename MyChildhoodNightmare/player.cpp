@@ -22,6 +22,7 @@ bool Player::InitPlayer()
 
 	injuredColdown = INJURED_COLDOWN;
 
+	existStatus = ExistenceStatus::LIVE;
 	demage = 30;
 	ammo = { -1, START_SHOOTGUN_AMMO, START_AK_AMMO };
 
@@ -60,6 +61,22 @@ void Player::SwitchWeapon()
 	else
 	{
 		currentWeapon = Weapon(currWeapon + 1);
+	}
+}
+
+void Player::AddEffect(Bonus const& bonus)
+{
+	auto type = bonus.bonusType;
+	switch (type)
+	{
+	case BonusType::AMMO:
+		break;
+	case BonusType::HEALTH:
+		break;
+	case BonusType::SPELL:
+		break;
+	default:
+		break;
 	}
 }
 

@@ -14,20 +14,13 @@ Bonus::Bonus(sf::Vector2f const& position)
 	{
 	case BonusType::AMMO:
 		bonusTexture.loadFromFile("resources/bonus_ammo.png");
-		cout << "0";
 		break;
 	case BonusType::HEALTH:
 		bonusTexture.loadFromFile("resources/bonus_hp.png");
-		cout << "1";
 		break;
 	case BonusType::SPELL:
 		bonusTexture.loadFromFile("resources/bonus_spell.png");
-		cout << "2";
 		spellType = SpellType(spellId);
-		break;
-	case BonusType::RANDOM:
-		bonusTexture.loadFromFile("resources/bonus_random.png");
-		cout << "3";
 		break;
 	default:
 		break;
@@ -40,12 +33,12 @@ Bonus::Bonus(sf::Vector2f const& position)
 	};
 
 	bodyShape.setSize(BODY_SIZE);
-	collisionShape.width = BODY_SIZE.x;
-	collisionShape.height = BODY_SIZE.y;
+	collisionRect.width = BODY_SIZE.x;
+	collisionRect.height = BODY_SIZE.y;
 
 	bodyShape.setPosition(position - BODY_SIZE);
-	collisionShape.left = position.x - BODY_SIZE.x;
-	collisionShape.top = position.y - BODY_SIZE.y;
+	collisionRect.left = position.x - BODY_SIZE.x;
+	collisionRect.top = position.y - BODY_SIZE.y;
 }
 
 void Bonus::Draw(sf::RenderWindow& window)

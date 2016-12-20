@@ -68,6 +68,11 @@ struct Game
 	void UpdateBonuses();
 
 	void CheckEntitiesCollides();
+	void EnemyPlayerCollides();
+	void PlayerBulletsEnemyCollides();
+	void EnemyBulletsPlayerCollides();
+	void BonusesPlayerCollides();
+	void PlayerLawaCollides();
 
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawBullets(sf::RenderWindow& window);
