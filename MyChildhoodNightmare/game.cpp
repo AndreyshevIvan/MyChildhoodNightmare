@@ -65,19 +65,19 @@ void Game::SpawnEntities()
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
 	std::vector<Object> birdsSpawns = currentLevel->GetObjects("enemy_bird_spawn");
 
-	for (auto it = shadowsSpawns.begin(); it != shadowsSpawns.end(); it++)
+	for (auto shadowSpawn : shadowsSpawns)
 	{
-		enemies.push_back(new Enemy(it->rect, EnemyType::SHADOW));
+		enemies.push_back(new Enemy(shadowSpawn.rect, EnemyType::SHADOW));
 	}
 
-	for (auto it = clownsSpawns.begin(); it != clownsSpawns.end(); it++)
+	for (auto clownSpawn : clownsSpawns)
 	{
-		enemies.push_back(new Enemy(it->rect, EnemyType::CLOWN));
+		enemies.push_back(new Enemy(clownSpawn.rect, EnemyType::CLOWN));
 	}
 
-	for (auto it = birdsSpawns.begin(); it != birdsSpawns.end(); it++)
+	for (auto birdSpawn : birdsSpawns)
 	{
-		enemies.push_back(new Enemy(it->rect, EnemyType::BIRD));
+		enemies.push_back(new Enemy(birdSpawn.rect, EnemyType::BIRD));
 	}
 
 	player.Spawn(currentLevel->GetObject("player_spawn"));
@@ -292,9 +292,8 @@ void Game::UpdateBullets()
 		}
 	}
 
-	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+	for (auto enemy : enemies)
 	{
-		Enemy* enemy = *enemyIt;
 		if (enemy->enemyType == EnemyType::CLOWN)
 		{
 			for (auto enemyBulletsIt = enemy->bullets.begin(); enemyBulletsIt != enemy->bullets.end();)
@@ -326,12 +325,10 @@ void Game::CheckEntitiesCollides()
 
 void Game::EnemyBulletsPlayerCollides()
 {
-	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+	for (auto enemy : enemies)
 	{
-		Enemy* enemy = *enemyIt;
-		for (auto bullIt = enemy->bullets.begin(); bullIt != enemy->bullets.end(); bullIt++)
+		for (auto bullet : enemy->bullets)
 		{
-			Bullet* bullet = *bullIt;
 			if (player.collisionRect.intersects(bullet->collisionRect))
 			{
 				player.health -= bullet->demage;
@@ -374,12 +371,10 @@ void Game::BonusesPlayerCollides()
 
 void Game::PlayerBulletsEnemyCollides()
 {
-	for (auto bullIt = player.bullets.begin(); bullIt != player.bullets.end(); bullIt++)
+	for (auto bullet : player.bullets)
 	{
-		Bullet* bullet = *bullIt;
-		for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+		for (auto enemy : enemies)
 		{
-			Enemy* enemy = *enemyIt;
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
 				enemy->health -= bullet->demage;
@@ -392,9 +387,8 @@ void Game::PlayerBulletsEnemyCollides()
 
 void Game::EnemyPlayerCollides()
 {
-	for (auto it = enemies.begin(); it != enemies.end(); it++)
+	for (auto enemy : enemies)
 	{
-		Character* enemy = *it;
 		if (enemy->collisionRect.intersects(player.collisionRect))
 		{
 			if (player.injuredColdown >= INJURED_COLDOWN)
@@ -463,9 +457,9 @@ void Game::UpdateColdowns()
 	{
 		buttonColdown += elapsedTime;
 	}
-	for (auto it = enemies.begin(); it != enemies.end(); it++)
+
+	for (auto enemy : enemies)
 	{
-		Enemy* enemy = *it;
 		if (enemy->idleWalkingColdown <= MAX_IDLE_WALKING_COLDOWN)
 		{
 			enemy->idleWalkingColdown += elapsedTime;
@@ -540,24 +534,21 @@ void Game::DrawLevel(sf::RenderWindow& window)
 
 void Game::DrawBullets(sf::RenderWindow& window)
 {
-	for (auto playerBulletsIt = player.bullets.begin(); playerBulletsIt != player.bullets.end(); playerBulletsIt++)
+	for (auto playerBullet : player.bullets)
 	{
-		Bullet* bullet = *playerBulletsIt;
-		if (GetCameraArea().intersects(bullet->collisionRect))
+		if (GetCameraArea().intersects(playerBullet->collisionRect))
 		{
-			window.draw(bullet->bodyShape);
+			window.draw(playerBullet->bodyShape);
 		}
 	}
 	
-	for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); enemyIt++)
+	for (auto enemy : enemies)
 	{
-		Enemy* enemy = *enemyIt;
-		for (auto enemyBulletsIt = enemy->bullets.begin(); enemyBulletsIt != enemy->bullets.end(); enemyBulletsIt++)
+		for (auto enemyBullet : enemy->bullets)
 		{
-			Bullet* bullet = *enemyBulletsIt;
-			if (GetCameraArea().intersects(bullet->collisionRect))
+			if (GetCameraArea().intersects(enemyBullet->collisionRect))
 			{
-				window.draw(bullet->bodyShape);
+				window.draw(enemyBullet->bodyShape);
 			}
 		}
 	}
@@ -565,18 +556,16 @@ void Game::DrawBullets(sf::RenderWindow& window)
 
 void Game::DrawEnemies(sf::RenderWindow& window)
 {
-	for (auto it = enemies.begin(); it != enemies.end(); it++)
+	for (auto enemy : enemies)
 	{
-		Character* enemy = *it;
 		enemy->Draw(window);
 	}
 }
 
 void Game::DrawBonuses(sf::RenderWindow& window)
 {
-	for (auto it = bonuses.begin(); it != bonuses.end(); it++)
+	for (auto bonus : bonuses)
 	{
-		Bonus* bonus = *it;
 		bonus->Draw(window);
 	}
 }

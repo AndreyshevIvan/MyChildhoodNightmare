@@ -64,7 +64,7 @@ struct Enemy : Character
 	EnemyType enemyType = EnemyType::NONE;
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
 
-	std::function<void()> Idle;
+	std::function<void(float elapsedTime, std::vector<Object> const& objects)> Idle;
 	std::function<void(Player const& player)> Pursuit;
 
 	void Update(float elapsedTime, Player const& player, std::vector<Object> const& objects);
@@ -74,7 +74,7 @@ struct Enemy : Character
 	void UpdateAI();
 	void BirdPursuite(float elapsedTime, std::vector<Object> const& mapTiles);
 
-	void ShadowPursuit(Player const& player);
+	void ShadowIdle(float elapsedTime, std::vector<Object> const& objects);
 
 	void ClownShoot(Player const& player);
 

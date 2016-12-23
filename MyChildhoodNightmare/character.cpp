@@ -89,11 +89,11 @@ void Character::UpdateHealthStatus()
 	}
 }
 
-bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& mapTiles)
+bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& objects)
 {
-	for (unsigned i = 0; i < mapTiles.size(); i++)
+	for (auto object : objects)
 	{
-		if (rect.intersects(mapTiles[i].rect) && mapTiles[i].name == "solid")
+		if (rect.intersects(object.rect) && object.name == "solid")
 		{
 			return true;
 		}

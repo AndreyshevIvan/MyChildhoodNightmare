@@ -83,6 +83,8 @@ void Player::AddEffect(Bonus const& bonus)
 void Player::Attack()
 {
 	int orientationId = static_cast<int>(orientationStatus);
+	int rounds = ammo[(int)currentWeapon];
+
 	switch (currentWeapon)
 	{
 	case Weapon::MELEE:
@@ -93,7 +95,7 @@ void Player::Attack()
 		}
 		break;
 	case Weapon::SHOOTGUN:
-		if (shootColdown > SHOOTGUN_COLDOWN && ammo[(int)currentWeapon] > 0)
+		if (shootColdown > SHOOTGUN_COLDOWN && rounds > 0)
 		{
 			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
 			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
@@ -101,15 +103,15 @@ void Player::Attack()
 			bullets.push_back(new Bullet(topBullPos, demage, orientationId));
 			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId));
 			bullets.push_back(new Bullet(bottomBullPos, demage, orientationId));
-			ammo[(int)currentWeapon]--;
+			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}
 		break;
 	case Weapon::AK:
-		if (shootColdown > AK_COLDOWN && ammo[(int)currentWeapon] > 0)
+		if (shootColdown > AK_COLDOWN && rounds > 0)
 		{
 			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId));
-			ammo[(int)currentWeapon]--;
+			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}
 		break;

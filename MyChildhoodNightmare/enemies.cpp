@@ -57,13 +57,14 @@ void Enemy::CreateShadow()
 	moveSpeed = CLOWN_MOVE_SPEED;
 
 	Pursuit = [&](Player const& player) {
+		(void)player;
 		moveSpeed = SHADOW_MOVE_SPEED;
-		ShadowPursuit(player);
 	};
 
-	Idle = [&]() {
+	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
+		moveSpeed = SHADOW_MOVE_SPEED;
 		runStatus = idleMovement;
-		moveSpeed = SHADOW_IDLE_MOVE_SPEED;
+		ShadowIdle(elapsedTime, objects);
 	};
 }
 
@@ -80,7 +81,9 @@ void Enemy::CreateClown()
 		ClownShoot(player);
 	};
 
-	Idle = [&]() {
+	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
+		(void)objects;
+		(void)elapsedTime;
 	};
 }
 
@@ -97,7 +100,9 @@ void Enemy::CreateBird()
 		(void)player;
 	};
 
-	Idle = [&]() {
+	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
+		(void)objects;
+		(void)elapsedTime;
 	};
 }
 
@@ -108,7 +113,7 @@ void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> 
 	switch (this->activityStatus)
 	{
 	case EnemyActivity::IDLE:
-		Idle();
+		Idle(elapsedTime, objects);
 		break;
 	case EnemyActivity::PURSUIT:
 		Pursuit(player);
@@ -137,20 +142,30 @@ void Enemy::UpdateActivityStatus(Player const& player)
 	}
 }
 
-void Enemy::ShadowPursuit(Player const& player)
+void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
 {
-	float enemyPosX = this->GetCharacterPos().x;
-	float playerPosX = player.GetCharacterPos().x;
+	auto handLeftMiddleCopy = handLeftMiddle.getGlobalBounds();
+	auto handRightMiddleCopy = handRightMiddle.getGlobalBounds();
 
-	if (abs(enemyPosX - playerPosX) >= SHADOW_MIN_TARGET_RANGE)
+	for (auto it = objects.begin(); it != objects.end(); it++)
 	{
-		if (enemyPosX <= playerPosX)
+		if (this->runStatus == MovementStatus::RUN_LEFT)
 		{
-			this->runStatus = MovementStatus::RUN_RIGHT;
+			handLeftMiddleCopy.left -= elapsedTime * SHADOW_MOVE_SPEED;
+
+			if (handLeftMiddleCopy.intersects(it->rect))
+			{
+				this->runStatus = MovementStatus::RUN_RIGHT;
+			}
 		}
 		else
 		{
-			this->runStatus = MovementStatus::RUN_LEFT;
+			handRightMiddleCopy.left += elapsedTime * SHADOW_MOVE_SPEED;
+			
+			if (handRightMiddleCopy.intersects(it->rect))
+			{
+				this->runStatus = MovementStatus::RUN_LEFT;
+			}
 		}
 	}
 }
