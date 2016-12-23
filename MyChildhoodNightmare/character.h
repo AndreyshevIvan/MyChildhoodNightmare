@@ -9,6 +9,7 @@ const float MIN_HEIGHT_FOR_DEMAGE = 16;
 const float DEMAGE_PER_HEIGHT = 0.8f;
 const float CHARACTERS_JUMP_SPEED = 400;
 const float CHARACTERS_JUMP_HEIGHT = 80;
+const float MIN_SHOOT_RANGE = 140;
 
 enum ExistenceStatus
 {
@@ -55,6 +56,7 @@ struct Character
 	float health;
 	float shootColdown = 0;
 	float currentFrame = 0;
+	float shootRange = MIN_SHOOT_RANGE;
 
 	void Spawn(Object const& spawnObj);
 

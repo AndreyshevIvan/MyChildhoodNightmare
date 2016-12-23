@@ -13,12 +13,13 @@ struct Bullet
 {
 	sf::RectangleShape bodyShape;
 	sf::FloatRect collisionRect;
-	sf::Vector2f speed;
+	float currentRange = 0;
+	float maxRange;
 	int movmentOrientation;
 	float demage;
 	bool isLive = true;
 
-	Bullet(sf::Vector2f const& startPos, float demage, int orientation)
+	Bullet(sf::Vector2f const& startPos, float demage, int orientation, float maxRange)
 	{
 		collisionRect.left = startPos.x;
 		collisionRect.top = startPos.y - 50;
@@ -30,6 +31,7 @@ struct Bullet
 		bodyShape.setPosition({ collisionRect.left, collisionRect.top });
 		movmentOrientation = orientation;
 
+		this->maxRange = maxRange;
 		this->demage = demage;
 	}
 

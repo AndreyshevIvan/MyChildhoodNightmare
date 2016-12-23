@@ -6,9 +6,10 @@ const sf::Vector2f PLAYER_SPAWN_POS = { 350 , 700 };
 const float PLAYER_MOVE_SPEED = 250;
 
 const float PLAYER_START_HEALTH = 100;
-const int START_SHOOTGUN_AMMO = 7;
-const int START_AK_AMMO = 30;
-const int MAX_AMMO = 99;
+const int PLAYER_START_SHOOTGUN_AMMO = 7;
+const int PLAYER_START_AK_AMMO = 30;
+const int PLAYER_MAX_AMMO = 99;
+const float PLAYER_START_SHOOT_RANGE = 400;
 
 const float INJURED_COLDOWN = 1.5;
 

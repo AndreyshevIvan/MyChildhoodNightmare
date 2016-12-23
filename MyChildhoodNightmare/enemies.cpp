@@ -74,7 +74,8 @@ void Enemy::CreateClown()
 
 	health = CLOWN_START_HEALTH;
 	demage = CLOWN_TOUCH_DEMAGE;
-	
+	shootRange = CLOWN_TARGET_RANGE;
+
 	Pursuit = [&](Player const& player) {
 		ClownShoot(player);
 	};
@@ -154,7 +155,26 @@ void Enemy::UpdateShadowActivityStatus(Player const& player)
 
 void Enemy::UpdateClownActivityStatus(Player const& player)
 {
-	(void)player;
+	activityStatus = EnemyActivity::IDLE;
+	float halfBody = bodyShape.getSize().y / 2.0f;
+	
+	targetArea.setSize({ 2.0f * CLOWN_TARGET_RANGE, halfBody });
+	targetArea.setPosition(GetCharacterPos().x - CLOWN_TARGET_RANGE, GetCharacterPos().y - halfBody - halfBody / 2.0f);
+	targetArea.setFillColor(sf::Color(40, 10, 30, 100));
+
+	if (player.collisionRect.intersects(targetArea.getGlobalBounds()))
+	{
+		cout << "PURSUIT!";
+		activityStatus = EnemyActivity::PURSUIT;
+		if (player.GetCharacterPos().x < GetCharacterPos().x)
+		{
+			orientationStatus = OrientationStatus::LEFT;
+		}
+		else
+		{
+			orientationStatus = OrientationStatus::RIGHT;
+		}
+	}
 }
 
 void Enemy::UpdateBirdActivityStatus(Player const& player)
@@ -203,32 +223,12 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
 
 void Enemy::ClownShoot(Player const& player)
 {
-	float playerPosX = player.GetCharacterPos().x;
-	float playerPosY = player.GetCharacterPos().y - player.bodyShape.getSize().y / 2.0f;
-
-	float enemyPosX = this->GetCharacterPos().x;
-	float enemyPosY = this->GetCharacterPos().y - this->bodyShape.getSize().y / 2.0f;
-
-	float range = abs(enemyPosX - playerPosX);
-	bool isVerticalTarget = (
-		playerPosY < enemyPosY + this->bodyShape.getSize().y / 2.0f &&
-		playerPosY > enemyPosY - this->bodyShape.getSize().y / 2.0f);
-
-	if (player.GetCharacterPos().x <= this->GetCharacterPos().x)
-	{
-		orientationStatus = OrientationStatus::LEFT;
-	}
-	else
-	{
-		orientationStatus = OrientationStatus::RIGHT;
-	}
+	(void)player;
 	int orientationId = static_cast<int>(orientationStatus);
 
-	if (shootColdown >= CLOWN_SHOOT_COLDOWN &&
-		range <= CLOWN_MIN_TARGET_RANGE && 
-		isVerticalTarget)
+	if (shootColdown >= CLOWN_SHOOT_COLDOWN)
 	{
-		bullets.push_back(new Bullet(this->GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId));
+		bullets.push_back(new Bullet(GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId, shootRange));
 		shootColdown = 0;
 	}
 }
@@ -264,5 +264,6 @@ void Enemy::Draw(sf::RenderWindow& window)
 	window.draw(handRightMiddle);
 	window.draw(handRightBottom);
 
+	window.draw(targetArea);
 	window.draw(bodyShape);
 }

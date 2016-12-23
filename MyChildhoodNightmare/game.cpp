@@ -460,10 +460,6 @@ void Game::UpdateColdowns()
 
 	for (auto enemy : enemies)
 	{
-		if (enemy->idleWalkingColdown <= MAX_IDLE_WALKING_COLDOWN)
-		{
-			enemy->idleWalkingColdown += elapsedTime;
-		}
 		if (enemy->shootColdown <= CLOWN_SHOOT_COLDOWN)
 		{
 			enemy->shootColdown += elapsedTime;

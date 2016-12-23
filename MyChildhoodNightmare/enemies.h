@@ -5,7 +5,6 @@
 
 const sf::Vector2f HAND_SIZE = { 3, 3 };
 const float HAND_MARGIN_X = 10;
-const float MAX_IDLE_WALKING_COLDOWN = 1.75;
 
 const float SHADOW_START_HEALTH = 210;
 const float SHADOW_MOVE_SPEED = 220;
@@ -14,10 +13,9 @@ const float SHADOW_DEMAGE = 25;
 const float CLOWN_START_HEALTH = 100;
 const float CLOWN_MOVE_SPEED = 0;
 const float CLOWN_TOUCH_DEMAGE = 6;
-const float CLOWN_MIN_TARGET_RANGE = 600;
-const float CLOWN_BULLET_DEMAGE = 2;
+const float CLOWN_TARGET_RANGE = 700;
+const float CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
-const float CLOWN_SHOOT_SERIES_COLDOWN = 1.2f;
 
 const float BIRD_START_HEALTH = 100;
 const float BIRD_MOVE_SPEED = 150;
@@ -47,6 +45,7 @@ struct Enemy : Character
 	void CreateBird();
 
 	sf::FloatRect position;
+	sf::RectangleShape targetArea;
 	
 	float idleWalkingColdown = 0;
 	MovementStatus currentRunStatus;

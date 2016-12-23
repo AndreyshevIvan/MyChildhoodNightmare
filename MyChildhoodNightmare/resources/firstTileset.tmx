@@ -120035,7 +120035,7 @@
   <object id="196" name="player_spawn" x="184" y="1814" width="18" height="16"/>
   <object id="199" name="enemy_shadow_spawn" x="768" y="1892" width="46" height="44"/>
   <object id="203" name="enemy_clown_spawn" x="1810.33" y="1806.67" width="46" height="44"/>
-  <object id="208" name="enemy_clown_spawn" x="570.333" y="1920" width="46" height="44"/>
+  <object id="208" name="enemy_clown_spawn" x="579.667" y="1829.33" width="46" height="44"/>
   <object id="209" name="enemy_clown_spawn" x="1223" y="1900" width="46" height="44"/>
   <object id="210" name="enemy_bird_spawn" x="825" y="1556" width="46" height="44"/>
   <object id="213" name="enemy_bird_spawn" x="353" y="1642" width="46" height="44"/>
