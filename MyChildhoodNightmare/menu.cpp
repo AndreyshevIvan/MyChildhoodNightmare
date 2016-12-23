@@ -181,9 +181,9 @@ void Menu::Draw(sf::RenderWindow& window)
 	}
 
 	auto currMenu = allItems[(size_t)currentMenu];
-	for (auto it = currMenu.begin(); it != currMenu.end(); it++)
+	for (auto menuElement : currMenu)
 	{
-		window.draw(*it);
+		window.draw(menuElement);
 	}
 	window.draw(menuIcon);
 }

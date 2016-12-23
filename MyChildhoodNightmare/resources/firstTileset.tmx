@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="400" height="100" tilewidth="32" tileheight="32" nextobjectid="217">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="400" height="100" tilewidth="32" tileheight="32" nextobjectid="218">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="100" columns="10">
   <image source="tileset.png" width="320" height="320"/>
  </tileset>
@@ -120035,7 +120035,7 @@
   <object id="196" name="player_spawn" x="184" y="1814" width="18" height="16"/>
   <object id="199" name="enemy_shadow_spawn" x="768" y="1892" width="46" height="44"/>
   <object id="203" name="enemy_clown_spawn" x="1810.33" y="1806.67" width="46" height="44"/>
-  <object id="208" name="enemy_clown_spawn" x="1425" y="1812" width="46" height="44"/>
+  <object id="208" name="enemy_clown_spawn" x="570.333" y="1920" width="46" height="44"/>
   <object id="209" name="enemy_clown_spawn" x="1223" y="1900" width="46" height="44"/>
   <object id="210" name="enemy_bird_spawn" x="825" y="1556" width="46" height="44"/>
   <object id="213" name="enemy_bird_spawn" x="353" y="1642" width="46" height="44"/>
@@ -120046,5 +120046,6 @@
  </objectgroup>
  <objectgroup name="levels">
   <object id="216" name="level2" x="1984" y="1828" width="80" height="76"/>
+  <object id="217" name="enemy_shadow_spawn" x="1589" y="1807.33" width="46" height="44"/>
  </objectgroup>
 </map>

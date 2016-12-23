@@ -28,8 +28,7 @@ Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
 	handRightMiddle.setSize(HAND_SIZE);
 	handRightBottom.setSize(HAND_SIZE);
 
-	int directionId = rand() % 2;
-	idleMovement = MovementStatus(directionId);
+	currentRunStatus = MovementStatus(rand() % 2);
 
 	bodyShape.setTexture(&bodyTexture);
 	const sf::Vector2f BODY_SIZE = {
@@ -54,16 +53,15 @@ void Enemy::CreateShadow()
 
 	health = SHADOW_START_HEALTH;
 	demage = SHADOW_DEMAGE;
-	moveSpeed = CLOWN_MOVE_SPEED;
+	moveSpeed = SHADOW_MOVE_SPEED;
 
 	Pursuit = [&](Player const& player) {
 		(void)player;
-		moveSpeed = SHADOW_MOVE_SPEED;
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
 		moveSpeed = SHADOW_MOVE_SPEED;
-		runStatus = idleMovement;
+		runStatus = currentRunStatus;
 		ShadowIdle(elapsedTime, objects);
 	};
 }
@@ -110,62 +108,95 @@ void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> 
 {
 	UpdateHealthStatus();
 	UpdateActivityStatus(player);
-	switch (this->activityStatus)
+
+	if (activityStatus == EnemyActivity::IDLE)
 	{
-	case EnemyActivity::IDLE:
 		Idle(elapsedTime, objects);
-		break;
-	case EnemyActivity::PURSUIT:
+	}
+	else
+	{
 		Pursuit(player);
-		break;
-	default:
-		break;
 	}
 
-	LookGround(objects);
-	UpdatePos(elapsedTime, objects);
+	if (enemyType != EnemyType::BIRD)
+	{
+		UpdatePos(elapsedTime, objects);
+	}
 	UpdateHands();
-}
-
-void Enemy::UpdateAI()
-{
 }
 
 void Enemy::UpdateActivityStatus(Player const& player)
 {
-	float rangeX = this->GetCharacterPos().x - player.GetCharacterPos().x;
-	float rangeY = this->GetCharacterPos().y - player.GetCharacterPos().y;
-
-	if (sqrt(rangeX * rangeX + rangeY * rangeY) <= SHADOW_MAX_TARGET_RANGE)
+	switch (this->enemyType)
 	{
-		this->activityStatus = EnemyActivity::PURSUIT;
+	case EnemyType::SHADOW:
+		UpdateShadowActivityStatus(player);
+		break;
+	case EnemyType::CLOWN:
+		UpdateClownActivityStatus(player);
+		break;
+	case EnemyType::BIRD:
+		UpdateBirdActivityStatus(player);
+		break;
+	case EnemyType::BOSS:
+		UpdateBossActivityStatus(player);
+		break;
+	default:
+		break;
 	}
+}
+
+void Enemy::UpdateShadowActivityStatus(Player const& player)
+{
+	this->activityStatus = EnemyActivity::IDLE;
+	(void)player;
+}
+
+void Enemy::UpdateClownActivityStatus(Player const& player)
+{
+	(void)player;
+}
+
+void Enemy::UpdateBirdActivityStatus(Player const& player)
+{
+	(void)player;
+}
+
+void Enemy::UpdateBossActivityStatus(Player const& player)
+{
+	(void)player;
 }
 
 void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
 {
-	auto handLeftMiddleCopy = handLeftMiddle.getGlobalBounds();
-	auto handRightMiddleCopy = handRightMiddle.getGlobalBounds();
+	auto handLeftMiddle_copy = handLeftMiddle.getGlobalBounds();
+	auto handLeftBottom_copy = handLeftBottom.getGlobalBounds();
 
-	for (auto it = objects.begin(); it != objects.end(); it++)
+	auto handRightMiddle_copy = handRightMiddle.getGlobalBounds();
+	auto handRightBottom_copy = handRightBottom.getGlobalBounds();
+
+	auto mevoment = elapsedTime * moveSpeed;
+
+	if (runStatus == MovementStatus::RUN_LEFT)
 	{
-		if (this->runStatus == MovementStatus::RUN_LEFT)
-		{
-			handLeftMiddleCopy.left -= elapsedTime * SHADOW_MOVE_SPEED;
+		handLeftMiddle_copy.left -= mevoment;
+		handLeftBottom_copy.left -= mevoment;
 
-			if (handLeftMiddleCopy.intersects(it->rect))
-			{
-				this->runStatus = MovementStatus::RUN_RIGHT;
-			}
-		}
-		else
+		if (IsCollidesWithLevel(handLeftMiddle_copy, objects) ||
+			!IsCollidesWithLevel(handLeftBottom_copy, objects))
 		{
-			handRightMiddleCopy.left += elapsedTime * SHADOW_MOVE_SPEED;
-			
-			if (handRightMiddleCopy.intersects(it->rect))
-			{
-				this->runStatus = MovementStatus::RUN_LEFT;
-			}
+			currentRunStatus = MovementStatus::RUN_RIGHT;
+		}
+	}
+	else if (runStatus == MovementStatus::RUN_RIGHT)
+	{
+		handRightMiddle_copy.left += mevoment;
+		handRightBottom_copy.left += mevoment;
+
+		if (IsCollidesWithLevel(handRightMiddle_copy, objects) ||
+			!IsCollidesWithLevel(handRightBottom_copy, objects))
+		{
+			currentRunStatus = MovementStatus::RUN_LEFT;
 		}
 	}
 }
@@ -181,8 +212,7 @@ void Enemy::ClownShoot(Player const& player)
 	float range = abs(enemyPosX - playerPosX);
 	bool isVerticalTarget = (
 		playerPosY < enemyPosY + this->bodyShape.getSize().y / 2.0f &&
-		playerPosY > enemyPosY - this->bodyShape.getSize().y / 2.0f
-		);
+		playerPosY > enemyPosY - this->bodyShape.getSize().y / 2.0f);
 
 	if (player.GetCharacterPos().x <= this->GetCharacterPos().x)
 	{
@@ -201,11 +231,6 @@ void Enemy::ClownShoot(Player const& player)
 		bullets.push_back(new Bullet(this->GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId));
 		shootColdown = 0;
 	}
-}
-
-void Enemy::LookGround(std::vector<Object> const& objects)
-{
-	(void)objects;
 }
 
 void Enemy::BirdPursuite(float elapsedTime, std::vector<Object> const& objects)
