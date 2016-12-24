@@ -26,13 +26,17 @@ struct Game
 
 	Player player;
 	std::vector<Enemy*> enemies;
+	std::vector<Bullet*> enemyBullets;
 	std::vector<Bonus*> bonuses;
 
-	std::vector<Object> objects;
+	std::vector<Object> blocks;
+	std::vector<Object> lava;
+
 	sf::Vector2f mapSize;
 	Level* currentLevel;
 	Level level_1;
 	Level level_2;
+	Level level_3;
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
 
@@ -43,10 +47,12 @@ struct Game
 	GameScene menuScene;
 	GameScene gameplayScene;
 	GameScene pauseScene;
+	GameScene gameOverScene;
 	GameScene *currentScene = nullptr;
 
 	bool InitGame();
-	void StartGame();
+	void StartGame(Level& level);
+	void CheckCompletedLevel();
 	void SpawnEntities();
 
 	void SetElapsedTime();
@@ -57,6 +63,7 @@ struct Game
 	void ControlPlayer();
 	void ControlMenu(sf::RenderWindow& window);
 	void ControlMenuLogic(sf::RenderWindow& window);
+	void ControlGameOver(sf::RenderWindow& window);
 
 	void UpdateCamera(sf::RenderWindow& window);
 	void UpdateColdowns();
@@ -72,10 +79,12 @@ struct Game
 	void PlayerBulletsEnemyCollides();
 	void EnemyBulletsPlayerCollides();
 	void BonusesPlayerCollides();
-	void PlayerLawaCollides();
+	void PlayerLavaCollides();
 
 	void DrawLevel(sf::RenderWindow& window);
 	void DrawBullets(sf::RenderWindow& window);
 	void DrawEnemies(sf::RenderWindow& window);
 	void DrawBonuses(sf::RenderWindow& window);
+
+	void ClearScene();
 };

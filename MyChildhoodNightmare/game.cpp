@@ -42,7 +42,42 @@ bool Game::InitGame()
 	return true;
 }
 
-void Game::StartGame()
+void Game::StartGame(Level& level)
+{
+	ClearScene();
+
+	currentLevel = &level;
+
+	blocks = currentLevel->GetObjects("solid");
+	lava = currentLevel->GetObjects("lava");
+
+	player.Clear();
+	player.InitPlayer();
+
+	SpawnEntities();
+
+	currentScene = &gameplayScene;
+}
+
+void Game::CheckCompletedLevel()
+{
+	bool IsChange = false;
+	auto door_level_2 = currentLevel->GetObject("level2");
+	auto door_level_3 = currentLevel->GetObject("level3");
+
+	if (player.collisionRect.intersects(door_level_2.rect))
+	{
+		IsChange = true;
+		StartGame(level_2);
+	}
+	else if (player.collisionRect.intersects(door_level_3.rect))
+	{
+		IsChange = true;
+		StartGame(level_3);
+	}
+}
+
+void Game::ClearScene()
 {
 	for (auto it = enemies.begin(); it != enemies.end();)
 	{
@@ -51,12 +86,12 @@ void Game::StartGame()
 		delete(enemy);
 	}
 
-	objects = currentLevel->GetAllObjects();
-	player.Clear();
-	player.InitPlayer();
-
-	SpawnEntities();
-	currentScene = &gameplayScene;
+	for (auto it = bonuses.begin(); it != bonuses.end();)
+	{
+		Bonus* bonus = *it;
+		it = bonuses.erase(it);
+		delete(bonus);
+	}
 }
 
 void Game::SpawnEntities()
@@ -102,9 +137,9 @@ sf::FloatRect Game::GetCameraArea()
 
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	for (unsigned i = 0; i < objects.size(); i++)
+	for (unsigned i = 0; i < blocks.size(); i++)
 	{
-		if (rect.intersects(objects[i].rect) && objects[i].name == "solid")
+		if (rect.intersects(blocks[i].rect) && blocks[i].name == "solid")
 		{
 			return true;
 		}
@@ -125,18 +160,14 @@ void Game::ControlPlayer()
 		{
 			player.Jump();
 		}
-		if (
-			Keyboard::isKeyPressed(Keyboard::A) ||
-			Keyboard::isKeyPressed(Keyboard::Left)
-			)
+		if (Keyboard::isKeyPressed(Keyboard::A) ||
+			Keyboard::isKeyPressed(Keyboard::Left))
 		{
 			player.runStatus = RUN_LEFT;
 			player.orientationStatus = LEFT;
 		}
-		if (
-			Keyboard::isKeyPressed(Keyboard::D) ||
-			Keyboard::isKeyPressed(Keyboard::Right)
-			)
+		if (Keyboard::isKeyPressed(Keyboard::D) ||
+			Keyboard::isKeyPressed(Keyboard::Right))
 		{
 			player.runStatus = RUN_RIGHT;
 			player.orientationStatus = RIGHT;
@@ -155,38 +186,30 @@ void Game::ControlPlayer()
 
 void Game::ControlMenu(sf::RenderWindow& window)
 {
-	if (
-		Keyboard::isKeyPressed(Keyboard::Escape) &&
+	if (Keyboard::isKeyPressed(Keyboard::Escape) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN &&
-		menu.currentMenu == CurrentMenu::PAUSE
-		)
+		menu.currentMenu == CurrentMenu::PAUSE)
 	{
 		menu.buttonsColdown = 0;
 		currentScene = &gameplayScene;
 	}
 	else
 	{
-		if (
-			Keyboard::isKeyPressed(Keyboard::F) &&
-			menu.buttonsColdown >= BUTTONS_COLDOWN
-			)
+		if (Keyboard::isKeyPressed(Keyboard::F) &&
+			menu.buttonsColdown >= BUTTONS_COLDOWN)
 		{
 			menu.buttonsColdown = 0;
 			ControlMenuLogic(window);
 		}
 		else
 		{
-			if (
-				Keyboard::isKeyPressed(Keyboard::Up) &&
-				menu.buttonsColdown >= BUTTONS_COLDOWN
-				)
+			if (Keyboard::isKeyPressed(Keyboard::Up) &&
+				menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
 				menu.SwitchButtonUp();
 			}
-			else if (
-				Keyboard::isKeyPressed(Keyboard::Down) &&
-				menu.buttonsColdown >= BUTTONS_COLDOWN
-				)
+			else if (Keyboard::isKeyPressed(Keyboard::Down) &&
+				menu.buttonsColdown >= BUTTONS_COLDOWN)
 			{
 				menu.SwitchButtonDown();
 			}
@@ -203,7 +226,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case 0:
-			StartGame();
+			StartGame(level_1);
 			break;
 		case 1:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -246,7 +269,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 			currentScene = &gameplayScene;
 			break;
 		case 1:
-			StartGame();
+			StartGame(*currentLevel);
 			break;
 		case 2:
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
@@ -260,30 +283,43 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 	}
 }
 
+void Game::ControlGameOver(sf::RenderWindow& window)
+{
+	(void)window;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+	{
+		StartGame(*currentLevel);
+	}
+	if (sf::Keyboard::isKeyPressed(Keyboard::Escape))
+	{
+		menu.SetMenu(CurrentMenu::START, camera.getCenter());
+		currentScene = &menuScene;
+	}
+}
+
 void Game::UpdatePlayer()
 {
-	player.UpdatePos(elapsedTime, objects);
+	player.UpdatePos(elapsedTime, blocks);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
 
-	auto nextLevel = currentLevel->GetObject("level2");
-
-	if (player.collisionRect.intersects(nextLevel.rect))
+	if (player.existStatus == ExistenceStatus::DEAD)
 	{
-		currentLevel = &level_2;
-		StartGame();
+		currentScene = &gameOverScene;
 	}
+
+	CheckCompletedLevel();
 }
 
 void Game::UpdateBullets()
 {
-	for (auto it = player.bullets.begin(); it != player.bullets.end();)
+	for (auto it = player.characterBullets.begin(); it != player.characterBullets.end();)
 	{
 		Bullet* bullet = *it;
 		bullet->Update(elapsedTime);
 		if (IsCollidesWithLevel(bullet->collisionRect) || !bullet->isLive)
 		{
-			it = player.bullets.erase(it);
+			it = player.characterBullets.erase(it);
 			delete(bullet);
 		}
 		else
@@ -292,24 +328,18 @@ void Game::UpdateBullets()
 		}
 	}
 
-	for (auto enemy : enemies)
+	for (auto it = enemyBullets.begin(); it != enemyBullets.end();)
 	{
-		if (enemy->enemyType == EnemyType::CLOWN)
+		Bullet* bullet = *it;
+		bullet->Update(elapsedTime);
+		if (IsCollidesWithLevel(bullet->collisionRect) || !bullet->isLive)
 		{
-			for (auto enemyBulletsIt = enemy->bullets.begin(); enemyBulletsIt != enemy->bullets.end();)
-			{
-				Bullet* enemyBullet = *enemyBulletsIt;
-				enemyBullet->Update(elapsedTime);
-				if (IsCollidesWithLevel(enemyBullet->collisionRect) || !enemyBullet->isLive)
-				{
-					enemyBulletsIt = enemy->bullets.erase(enemyBulletsIt);
-					delete(enemyBullet);
-				}
-				else
-				{
-					++enemyBulletsIt;
-				}
-			}
+			it = enemyBullets.erase(it);
+			delete(bullet);
+		}
+		else
+		{
+			++it;
 		}
 	}
 }
@@ -320,33 +350,32 @@ void Game::CheckEntitiesCollides()
 	PlayerBulletsEnemyCollides();
 	EnemyBulletsPlayerCollides();
 	BonusesPlayerCollides();
-	PlayerLawaCollides();
+	PlayerLavaCollides();
 }
 
 void Game::EnemyBulletsPlayerCollides()
 {
-	for (auto enemy : enemies)
+	for (auto bullet : enemyBullets)
 	{
-		for (auto bullet : enemy->bullets)
+		if (player.collisionRect.intersects(bullet->collisionRect))
 		{
-			if (player.collisionRect.intersects(bullet->collisionRect))
-			{
-				player.health -= bullet->demage;
-				bullet->isLive = false;
-			}
+			player.health -= bullet->demage;
+			bullet->isLive = false;
 		}
 	}
 }
 
-void Game::PlayerLawaCollides()
+void Game::PlayerLavaCollides()
 {
-	auto lawa = currentLevel->GetObjects("lawa");
-
-	for (auto it = lawa.begin(); it != lawa.end(); it++)
+	for (auto lavaBlock : this->lava)
 	{
-		if (it->rect.intersects(player.collisionRect))
+		if (lavaBlock.rect.intersects(player.collisionRect))
 		{
-			player.existStatus = ExistenceStatus::DEAD;
+			if (player.injuredColdown >= INJURED_COLDOWN)
+			{
+				player.health -= LAVA_DEMAGE;
+				player.injuredColdown = 0;
+			}
 		}
 	}
 }
@@ -371,7 +400,7 @@ void Game::BonusesPlayerCollides()
 
 void Game::PlayerBulletsEnemyCollides()
 {
-	for (auto bullet : player.bullets)
+	for (auto bullet : player.characterBullets)
 	{
 		for (auto enemy : enemies)
 		{
@@ -405,13 +434,10 @@ void Game::UpdateEnemies()
 	for (auto it = enemies.begin(); it != enemies.end();)
 	{
 		Enemy* enemy = *it;
-		enemy->Update(elapsedTime, player, objects);
+		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 		if (enemy->existStatus != ExistenceStatus::LIVE)
 		{
-			if (rand() % 100 < BONUS_PROBABILITY)
-			{
-				bonuses.push_back(new Bonus(enemy->GetCharacterPos()));
-			}
+			bonuses.push_back(new Bonus(enemy->GetCharacterPos()));
 			it = enemies.erase(it);
 			delete(enemy);
 		}
@@ -427,6 +453,8 @@ void Game::UpdateBonuses()
 	for (auto it = bonuses.begin(); it != bonuses.end();)
 	{
 		Bonus* bonus = *it;
+		bonus->Update(elapsedTime, blocks);
+		cout << "is update";
 		if (bonus->collisionRect.intersects(player.collisionRect))
 		{
 			it = bonuses.erase(it);
@@ -530,22 +558,19 @@ void Game::DrawLevel(sf::RenderWindow& window)
 
 void Game::DrawBullets(sf::RenderWindow& window)
 {
-	for (auto playerBullet : player.bullets)
+	for (auto playerBullet : player.characterBullets)
 	{
 		if (GetCameraArea().intersects(playerBullet->collisionRect))
 		{
 			window.draw(playerBullet->bodyShape);
 		}
 	}
-	
-	for (auto enemy : enemies)
+
+	for (auto bullet : enemyBullets)
 	{
-		for (auto enemyBullet : enemy->bullets)
+		if (GetCameraArea().intersects(bullet->collisionRect))
 		{
-			if (GetCameraArea().intersects(enemyBullet->collisionRect))
-			{
-				window.draw(enemyBullet->bodyShape);
-			}
+			window.draw(bullet->bodyShape);
 		}
 	}
 }

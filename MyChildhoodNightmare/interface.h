@@ -26,7 +26,10 @@ struct PlayerInterface
 	sf::Texture playerShootgunBarTexture;
 	sf::Texture playerAkBarTexture;
 	sf::Text playerWeapon;
-	sf::Text playerAmmo; 
+	sf::Text playerAmmo;
+
+	sf::RectangleShape gameOver;
+	sf::Texture gameOverTexture;
 
 	bool Init();
 
@@ -38,3 +41,4 @@ struct PlayerInterface
 };
 
 std::string IntToStr(int number);
+sf::Vector2f GetTextureSize(sf::Texture const& texture);

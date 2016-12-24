@@ -28,7 +28,7 @@ sf::Vector2f Character::GetCharacterPos() const
 	return position;
 }
 
-void Character::UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles)
+void Character::UpdatePos(float elapsedTime, std::vector<Object> const& blocks)
 {
 	if (runStatus != NOT_RUN)
 	{
@@ -45,19 +45,19 @@ void Character::UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles
 
 		collisionRect.left += movement;
 
-		if (IsCollidesWithLevel(collisionRect, mapTiles))
+		if (IsCollidesWithLevel(collisionRect, blocks))
 		{
 			collisionRect.left -= movement;
 		}
 	}
 
-	UpdateGravity(elapsedTime, mapTiles);
+	UpdateGravity(elapsedTime, blocks);
 
 	runStatus = NOT_RUN;
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles)
+void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& blocks)
 {
 	float movementY = jumpSpeed;
 
@@ -66,7 +66,7 @@ void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& mapT
 
 	collisionRect.top += movementY;
 
-	if (IsCollidesWithLevel(collisionRect, mapTiles))
+	if (IsCollidesWithLevel(collisionRect, blocks))
 	{
 		collisionRect.top -= movementY;
 		if (movementY > 0)
@@ -89,11 +89,11 @@ void Character::UpdateHealthStatus()
 	}
 }
 
-bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& objects)
+bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& blocks)
 {
-	for (auto object : objects)
+	for (auto block : blocks)
 	{
-		if (rect.intersects(object.rect) && object.name == "solid")
+		if (rect.intersects(block.rect) && block.name == "solid")
 		{
 			return true;
 		}
@@ -108,10 +108,10 @@ void Character::Draw(RenderWindow& window)
 
 void Character::Clear()
 {
-	for (auto it = bullets.begin(); it != bullets.end();)
+	for (auto it = characterBullets.begin(); it != characterBullets.end();)
 	{
 		Bullet* bullet = *it;
-		it = bullets.erase(it);
+		it = characterBullets.erase(it);
 		delete(bullet);
 	}
 }

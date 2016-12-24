@@ -1,4 +1,7 @@
 #pragma once
+
+#define _USE_MATH_DEFINES
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
@@ -9,4 +12,5 @@
 #include "tinyxml/level.h"
 #include <string>
 #include <vector>
-#include <math.h>
+
+static const float G = 750;

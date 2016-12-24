@@ -7,8 +7,10 @@ static const std::string GAME_NAME = "My Childhood Nightmare";
 void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
 void InitMenuScene(Game& game);
+void InitGameOverScene(Game& game);
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
+
 void HandleEvents(sf::RenderWindow& window, Game& game);
 void Update(Game& game);
 void Render(sf::RenderWindow& window, Game& game);
@@ -30,7 +32,7 @@ int main()
 	}
 	else
 	{
-		std::cout << "ERROR: FILES NOT FOUND.";
+		std::cout << "ERROR: ANY FILES NOT FOUND.";
 		system("pause");
 		return 1;
 	}
@@ -58,7 +60,9 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 	while (window.pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
+		{
 			window.close();
+		}
 	}
 	game.currentScene->toHandle(window);
 }
@@ -80,6 +84,7 @@ void InitScenes(Game& game)
 {
 	InitGamePlayScene(game);
 	InitMenuScene(game);
+	InitGameOverScene(game);
 
 	game.currentScene = &game.menuScene;
 }
@@ -95,6 +100,7 @@ void InitGamePlayScene(Game& game)
 		game.UpdatePlayer();
 		game.UpdateEnemies();
 		game.UpdateBullets();
+		game.UpdateBonuses();
 		game.UpdateBackground();
 		game.CheckEntitiesCollides();
 	};
@@ -126,5 +132,21 @@ void InitMenuScene(Game& game)
 		}
 		window.setView(game.camera);
 		game.menu.Draw(window);
+	};
+}
+
+void InitGameOverScene(Game& game)
+{
+	game.gameOverScene.toHandle = [&](sf::RenderWindow& window) {
+		game.ControlGameOver(window);
+	};
+	game.gameOverScene.onUpdate = [&]() {
+		sf::RectangleShape* gameOverBack = &game.interface.gameOver;
+		auto pos = game.camera.getCenter();
+
+		gameOverBack->setPosition(pos);
+	};
+	game.gameOverScene.onDraw = [&](sf::RenderWindow& window) {
+		window.draw(game.interface.gameOver);
 	};
 }

@@ -4,7 +4,7 @@ using namespace std;
 
 Bonus::Bonus(sf::Vector2f const& position)
 {
-	int bonusId = rand() % BONUS_COUNT;
+	int bonusId = rand() % BONUS_COUNT + 1;
 	bonusType = BonusType(bonusId);
 	int spellId = rand() % SPELL_COUNT + 1;
 
@@ -18,6 +18,9 @@ Bonus::Bonus(sf::Vector2f const& position)
 	case BonusType::HEALTH:
 		bonusTexture.loadFromFile("resources/bonus_hp.png");
 		break;
+	case BonusType::RANDOM:
+		bonusTexture.loadFromFile("resources/bonus_random.png");
+		break;
 	case BonusType::SPELL:
 		bonusTexture.loadFromFile("resources/bonus_spell.png");
 		spellType = SpellType(spellId);
@@ -27,18 +30,39 @@ Bonus::Bonus(sf::Vector2f const& position)
 	}
 
 	bodyShape.setTexture(&bonusTexture);
-	const sf::Vector2f BODY_SIZE = {
-		static_cast<float>(bonusTexture.getSize().x),
-		static_cast<float>(bonusTexture.getSize().y)
-	};
+	bodyShape.setSize(BONUS_BODY_SIZE);
+	collisionRect.width = BONUS_BODY_SIZE.x / 2.0f;
+	collisionRect.height = BONUS_BODY_SIZE.y / 2.0f;
 
-	bodyShape.setSize(BODY_SIZE);
-	collisionRect.width = BODY_SIZE.x;
-	collisionRect.height = BODY_SIZE.y;
+	collisionRect.left = position.x - BONUS_BODY_SIZE.x;
+	collisionRect.top = position.y - BONUS_BODY_SIZE.y;
+}
 
-	bodyShape.setPosition(position - BODY_SIZE);
-	collisionRect.left = position.x - BODY_SIZE.x;
-	collisionRect.top = position.y - BODY_SIZE.y;
+void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
+{
+	bool isCollideWithLevel = false;
+
+	float rectCenterX = collisionRect.left - collisionRect.width / 2.0f;
+	float rectCenterY = collisionRect.top - collisionRect.height / 2.0f;
+
+	bodyShape.setPosition({ rectCenterX , rectCenterY });
+
+	for (auto block : blocks)
+	{
+		if (block.rect.intersects(collisionRect))
+		{
+			isCollideWithLevel = true;
+		}
+	}
+
+	if (!isCollideWithLevel)
+	{
+		float movement = fallSpeed;
+
+		fallSpeed = fallSpeed + G * elapsedTime;
+		movement = fallSpeed * elapsedTime;
+		collisionRect.top += movement;
+	}
 }
 
 void Bonus::Draw(sf::RenderWindow& window)

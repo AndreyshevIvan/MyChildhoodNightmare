@@ -53,16 +53,19 @@ void Enemy::CreateShadow()
 
 	health = SHADOW_START_HEALTH;
 	demage = SHADOW_DEMAGE;
-	moveSpeed = SHADOW_MOVE_SPEED;
+	
+	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
+	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
 
-	Pursuit = [&](Player const& player) {
+	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+		(void)bullets;
 		(void)player;
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
+	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
 		moveSpeed = SHADOW_MOVE_SPEED;
 		runStatus = currentRunStatus;
-		ShadowIdle(elapsedTime, objects);
+		ShadowIdle(elapsedTime, blocks);
 	};
 }
 
@@ -76,12 +79,12 @@ void Enemy::CreateClown()
 	demage = CLOWN_TOUCH_DEMAGE;
 	shootRange = CLOWN_TARGET_RANGE;
 
-	Pursuit = [&](Player const& player) {
-		ClownShoot(player);
+	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+		ClownShoot(player, bullets);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
-		(void)objects;
+	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+		(void)blocks;
 		(void)elapsedTime;
 	};
 }
@@ -95,34 +98,40 @@ void Enemy::CreateBird()
 	health = BIRD_START_HEALTH;
 	demage = BIRD_DEMAGE;
 
-	Pursuit = [&](Player const& player) {
-		(void)player;
+	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+		(void)bullets;
+		BirdPursuite(player);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& objects) {
-		(void)objects;
-		(void)elapsedTime;
+	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+		(void)blocks;
+		BirdIdle(elapsedTime);
 	};
 }
 
-void Enemy::Update(float elapsedTime, Player const& player, std::vector<Object> const& objects)
+void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets)
 {
 	UpdateHealthStatus();
 	UpdateActivityStatus(player);
 
 	if (activityStatus == EnemyActivity::IDLE)
 	{
-		Idle(elapsedTime, objects);
+		Idle(elapsedTime, blocks);
 	}
 	else
 	{
-		Pursuit(player);
+		Pursuit(player, bullets);
 	}
 
-	if (enemyType != EnemyType::BIRD)
+	if (enemyType == EnemyType::BIRD)
 	{
-		UpdatePos(elapsedTime, objects);
+		UpdateBirdPos(elapsedTime, blocks);
 	}
+	else
+	{
+		UpdatePos(elapsedTime, blocks);
+	}
+
 	UpdateHands();
 }
 
@@ -164,7 +173,6 @@ void Enemy::UpdateClownActivityStatus(Player const& player)
 
 	if (player.collisionRect.intersects(targetArea.getGlobalBounds()))
 	{
-		cout << "PURSUIT!";
 		activityStatus = EnemyActivity::PURSUIT;
 		if (player.GetCharacterPos().x < GetCharacterPos().x)
 		{
@@ -179,7 +187,19 @@ void Enemy::UpdateClownActivityStatus(Player const& player)
 
 void Enemy::UpdateBirdActivityStatus(Player const& player)
 {
-	(void)player;
+	activityStatus = EnemyActivity::IDLE;
+
+	sf::Vector2f playerPos = player.GetCharacterPos();
+
+	float rangeX = playerPos.x - collisionRect.left;
+	float rangeY = playerPos.y - collisionRect.top;
+
+	float targetRadius = sqrt(rangeX * rangeX + rangeY * rangeY);
+
+	if (targetRadius <= BIRD_TARGET_RANGE)
+	{
+		activityStatus = EnemyActivity::PURSUIT;
+	}
 }
 
 void Enemy::UpdateBossActivityStatus(Player const& player)
@@ -187,7 +207,7 @@ void Enemy::UpdateBossActivityStatus(Player const& player)
 	(void)player;
 }
 
-void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
+void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 {
 	auto handLeftMiddle_copy = handLeftMiddle.getGlobalBounds();
 	auto handLeftBottom_copy = handLeftBottom.getGlobalBounds();
@@ -202,8 +222,8 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
 		handLeftMiddle_copy.left -= mevoment;
 		handLeftBottom_copy.left -= mevoment;
 
-		if (IsCollidesWithLevel(handLeftMiddle_copy, objects) ||
-			!IsCollidesWithLevel(handLeftBottom_copy, objects))
+		if (IsCollidesWithLevel(handLeftMiddle_copy, blocks) ||
+			!IsCollidesWithLevel(handLeftBottom_copy, blocks))
 		{
 			currentRunStatus = MovementStatus::RUN_RIGHT;
 		}
@@ -213,15 +233,15 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& objects)
 		handRightMiddle_copy.left += mevoment;
 		handRightBottom_copy.left += mevoment;
 
-		if (IsCollidesWithLevel(handRightMiddle_copy, objects) ||
-			!IsCollidesWithLevel(handRightBottom_copy, objects))
+		if (IsCollidesWithLevel(handRightMiddle_copy, blocks) ||
+			!IsCollidesWithLevel(handRightBottom_copy, blocks))
 		{
 			currentRunStatus = MovementStatus::RUN_LEFT;
 		}
 	}
 }
 
-void Enemy::ClownShoot(Player const& player)
+void Enemy::ClownShoot(Player const& player, std::vector<Bullet*>& bullets)
 {
 	(void)player;
 	int orientationId = static_cast<int>(orientationStatus);
@@ -233,10 +253,49 @@ void Enemy::ClownShoot(Player const& player)
 	}
 }
 
-void Enemy::BirdPursuite(float elapsedTime, std::vector<Object> const& objects)
+void Enemy::UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks)
+{
+	sf::FloatRect collisionRect_copy = collisionRect;
+
+	collisionRect_copy.left += elapsedTime * BIRD_MOVE_SPEED * birdMove.x / 2.0f;
+	if (!IsCollidesWithLevel(collisionRect_copy, blocks))
+	{
+		collisionRect.left = collisionRect_copy.left;
+	}
+
+	collisionRect_copy.top += elapsedTime * BIRD_MOVE_SPEED * birdMove.y;
+	if (!IsCollidesWithLevel(collisionRect_copy, blocks))
+	{
+		collisionRect.top = collisionRect_copy.top;
+	}
+
+	birdMove = { 0, 0 };
+	bodyShape.setPosition(GetCharacterPos());
+}
+
+void Enemy::BirdIdle(float elapsedTime)
 {
 	(void)elapsedTime;
-	(void)objects;
+}
+
+void Enemy::BirdPursuite(Player const& player)
+{
+	sf::Vector2f playerPos = player.GetCharacterPos();
+
+	float halfPlayerBody = player.collisionRect.height / 2.0f;
+	float moveX = 1;
+	float moveY = 1;
+
+	if (playerPos.x < GetCharacterPos().x)
+	{
+		moveX = -moveX;
+	}
+	if (playerPos.y - halfPlayerBody < GetCharacterPos().y)
+	{
+		moveY = -moveY;
+	}
+
+	birdMove = { moveX , moveY };
 }
 
 void Enemy::UpdateHands()

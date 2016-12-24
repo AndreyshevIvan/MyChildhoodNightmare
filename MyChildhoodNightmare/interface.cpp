@@ -8,7 +8,8 @@ bool PlayerInterface::Init()
 	if (!playerHealthBarTexture.loadFromFile("resources/healthBar.png") ||
 		!playerMeleeBarTexture.loadFromFile("resources/meleeBar.png") ||
 		!playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png") ||
-		!playerAkBarTexture.loadFromFile("resources/akBar.png"))
+		!playerAkBarTexture.loadFromFile("resources/akBar.png") ||
+		!gameOverTexture.loadFromFile("resources/gameOver.png"))
 	{
 		return false;
 	}
@@ -20,10 +21,14 @@ bool PlayerInterface::Init()
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
 
-	playerHealthBar.setSize(PLAYER_HEALTH_BAR_SIZE);
+	playerHealthBar.setSize(GetTextureSize(playerHealthBarTexture));
 	playerHealthBar.setTexture(&playerHealthBarTexture);
 
 	playerWeaponBar.setSize(PLAYER_WEAPON_BAR_SIZE);
+
+	gameOver.setTexture(&gameOverTexture);
+	gameOver.setSize(GetTextureSize(gameOverTexture));
+	gameOver.setOrigin(gameOver.getSize().x / 2.0f , gameOver.getSize().y / 2.0f);
 
 	return true;
 }
@@ -116,4 +121,14 @@ string IntToStr(int number)
 	}
 
 	return result;
+}
+
+sf::Vector2f GetTextureSize(sf::Texture const& texture)
+{
+	const sf::Vector2f size = {
+		static_cast<float>(texture.getSize().x),
+		static_cast<float>(texture.getSize().y)
+	};
+
+	return size;
 }

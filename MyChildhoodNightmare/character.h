@@ -3,7 +3,6 @@
 #include "bullets.h"
 #include "bonus.h"
 
-const float G = 750;
 const float FLYING_SLOWDOWN = 0.6f;
 const float MIN_HEIGHT_FOR_DEMAGE = 16;
 const float DEMAGE_PER_HEIGHT = 0.8f;
@@ -47,7 +46,7 @@ struct Character
 	ExistenceStatus existStatus = ExistenceStatus::LIVE;
 	OrientationStatus orientationStatus = OrientationStatus::RIGHT;
 
-	std::vector<Bullet*> bullets;
+	std::vector<Bullet*> characterBullets;
 
 	float moveSpeed;
 	float jumpSpeed = 0;

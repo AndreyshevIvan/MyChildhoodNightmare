@@ -3,11 +3,13 @@
 #include "character.h"
 #include "player.h"
 
-const sf::Vector2f HAND_SIZE = { 3, 3 };
+const sf::Vector2f HAND_SIZE = { 2, 2 };
 const float HAND_MARGIN_X = 10;
+const float PI = 3.14f;
 
 const float SHADOW_START_HEALTH = 210;
-const float SHADOW_MOVE_SPEED = 220;
+const float SHADOW_MOVE_SPEED = 180;
+const float SHADOW_MOVE_SPEED_RANDOM = 80;
 const float SHADOW_DEMAGE = 25;
 
 const float CLOWN_START_HEALTH = 100;
@@ -18,8 +20,11 @@ const float CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
 
 const float BIRD_START_HEALTH = 100;
-const float BIRD_MOVE_SPEED = 150;
+const float BIRD_TARGET_RANGE = 1000;
+const float BIRD_MOVE_SPEED = 80;
 const float BIRD_DEMAGE = 6;
+
+const float LAVA_DEMAGE = 20;
 
 enum struct EnemyType
 {
@@ -47,7 +52,8 @@ struct Enemy : Character
 	sf::FloatRect position;
 	sf::RectangleShape targetArea;
 	
-	float idleWalkingColdown = 0;
+	sf::Vector2f birdMove;
+
 	MovementStatus currentRunStatus;
 
 	sf::RectangleShape handLeftTop;
@@ -61,10 +67,10 @@ struct Enemy : Character
 	EnemyType enemyType = EnemyType::NONE;
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
 
-	std::function<void(float elapsedTime, std::vector<Object> const& objects)> Idle;
-	std::function<void(Player const& player)> Pursuit;
+	std::function<void(float elapsedTime, std::vector<Object> const& blocks)> Idle;
+	std::function<void(Player const& player, std::vector<Bullet*>& bullets)> Pursuit;
 
-	void Update(float elapsedTime, Player const& player, std::vector<Object> const& objects);
+	void UpdateAI(float elapsedTime, Player const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets);
 	void UpdateHands();
 
 	void UpdateActivityStatus(Player const& player);
@@ -73,11 +79,13 @@ struct Enemy : Character
 	void UpdateClownActivityStatus(Player const& player);
 	void UpdateBossActivityStatus(Player const& player);
 
-	void ShadowIdle(float elapsedTime, std::vector<Object> const& objects);
+	void ShadowIdle(float elapsedTime, std::vector<Object> const& blocks);
 
-	void ClownShoot(Player const& player);
+	void ClownShoot(Player const& player, std::vector<Bullet*>& bullets);
 
-	void BirdPursuite(float elapsedTime, std::vector<Object> const& mapTiles);
+	void UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks);
+	void BirdIdle(float elapsedTime);
+	void BirdPursuite(Player const& player);
 
 	void Draw(sf::RenderWindow& window) override;
 };

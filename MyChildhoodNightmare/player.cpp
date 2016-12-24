@@ -27,7 +27,7 @@ bool Player::InitPlayer()
 	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 	shootRange = PLAYER_START_SHOOT_RANGE;
 
-	bullets.clear();
+	characterBullets.clear();
 
 	return true;
 }
@@ -91,7 +91,7 @@ void Player::Attack()
 	case Weapon::MELEE:
 		if (shootColdown > MELEE_COLDOWN)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
+			characterBullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
 			shootColdown = 0;
 		}
 		break;
@@ -101,9 +101,9 @@ void Player::Attack()
 			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
 			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
 
-			bullets.push_back(new Bullet(topBullPos, demage, orientationId, shootRange));
-			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
-			bullets.push_back(new Bullet(bottomBullPos, demage, orientationId, shootRange));
+			characterBullets.push_back(new Bullet(topBullPos, demage, orientationId, shootRange));
+			characterBullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
+			characterBullets.push_back(new Bullet(bottomBullPos, demage, orientationId, shootRange));
 			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}
@@ -111,7 +111,7 @@ void Player::Attack()
 	case Weapon::AK:
 		if (shootColdown > AK_COLDOWN && rounds > 0)
 		{
-			bullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
+			characterBullets.push_back(new Bullet(GetCharacterPos(), demage, orientationId, shootRange));
 			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}
