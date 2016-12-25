@@ -16,10 +16,10 @@ struct Bullet
 	float currentRange = 0;
 	float maxRange;
 	int movmentOrientation;
-	float demage;
+	int demage;
 	bool isLive = true;
 
-	Bullet(sf::Vector2f const& startPos, float demage, int orientation, float maxRange)
+	Bullet(sf::Vector2f const& startPos, int demage, int orientation, float maxRange)
 	{
 		collisionRect.left = startPos.x;
 		collisionRect.top = startPos.y - 50;

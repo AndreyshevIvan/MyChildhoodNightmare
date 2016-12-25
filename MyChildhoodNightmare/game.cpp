@@ -112,37 +112,38 @@ void Game::SpawnEntities()
 	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
 	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
 
-	for (auto shadowSpawn : shadowsSpawns)
+	for (auto const& shadowSpawn : shadowsSpawns)
 	{
 		sf::Vector2f pos = { shadowSpawn.rect.left, shadowSpawn.rect.top };
 		enemies.push_back(new Enemy(pos, EnemyType::SHADOW));
 	}
 
-	for (auto clownSpawn : clownsSpawns)
+	for (auto const& clownSpawn : clownsSpawns)
 	{
 		sf::Vector2f pos = { clownSpawn.rect.left, clownSpawn.rect.top };
 		enemies.push_back(new Enemy(pos, EnemyType::CLOWN));
 	}
 
-	for (auto birdSpawn : birdsSpawns)
+	for (auto const& birdSpawn : birdsSpawns)
 	{
 		sf::Vector2f pos = { birdSpawn.rect.left, birdSpawn.rect.top };
 		enemies.push_back(new Enemy(pos, EnemyType::BIRD));
 	}
 
-	for (auto bonusSpawn : bonusesSpawns)
+	for (auto const& bonusSpawn : bonusesSpawns)
 	{
 		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
 		bonuses.push_back(new Bonus(bonusPos));
 	}
 
-	for (auto itemsSpawn : itemsBoxSpawns)
+	for (auto const& itemsSpawn : itemsBoxSpawns)
 	{
 		sf::Vector2f itemPos = { itemsSpawn.rect.left, itemsSpawn.rect.top };
 		bonuses.push_back(new Bonus(itemPos, Items::BOX));
 	}
 
-	player.Spawn(currentLevel->GetObject("player_spawn"));
+	sf::FloatRect posRect = currentLevel->GetObject("player_spawn").rect;
+	player.Spawn({ posRect.left, posRect.top });
 }
 
 void Game::SetElapsedTime()
@@ -538,7 +539,6 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 	if (cameraCenter.y + halfWindow.y > mapSize.y)
 	{
 		camera.setCenter(cameraCenter.x, mapSize.y - halfWindow.y);
-		cameraCenter = camera.getCenter();
 	}
 
 	window.setView(camera);
@@ -572,17 +572,14 @@ void Game::DrawLevel(sf::RenderWindow& window)
 	currentLevel->Draw(window, GetCameraArea());
 }
 
-void Game::DrawBullets(sf::RenderWindow& window)
+void Game::DrawBullets(sf::RenderWindow& window) // player bullets generally in window
 {
-	for (auto playerBullet : player.characterBullets)
+	for (auto const& playerBullet : player.characterBullets)
 	{
-		if (GetCameraArea().intersects(playerBullet->collisionRect))
-		{
-			window.draw(playerBullet->bodyShape);
-		}
+		window.draw(playerBullet->bodyShape);
 	}
 
-	for (auto bullet : enemyBullets)
+	for (auto const& bullet : enemyBullets)
 	{
 		if (GetCameraArea().intersects(bullet->collisionRect))
 		{
@@ -593,16 +590,22 @@ void Game::DrawBullets(sf::RenderWindow& window)
 
 void Game::DrawEnemies(sf::RenderWindow& window)
 {
-	for (auto enemy : enemies)
+	for (auto const& enemy : enemies)
 	{
-		enemy->Draw(window, GetCameraArea());
+		if (GetCameraArea().intersects(enemy->collisionRect))
+		{
+			enemy->DrawCharacter(window);
+		}
 	}
 }
 
 void Game::DrawBonuses(sf::RenderWindow& window)
 {
-	for (auto bonus : bonuses)
+	for (auto const& bonus : bonuses)
 	{
-		bonus->Draw(window, GetCameraArea());
+		if (GetCameraArea().intersects(bonus->collisionRect))
+		{
+			bonus->DrawBonus(window);
+		}
 	}
 }

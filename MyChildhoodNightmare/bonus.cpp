@@ -37,7 +37,7 @@ Bonus::Bonus(sf::Vector2f const& position)
 	collisionRect.width = BONUS_BODY_SIZE.x / 2.0f;
 	collisionRect.height = BONUS_BODY_SIZE.y / 2.0f;
 
-	collisionRect.left = position.x - BONUS_BODY_SIZE.x;
+	collisionRect.left = position.x;
 	collisionRect.top = position.y - BONUS_BODY_SIZE.y;
 }
 
@@ -61,40 +61,44 @@ Bonus::Bonus(sf::Vector2f const& position, Items item)
 
 void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
 {
-	bool isCollideWithLevel = false;
-
-	float rectCenterX = collisionRect.left - collisionRect.width / 2.0f;
-	float rectCenterY = collisionRect.top - collisionRect.height / 2.0f;
-
-	bodyShape.setPosition({ rectCenterX , rectCenterY });
-
-	for (auto block : blocks)
+	if (!IsBonusOnGround)
 	{
-		if (block.rect.intersects(collisionRect))
+		float rectCenterX = collisionRect.left - collisionRect.width / 2.0f;
+		float rectCenterY = collisionRect.top - collisionRect.height / 2.0f;
+
+		bodyShape.setPosition({ rectCenterX , rectCenterY });
+
+		for (auto block : blocks)
 		{
-			isCollideWithLevel = true;
+			if (block.rect.intersects(collisionRect))
+			{
+				IsBonusOnGround = true;
+			}
 		}
-	}
 
-	if (!isCollideWithLevel)
-	{
-		float movement = fallSpeed;
+		if (!IsBonusOnGround)
+		{
+			float movement = fallSpeed;
 
-		fallSpeed = fallSpeed + G * elapsedTime;
-		movement = fallSpeed * elapsedTime;
-		collisionRect.top += movement;
+			fallSpeed = fallSpeed + G * elapsedTime;
+			movement = fallSpeed * elapsedTime;
+			collisionRect.top += movement;
+		}
 	}
 }
 
-void Bonus::Draw(sf::RenderWindow& window, sf::FloatRect const& area)
+void Bonus::DrawBonus(sf::RenderWindow& window)
 {
-	if (bodyShape.getGlobalBounds().intersects(area))
-	{
-		window.draw(bodyShape);
-	}
+	window.draw(bodyShape);
 }
 
 void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses)
 {
-	bonuses.push_back(new Bonus(position));
+	int probability = rand() % 100;
+
+	if (probability < BONUS_PROBABILITY)
+	{
+		bonuses.push_back(new Bonus(position));
+	}
+	cout << probability << "\n";
 }

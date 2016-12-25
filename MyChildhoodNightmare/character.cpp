@@ -4,10 +4,10 @@
 using namespace std;
 using namespace sf;
 
-void Character::Spawn(Object const& spawnObj)
+void Character::Spawn(sf::Vector2f const& pos)
 {
-	collisionRect.left = spawnObj.rect.left;
-	collisionRect.top = spawnObj.rect.top;
+	collisionRect.left = pos.x;
+	collisionRect.top = pos.y;
 }
 
 void Character::Jump()
@@ -91,7 +91,7 @@ void Character::UpdateHealthStatus()
 
 bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& blocks)
 {
-	for (auto block : blocks)
+	for (auto const& block : blocks)
 	{
 		if (rect.intersects(block.rect) && block.name == "solid")
 		{
@@ -101,12 +101,9 @@ bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const&
 	return false;
 }
 
-void Character::Draw(RenderWindow& window, sf::FloatRect const& area)
+void Character::DrawCharacter(RenderWindow& window)
 {
-	if (bodyShape.getGlobalBounds().intersects(area))
-	{
-		window.draw(bodyShape);
-	}
+	window.draw(bodyShape);
 }
 
 void Character::Clear()

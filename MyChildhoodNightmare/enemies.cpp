@@ -2,8 +2,8 @@
 
 using namespace std;
 
-Enemy::Enemy(sf::Vector2f const& posRect, EnemyType const& type)
-	:position(posRect)
+Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
+	:position(position)
 	,enemyType(type)
 {
 	switch (type)
@@ -21,13 +21,6 @@ Enemy::Enemy(sf::Vector2f const& posRect, EnemyType const& type)
 		break;
 	}
 
-	handLeftTop.setSize(HAND_SIZE);
-	handLeftMiddle.setSize(HAND_SIZE);
-	handLeftBottom.setSize(HAND_SIZE);
-	handRightTop.setSize(HAND_SIZE);
-	handRightMiddle.setSize(HAND_SIZE);
-	handRightBottom.setSize(HAND_SIZE);
-
 	currentRunStatus = MovementStatus(rand() % 2);
 
 	bodyShape.setTexture(&bodyTexture);
@@ -41,8 +34,8 @@ Enemy::Enemy(sf::Vector2f const& posRect, EnemyType const& type)
 
 	collisionRect.width = bodyShape.getSize().x / 2.0f;
 	collisionRect.height = bodyShape.getSize().y - 10;
-	collisionRect.top = posRect.x;
-	collisionRect.left = posRect.y;
+	collisionRect.top = position.y;
+	collisionRect.left = position.x;
 }
 
 void Enemy::CreateShadow()
@@ -209,11 +202,11 @@ void Enemy::UpdateBossActivityStatus(Player const& player)
 
 void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 {
-	sf::FloatRect handLeftMiddle_copy = handLeftMiddle.getGlobalBounds();
-	sf::FloatRect handLeftBottom_copy = handLeftBottom.getGlobalBounds();
+	sf::FloatRect handLeftMiddle_copy = handLeftMiddle;
+	sf::FloatRect handLeftBottom_copy = handLeftBottom;
 
-	sf::FloatRect handRightMiddle_copy = handRightMiddle.getGlobalBounds();
-	sf::FloatRect handRightBottom_copy = handRightBottom.getGlobalBounds();
+	sf::FloatRect handRightMiddle_copy = handRightMiddle;
+	sf::FloatRect handRightBottom_copy = handRightBottom;
 
 	auto mevoment = elapsedTime * moveSpeed;
 
@@ -305,11 +298,11 @@ void Enemy::UpdateHands()
 	float topHandY = GetCharacterPos().y - bodyShape.getSize().y;
 	float bottomHandY = GetCharacterPos().y + 10;
 
-	handLeftTop.setPosition(leftHandX, topHandY);
-	handLeftMiddle.setPosition(leftHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f);
-	handLeftBottom.setPosition(leftHandX, bottomHandY);
+	handLeftTop = sf::FloatRect({ leftHandX, topHandY }, HAND_SIZE);
+	handLeftMiddle = sf::FloatRect({ leftHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
+	handLeftBottom = sf::FloatRect({ leftHandX, bottomHandY }, HAND_SIZE );
 
-	handRightTop.setPosition(rightHandX, topHandY);
-	handRightMiddle.setPosition(rightHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f);
-	handRightBottom.setPosition(rightHandX, bottomHandY);
+	handRightTop = sf::FloatRect({ rightHandX, topHandY }, HAND_SIZE);
+	handRightMiddle = sf::FloatRect({ rightHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
+	handRightBottom = sf::FloatRect({ rightHandX, bottomHandY }, HAND_SIZE);
 }

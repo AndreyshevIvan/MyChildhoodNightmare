@@ -3,13 +3,16 @@
 using namespace std;
 using namespace sf;
 
+const sf::Vector2f RESOLUTION = { 1366 , 768 };
+
 bool PlayerInterface::Init()
 {
 	if (!playerHealthBarTexture.loadFromFile("resources/healthBar.png") ||
 		!playerMeleeBarTexture.loadFromFile("resources/meleeBar.png") ||
 		!playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png") ||
 		!playerAkBarTexture.loadFromFile("resources/akBar.png") ||
-		!gameOverTexture.loadFromFile("resources/gameOver.png"))
+		!gameOverTexture.loadFromFile("resources/gameOver.png") ||
+		!filterTexture.loadFromFile("resources/filter.png"))
 	{
 		return false;
 	}
@@ -29,6 +32,10 @@ bool PlayerInterface::Init()
 	gameOver.setTexture(&gameOverTexture);
 	gameOver.setSize(GetTextureSize(gameOverTexture));
 	gameOver.setOrigin(gameOver.getSize().x / 2.0f , gameOver.getSize().y / 2.0f);
+
+	filter.setSize(RESOLUTION);
+	filter.setTexture(&filterTexture);
+	filter.setOrigin(RESOLUTION.x / 2.0f, RESOLUTION.y / 2.0f);
 
 	return true;
 }
@@ -53,19 +60,14 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 		playerHealthPos.x + PLAYER_AMMO_MARGIN.x,
 		playerHealthPos.y + PLAYER_AMMO_MARGIN.y
 	);
+
+	filter.setPosition(cameraPos);
 }
 
-void PlayerInterface::UpdatePlayerHP(float health)
+void PlayerInterface::UpdatePlayerHP(int health)
 {
-	if (health > 0)
-	{
-		string hpStr = IntToStr(static_cast<int>(health));
-		playerHealth.setString(hpStr);
-	}
-	else
-	{
-		playerHealth.setString("0");
-	}
+	string hpStr = IntToStr(health);
+	playerHealth.setString(hpStr);
 }
 
 void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
@@ -102,6 +104,7 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 
 void PlayerInterface::Draw(RenderWindow& window)
 {
+	window.draw(filter);
 	window.draw(playerHealthBar);
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);

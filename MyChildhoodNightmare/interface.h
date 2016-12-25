@@ -27,6 +27,8 @@ struct PlayerInterface
 	sf::Texture playerAkBarTexture;
 	sf::Text playerWeapon;
 	sf::Text playerAmmo;
+	sf::RectangleShape filter;
+	sf::Texture filterTexture;
 
 	sf::RectangleShape gameOver;
 	sf::Texture gameOverTexture;
@@ -34,7 +36,7 @@ struct PlayerInterface
 	bool Init();
 
 	void UpdateBarsPos(sf::Vector2f const& cameraPos);
-	void UpdatePlayerHP(float health);
+	void UpdatePlayerHP(int health);
 	void UpdatePlayerWeapon(int weapon, int ammo = 0);
 
 	void Draw(sf::RenderWindow& window);

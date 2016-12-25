@@ -285,15 +285,18 @@ sf::Vector2i Level::GetTileSize()
     return sf::Vector2i(tileWidth, tileHeight);
 }
 
-void Level::Draw(sf::RenderWindow &window, sf::FloatRect drawArea)
+void Level::Draw(sf::RenderWindow& window, sf::FloatRect const& viewportRect)
 {
-	// ?enoai ana oaeeu (iauaeou ia ?enoai!)
-	for (size_t layer = 0; layer < layers.size(); layer++)
-		for (size_t tile = 0; tile < layers[layer].tiles.size(); tile++)
-			if (drawArea.intersects(layers[layer].tiles[tile].getGlobalBounds()))
+	for (const auto &layer : layers)
+	{
+		for (const auto &tile : layer.tiles)
+		{
+			if (viewportRect.intersects(tile.getGlobalBounds()))
 			{
-				window.draw(layers[layer].tiles[tile]);
+				window.draw(tile);
 			}
+		}
+	}
 }
 
 float Level::GetTilemapWidth()

@@ -35,20 +35,13 @@ bool Player::InitPlayer()
 
 void Player::UpdateStatuses()
 {
-	if (existStatus == LIVE)
+	if (injuredColdown < INJURED_COLDOWN)
 	{
-		if (injuredColdown < INJURED_COLDOWN)
-		{
-			bodyShape.setFillColor(Color::Red);
-		}
-		else
-		{
-			bodyShape.setFillColor(Color::Green);
-		}
+		bodyShape.setFillColor(Color(255, 255, 255, 150));
 	}
 	else
 	{
-		bodyShape.setFillColor(Color::Blue);
+		bodyShape.setFillColor(Color(255, 255, 255, 255));
 	}
 }
 

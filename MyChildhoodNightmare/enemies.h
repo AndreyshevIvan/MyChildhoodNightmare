@@ -7,24 +7,24 @@ const sf::Vector2f HAND_SIZE = { 2, 2 };
 const float HAND_MARGIN_X = 10;
 const float PI = 3.14f;
 
-const float SHADOW_START_HEALTH = 210;
+const int SHADOW_START_HEALTH = 210;
 const float SHADOW_MOVE_SPEED = 180;
 const float SHADOW_MOVE_SPEED_RANDOM = 80;
-const float SHADOW_DEMAGE = 25;
+const int SHADOW_DEMAGE = 25;
 
-const float CLOWN_START_HEALTH = 100;
+const int CLOWN_START_HEALTH = 100;
 const float CLOWN_MOVE_SPEED = 0;
-const float CLOWN_TOUCH_DEMAGE = 6;
-const float CLOWN_TARGET_RANGE = 700;
-const float CLOWN_BULLET_DEMAGE = 3;
+const int CLOWN_TOUCH_DEMAGE = 6;
+const float CLOWN_TARGET_RANGE = 600;
+const int CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
 
-const float BIRD_START_HEALTH = 100;
+const int BIRD_START_HEALTH = 100;
 const float BIRD_TARGET_RANGE = 1000;
 const float BIRD_MOVE_SPEED = 80;
-const float BIRD_DEMAGE = 6;
+const int BIRD_DEMAGE = 6;
 
-const float LAVA_DEMAGE = 20;
+const int LAVA_DEMAGE = 20;
 
 enum struct EnemyType
 {
@@ -56,13 +56,13 @@ struct Enemy : Character
 
 	MovementStatus currentRunStatus;
 
-	sf::RectangleShape handLeftTop;
-	sf::RectangleShape handLeftMiddle;
-	sf::RectangleShape handLeftBottom;
+	sf::FloatRect handLeftTop;
+	sf::FloatRect handLeftMiddle;
+	sf::FloatRect handLeftBottom;
 
-	sf::RectangleShape handRightTop;
-	sf::RectangleShape handRightMiddle;
-	sf::RectangleShape handRightBottom;
+	sf::FloatRect handRightTop;
+	sf::FloatRect handRightMiddle;
+	sf::FloatRect handRightBottom;
 
 	EnemyType enemyType = EnemyType::NONE;
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
@@ -82,6 +82,7 @@ struct Enemy : Character
 	void ShadowIdle(float elapsedTime, std::vector<Object> const& blocks);
 
 	void ClownShoot(Player const& player, std::vector<Bullet*>& bullets);
+	bool IsClownOnGround = false;
 
 	void UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks);
 	void BirdIdle(float elapsedTime);

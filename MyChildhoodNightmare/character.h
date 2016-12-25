@@ -51,13 +51,13 @@ struct Character
 	float moveSpeed;
 	float jumpSpeed = 0;
 	float weaponDemage;
-	float demage;
-	float health;
+	int demage;
+	int health;
 	float shootColdown = 0;
 	float currentFrame = 0;
 	float shootRange = MIN_SHOOT_RANGE;
 
-	void Spawn(Object const& spawnObj);
+	void Spawn(sf::Vector2f const& pos);
 
 	sf::Vector2f GetCharacterPos() const;
 	
@@ -69,7 +69,7 @@ struct Character
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateHealthStatus();
 
-	virtual void Draw(sf::RenderWindow& window, sf::FloatRect const& area);
+	virtual void DrawCharacter(sf::RenderWindow& window);
 
 	void Clear();
 };
