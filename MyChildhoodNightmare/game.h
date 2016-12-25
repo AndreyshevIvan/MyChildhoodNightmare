@@ -40,6 +40,8 @@ struct Game
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
 
+	std::map<Level*, int> boxesCoundMap;
+
 	Menu menu;
 	PlayerInterface interface;
 	Difficult difficult;

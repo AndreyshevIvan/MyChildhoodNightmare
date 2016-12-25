@@ -101,9 +101,12 @@ bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const&
 	return false;
 }
 
-void Character::Draw(RenderWindow& window)
+void Character::Draw(RenderWindow& window, sf::FloatRect const& area)
 {
-	window.draw(bodyShape);
+	if (bodyShape.getGlobalBounds().intersects(area))
+	{
+		window.draw(bodyShape);
+	}
 }
 
 void Character::Clear()

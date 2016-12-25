@@ -69,7 +69,7 @@ struct Character
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateHealthStatus();
 
-	virtual void Draw(sf::RenderWindow& window);
+	virtual void Draw(sf::RenderWindow& window, sf::FloatRect const& area);
 
 	void Clear();
 };

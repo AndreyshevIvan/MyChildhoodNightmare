@@ -1,23 +1,18 @@
 /*
 www.sourceforge.net/projects/tinyxml
 Original code by Lee Thomason (www.grinninglizard.com)
-
 This software is provided 'as-is', without any express or implied 
 warranty. In no event will the authors be held liable for any 
 damages arising from the use of this software.
-
 Permission is granted to anyone to use this software for any 
 purpose, including commercial applications, and to alter it and 
 redistribute it freely, subject to the following restrictions:
-
 1. The origin of this software must not be misrepresented; you must 
 not claim that you wrote the original software. If you use this
 software in a product, an acknowledgment in the product documentation
 would be appreciated but is not required.
-
 2. Altered source versions must be plainly marked as such, and 
 must not be misrepresented as being the original software.
-
 3. This notice may not be removed or altered from any source 
 distribution.
 */
@@ -1369,9 +1364,7 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 				  make it possible for an application to retrieve the text of comments. For compatibility, 
 				  the string "--" (double-hyphen) MUST NOT occur within comments.] Parameter entity 
 				  references MUST NOT be recognized within comments.
-
 				  An example of a comment:
-
 				  <!-- declarations for <head> & <body> -->
 	*/
 
@@ -1635,4 +1628,3 @@ bool TiXmlText::Blank() const
 			return false;
 	return true;
 }
-

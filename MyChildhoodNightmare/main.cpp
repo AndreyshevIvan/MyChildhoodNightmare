@@ -50,7 +50,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 
@@ -109,7 +109,7 @@ void InitGamePlayScene(Game& game)
 		game.UpdateInterface();
 		game.DrawLevel(window);
 		game.interface.Draw(window);
-		game.player.Draw(window);
+		game.player.Draw(window, game.GetCameraArea());
 		game.DrawBullets(window);
 		game.DrawEnemies(window);
 		game.DrawBonuses(window);

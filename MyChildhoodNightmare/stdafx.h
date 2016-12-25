@@ -7,9 +7,9 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
-#include <list>
+#include <map>
 #include <iostream>
-#include "tinyxml/level.h"
+#include "tinyxml\level.h"
 #include <string>
 #include <vector>
 

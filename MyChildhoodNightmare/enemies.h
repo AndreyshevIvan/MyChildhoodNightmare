@@ -43,13 +43,13 @@ enum struct EnemyActivity
 
 struct Enemy : Character
 {
-	Enemy(sf::FloatRect const& posRect = sf::FloatRect(0, 0, 0, 0), EnemyType const& type = EnemyType::NONE);
+	Enemy(sf::Vector2f const& posRect = sf::Vector2f(0, 0), EnemyType const& type = EnemyType::NONE);
 
 	void CreateShadow();
 	void CreateClown();
 	void CreateBird();
 
-	sf::FloatRect position;
+	sf::Vector2f position;
 	sf::RectangleShape targetArea;
 	
 	sf::Vector2f birdMove;
@@ -86,6 +86,4 @@ struct Enemy : Character
 	void UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks);
 	void BirdIdle(float elapsedTime);
 	void BirdPursuite(Player const& player);
-
-	void Draw(sf::RenderWindow& window) override;
 };

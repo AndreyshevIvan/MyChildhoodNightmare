@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
+Enemy::Enemy(sf::Vector2f const& posRect, EnemyType const& type)
 	:position(posRect)
 	,enemyType(type)
 {
@@ -41,8 +41,8 @@ Enemy::Enemy(sf::FloatRect const& posRect, EnemyType const& type)
 
 	collisionRect.width = bodyShape.getSize().x / 2.0f;
 	collisionRect.height = bodyShape.getSize().y - 10;
-	collisionRect.top = posRect.top;
-	collisionRect.left = posRect.left;
+	collisionRect.top = posRect.x;
+	collisionRect.left = posRect.y;
 }
 
 void Enemy::CreateShadow()
@@ -171,7 +171,7 @@ void Enemy::UpdateClownActivityStatus(Player const& player)
 	targetArea.setPosition(GetCharacterPos().x - CLOWN_TARGET_RANGE, GetCharacterPos().y - halfBody - halfBody / 2.0f);
 	targetArea.setFillColor(sf::Color(40, 10, 30, 100));
 
-	if (player.collisionRect.intersects(targetArea.getGlobalBounds()))
+	if (player.collisionRect.intersects((sf::FloatRect)targetArea.getGlobalBounds()))
 	{
 		activityStatus = EnemyActivity::PURSUIT;
 		if (player.GetCharacterPos().x < GetCharacterPos().x)
@@ -209,11 +209,11 @@ void Enemy::UpdateBossActivityStatus(Player const& player)
 
 void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 {
-	auto handLeftMiddle_copy = handLeftMiddle.getGlobalBounds();
-	auto handLeftBottom_copy = handLeftBottom.getGlobalBounds();
+	sf::FloatRect handLeftMiddle_copy = handLeftMiddle.getGlobalBounds();
+	sf::FloatRect handLeftBottom_copy = handLeftBottom.getGlobalBounds();
 
-	auto handRightMiddle_copy = handRightMiddle.getGlobalBounds();
-	auto handRightBottom_copy = handRightBottom.getGlobalBounds();
+	sf::FloatRect handRightMiddle_copy = handRightMiddle.getGlobalBounds();
+	sf::FloatRect handRightBottom_copy = handRightBottom.getGlobalBounds();
 
 	auto mevoment = elapsedTime * moveSpeed;
 
@@ -312,17 +312,4 @@ void Enemy::UpdateHands()
 	handRightTop.setPosition(rightHandX, topHandY);
 	handRightMiddle.setPosition(rightHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f);
 	handRightBottom.setPosition(rightHandX, bottomHandY);
-}
-
-void Enemy::Draw(sf::RenderWindow& window)
-{
-	window.draw(handLeftTop);
-	window.draw(handLeftBottom);
-	window.draw(handLeftMiddle);
-	window.draw(handRightTop);
-	window.draw(handRightMiddle);
-	window.draw(handRightBottom);
-
-	window.draw(targetArea);
-	window.draw(bodyShape);
 }

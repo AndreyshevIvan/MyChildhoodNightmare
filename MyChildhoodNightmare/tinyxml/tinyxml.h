@@ -1,23 +1,18 @@
 /*
 www.sourceforge.net/projects/tinyxml
 Original code by Lee Thomason (www.grinninglizard.com)
-
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any
 damages arising from the use of this software.
-
 Permission is granted to anyone to use this software for any
 purpose, including commercial applications, and to alter it and
 redistribute it freely, subject to the following restrictions:
-
 1. The origin of this software must not be misrepresented; you must
 not claim that you wrote the original software. If you use this
 software in a product, an acknowledgment in the product documentation
 would be appreciated but is not required.
-
 2. Altered source versions must be plainly marked as such, and
 must not be misrepresented as being the original software.
-
 3. This notice may not be removed or altered from any source
 distribution.
 */
@@ -112,17 +107,12 @@ struct TiXmlCursor
 	class to handle callbacks. For nodes that contain other nodes (Document, Element)
 	you will get called with a VisitEnter/VisitExit pair. Nodes that are always leaves
 	are simply called with Visit().
-
 	If you return 'true' from a Visit method, recursive parsing will continue. If you return
 	false, <b>no children of this node or its sibilings</b> will be Visited.
-
 	All flavors of Visit methods have a default implementation that returns 'true' (continue 
 	visiting). You need to only override methods that are interesting to you.
-
 	Generally Accept() is called on the TiXmlDocument, although all nodes suppert Visiting.
-
 	You should never change the document from a callback.
-
 	@sa TiXmlNode::Accept()
 */
 class TiXmlVisitor
@@ -172,22 +162,18 @@ const TiXmlEncoding TIXML_DEFAULT_ENCODING = TIXML_ENCODING_UNKNOWN;
 /** TiXmlBase is a base class for every class in TinyXml.
 	It does little except to establish that TinyXml classes
 	can be printed and provide some utility functions.
-
 	In XML, the document and elements can contain
 	other elements and other types of nodes.
-
 	@verbatim
 	A Document can contain:	Element	(container or leaf)
 							Comment (leaf)
 							Unknown (leaf)
 							Declaration( leaf )
-
 	An Element can contain:	Element (container or leaf)
 							Text	(leaf)
 							Attributes (not on tree)
 							Comment (leaf)
 							Unknown (leaf)
-
 	A Decleration contains: Attributes (not on tree)
 	@endverbatim
 */
@@ -227,18 +213,14 @@ public:
 		The row and column are 1-based. (That is the first row and first column is
 		1,1). If the returns values are 0 or less, then the parser does not have
 		a row and column value.
-
 		Generally, the row and column value will be set when the TiXmlDocument::Load(),
 		TiXmlDocument::LoadFile(), or any TiXmlNode::Parse() is called. It will NOT be set
 		when the DOM was created from operator>>.
-
 		The values reflect the initial load. Once the DOM is modified programmatically
 		(by adding or changing nodes and attributes) the new values will NOT update to
 		reflect changes in the document.
-
 		There is a minor performance cost to computing the row and column. Computation
 		can be disabled if TiXmlDocument::SetTabSize() is called with 0 as the value.
-
 		@sa TiXmlDocument::SetTabSize()
 	*/
 	int Row() const			{ return location.row + 1; }
@@ -436,7 +418,6 @@ public:
 	    /** An output stream operator, for every class. Note that this outputs
 		    without any newlines or formatting, as opposed to Print(), which
 		    includes tabs and new lines.
-
 		    The operator<< and operator>> are not completely symmetric. Writing
 		    a node to a stream is very well defined. You'll get a nice stream
 		    of output, without any extra whitespace or newlines.
@@ -445,7 +426,6 @@ public:
 		    a TiXmlElement (for example) and read that from an input stream,
 		    the text needs to define an element or junk will result. This is
 		    true of all input streams, but it's worth keeping in mind.
-
 		    A TiXmlDocument will read nodes until it reads a root element, and
 			all the children of that root element.
 	    */	
@@ -481,7 +461,6 @@ public:
 		Unknown:	the tag contents
 		Text:		the text string
 		@endverbatim
-
 		The subclasses will wrap this function.
 	*/
 	const char *Value() const { return value.c_str (); }
@@ -548,13 +527,11 @@ public:
 		@verbatim
 			for( child = parent->FirstChild(); child; child = child->NextSibling() )
 		@endverbatim
-
 		IterateChildren does the same thing with the syntax:
 		@verbatim
 			child = 0;
 			while( child = parent->IterateChildren( child ) )
 		@endverbatim
-
 		IterateChildren takes the previous child as input and finds
 		the next one. If the previous child is null, it returns the
 		first. IterateChildren will return null when done.
@@ -582,12 +559,10 @@ public:
 
 
 	/** Add a new node related to this. Adds a child past the LastChild.
-
 		NOTE: the node to be added is passed by pointer, and will be
 		henceforth owned (and deleted) by tinyXml. This method is efficient
 		and avoids an extra copy, but should be used with care as it
 		uses a different memory model than the other insert functions.
-
 		@sa InsertEndChild
 	*/
 	TiXmlNode* LinkEndChild( TiXmlNode* addThis );
@@ -716,18 +691,13 @@ public:
 	/** Accept a hierchical visit the nodes in the TinyXML DOM. Every node in the 
 		XML tree will be conditionally visited and the host will be called back
 		via the TiXmlVisitor interface.
-
 		This is essentially a SAX interface for TinyXML. (Note however it doesn't re-parse
 		the XML for the callbacks, so the performance of TinyXML is unchanged by using this
 		interface versus any other.)
-
 		The interface has been based on ideas from:
-
 		- http://www.saxproject.org/
 		- http://c2.com/cgi/wiki?HierarchicalVisitorPattern 
-
 		Which are both good references for "visiting".
-
 		An example of using Accept():
 		@verbatim
 		TiXmlPrinter printer;
@@ -771,7 +741,6 @@ private:
 
 /** An attribute is a name-value pair. Elements have an arbitrary
 	number of attributes, each with a unique name.
-
 	@note The attributes are not TiXmlNodes, since they are not
 		  part of the tinyXML document object model. There are other
 		  suggested ways to look at this problem.
@@ -824,7 +793,6 @@ public:
 		If the value is an integer, it is stored in 'value' and 
 		the call returns TIXML_SUCCESS. If it is not
 		an integer, it returns TIXML_WRONG_TYPE.
-
 		A specialized but useful call. Note that for success it returns 0,
 		which is the opposite of almost all other TinyXml calls.
 	*/
@@ -895,7 +863,6 @@ private:
 	classes that use it, but NOT transparent to the Attribute
 	which has to implement a next() and previous() method. Which makes
 	it a bit problematic and prevents the use of STL.
-
 	This version is implemented with circular lists because:
 		- I like circular lists
 		- it demonstrates some independence from the (typical) doubly linked list.
@@ -1018,7 +985,6 @@ public:
 		be careful to make sure to call this with the correct type.
 		
 		NOTE: This method doesn't work correctly for 'string' types that contain spaces.
-
 		@return TIXML_SUCCESS, TIXML_WRONG_TYPE, or TIXML_NO_ATTRIBUTE
 	*/
 	template< typename T > int QueryValueAttribute( const std::string& name, T* outValue ) const
@@ -1092,13 +1058,11 @@ public:
 	
 		If the first child of 'this' is a TiXmlText, the GetText()
 		returns the character string of the Text node, else null is returned.
-
 		This is a convenient method for getting the text of simple contained text:
 		@verbatim
 		<foo>This is text</foo>
 		const char* str = fooElement->GetText();
 		@endverbatim
-
 		'str' will be a pointer to "This is text". 
 		
 		Note that this function can be misleading. If the element foo was created from
@@ -1106,14 +1070,12 @@ public:
 		@verbatim
 		<foo><b>This is text</b></foo> 
 		@endverbatim
-
 		then the value of str would be null. The first child node isn't a text node, it is
 		another element. From this XML:
 		@verbatim
 		<foo>This is <b>text</b></foo> 
 		@endverbatim
 		GetText() will return "This is ".
-
 		WARNING: GetText() accesses a child node - don't become confused with the 
 				 similarly named TiXmlHandle::Text() and TiXmlNode::ToText() which are 
 				 safe type casts on the referenced node.
@@ -1273,11 +1235,9 @@ private:
 	@verbatim
 		<?xml version="1.0" standalone="yes"?>
 	@endverbatim
-
 	TinyXml will happily read or write files without a declaration,
 	however. There are 3 possible attributes to the declaration:
 	version, encoding, and standalone.
-
 	Note: In this version of the code, the attributes are
 	handled as special cases, not generic attributes, simply
 	because there can only be at most 3 and they are always the same.
@@ -1348,7 +1308,6 @@ private:
 	unknown. It is a tag of text, but should not be modified.
 	It will be written back to the XML, unchanged, when the file
 	is saved.
-
 	DTD tags get thrown into TiXmlUnknowns.
 */
 class TiXmlUnknown : public TiXmlNode
@@ -1471,7 +1430,6 @@ public:
 		and the first row is row 1. A value of 0 means the row and column wasn't applicable
 		(memory errors, for example, have no row/column) or the parser lost the error. (An
 		error in the error reporting, in that case.)
-
 		@sa SetTabSize, Row, Column
 	*/
 	int ErrorRow() const	{ return errorLocation.row+1; }
@@ -1485,20 +1443,16 @@ public:
 		greater than 0, the row and column of each node and attribute is stored
 		when the file is loaded. Very useful for tracking the DOM back in to
 		the source file.
-
 		The tab size is required for calculating the location of nodes. If not
 		set, the default of 4 is used. The tabsize is set per document. Setting
 		the tabsize to 0 disables row/column tracking.
-
 		Note that row and column tracking is not supported when using operator>>.
-
 		The tab size needs to be enabled before the parse or load. Correct usage:
 		@verbatim
 		TiXmlDocument doc;
 		doc.SetTabSize( 8 );
 		doc.Load( "myfile.xml" );
 		@endverbatim
-
 		@sa Row, Column
 	*/
 	void SetTabSize( int _tabsize )		{ tabsize = _tabsize; }
@@ -1559,7 +1513,6 @@ private:
 	A TiXmlHandle is a class that wraps a node pointer with null checks; this is
 	an incredibly useful thing. Note that TiXmlHandle is not part of the TinyXml
 	DOM structure. It is a separate utility class.
-
 	Take an example:
 	@verbatim
 	<Document>
@@ -1569,10 +1522,8 @@ private:
 		</Element>
 	<Document>
 	@endverbatim
-
 	Assuming you want the value of "attributeB" in the 2nd "Child" element, it's very 
 	easy to write a *lot* of code that looks like:
-
 	@verbatim
 	TiXmlElement* root = document.FirstChildElement( "Document" );
 	if ( root )
@@ -1588,11 +1539,9 @@ private:
 				{
 					// Finally do something useful.
 	@endverbatim
-
 	And that doesn't even cover "else" cases. TiXmlHandle addresses the verbosity
 	of such code. A TiXmlHandle checks for null	pointers so it is perfectly safe 
 	and correct to use:
-
 	@verbatim
 	TiXmlHandle docHandle( &document );
 	TiXmlElement* child2 = docHandle.FirstChild( "Document" ).FirstChild( "Element" ).Child( "Child", 1 ).ToElement();
@@ -1600,16 +1549,12 @@ private:
 	{
 		// do something useful
 	@endverbatim
-
 	Which is MUCH more concise and useful.
-
 	It is also safe to copy handles - internally they are nothing more than node pointers.
 	@verbatim
 	TiXmlHandle handleCopy = handle;
 	@endverbatim
-
 	What they should not be used for is iteration:
-
 	@verbatim
 	int i=0; 
 	while ( true )
@@ -1621,14 +1566,11 @@ private:
 		++i;
 	}
 	@endverbatim
-
 	It seems reasonable, but it is in fact two embedded while loops. The Child method is 
 	a linear walk to find the element, so this code would iterate much more than it needs 
 	to. Instead, prefer:
-
 	@verbatim
 	TiXmlElement* child = docHandle.FirstChild( "Document" ).FirstChild( "Element" ).FirstChild( "Child" ).ToElement();
-
 	for( child; child; child=child->NextSiblingElement() )
 	{
 		// do something
@@ -1716,20 +1658,16 @@ private:
 
 
 /** Print to memory functionality. The TiXmlPrinter is useful when you need to:
-
 	-# Print to memory (especially in non-STL mode)
 	-# Control formatting (line endings, etc.)
-
 	When constructed, the TiXmlPrinter is in its default "pretty printing" mode.
 	Before calling Accept() you can call methods to control the printing
 	of the XML document. After TiXmlNode::Accept() is called, the printed document can
 	be accessed via the CStr(), Str(), and Size() methods.
-
 	TiXmlPrinter uses the Visitor API.
 	@verbatim
 	TiXmlPrinter printer;
 	printer.SetIndent( "\t" );
-
 	doc.Accept( &printer );
 	fprintf( stdout, "%s", printer.CStr() );
 	@endverbatim

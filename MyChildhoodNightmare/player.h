@@ -9,7 +9,7 @@ const float PLAYER_START_HEALTH = 100;
 const int PLAYER_START_SHOOTGUN_AMMO = 7;
 const int PLAYER_START_AK_AMMO = 30;
 const int PLAYER_MAX_AMMO = 99;
-const float PLAYER_START_SHOOT_RANGE = 400;
+const float PLAYER_START_SHOOT_RANGE = 500;
 
 const float INJURED_COLDOWN = 1.5;
 
@@ -33,12 +33,15 @@ struct Player : Character
 	float injuredColdown;
 	std::vector<int> ammo;
 
+	int boxes = 0;
+
 	bool InitPlayer();
 
 	void SwitchWeapon();
 	
 	void Attack();
-	void AddEffect(Bonus const& bonus);
+	bool AddBonusEffect(Bonus const& bonus);
 
 	void UpdateStatuses();
+	void UpdateTexture();
 };

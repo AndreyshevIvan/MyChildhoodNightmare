@@ -39,6 +39,12 @@ bool Game::InitGame()
 
 	buttonColdown = 0;
 
+	boxesCoundMap = {
+		{ &level_1, 3 },
+		{ &level_2, 3 },
+		{ &level_3, 1 }
+	};
+
 	return true;
 }
 
@@ -62,15 +68,19 @@ void Game::StartGame(Level& level)
 void Game::CheckCompletedLevel()
 {
 	bool IsChange = false;
-	auto door_level_2 = currentLevel->GetObject("level2");
-	auto door_level_3 = currentLevel->GetObject("level3");
+	auto door_level_2 = currentLevel->GetObject("level2").rect;
+	auto door_level_3 = currentLevel->GetObject("level3").rect;
+	auto playerRect = player.collisionRect;
 
-	if (player.collisionRect.intersects(door_level_2.rect))
+	int currBoxes = player.boxes;
+	int neededBoxes = boxesCoundMap.find(currentLevel)->second;
+
+	if (playerRect.intersects(door_level_2) && currBoxes == neededBoxes)
 	{
 		IsChange = true;
 		StartGame(level_2);
 	}
-	else if (player.collisionRect.intersects(door_level_3.rect))
+	else if (playerRect.intersects(door_level_3) && currBoxes == neededBoxes)
 	{
 		IsChange = true;
 		StartGame(level_3);
@@ -99,20 +109,37 @@ void Game::SpawnEntities()
 	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
 	std::vector<Object> birdsSpawns = currentLevel->GetObjects("enemy_bird_spawn");
+	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
+	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
 
 	for (auto shadowSpawn : shadowsSpawns)
 	{
-		enemies.push_back(new Enemy(shadowSpawn.rect, EnemyType::SHADOW));
+		sf::Vector2f pos = { shadowSpawn.rect.left, shadowSpawn.rect.top };
+		enemies.push_back(new Enemy(pos, EnemyType::SHADOW));
 	}
 
 	for (auto clownSpawn : clownsSpawns)
 	{
-		enemies.push_back(new Enemy(clownSpawn.rect, EnemyType::CLOWN));
+		sf::Vector2f pos = { clownSpawn.rect.left, clownSpawn.rect.top };
+		enemies.push_back(new Enemy(pos, EnemyType::CLOWN));
 	}
 
 	for (auto birdSpawn : birdsSpawns)
 	{
-		enemies.push_back(new Enemy(birdSpawn.rect, EnemyType::BIRD));
+		sf::Vector2f pos = { birdSpawn.rect.left, birdSpawn.rect.top };
+		enemies.push_back(new Enemy(pos, EnemyType::BIRD));
+	}
+
+	for (auto bonusSpawn : bonusesSpawns)
+	{
+		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
+		bonuses.push_back(new Bonus(bonusPos));
+	}
+
+	for (auto itemsSpawn : itemsBoxSpawns)
+	{
+		sf::Vector2f itemPos = { itemsSpawn.rect.left, itemsSpawn.rect.top };
+		bonuses.push_back(new Bonus(itemPos, Items::BOX));
 	}
 
 	player.Spawn(currentLevel->GetObject("player_spawn"));
@@ -302,6 +329,7 @@ void Game::UpdatePlayer()
 	player.UpdatePos(elapsedTime, blocks);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
+	player.UpdateTexture();
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
@@ -385,9 +413,8 @@ void Game::BonusesPlayerCollides()
 	for (auto it = bonuses.begin(); it != bonuses.end();)
 	{
 		Bonus* bonus = *it;
-		if (bonus->collisionRect.intersects(player.collisionRect))
+		if (bonus->collisionRect.intersects(player.collisionRect) && player.AddBonusEffect(*bonus))
 		{
-			player.AddEffect(*bonus);
 			it = bonuses.erase(it);
 			delete(bonus);
 		}
@@ -437,7 +464,7 @@ void Game::UpdateEnemies()
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 		if (enemy->existStatus != ExistenceStatus::LIVE)
 		{
-			bonuses.push_back(new Bonus(enemy->GetCharacterPos()));
+			CreateBonus(enemy->GetCharacterPos(), bonuses);
 			it = enemies.erase(it);
 			delete(enemy);
 		}
@@ -450,20 +477,9 @@ void Game::UpdateEnemies()
 
 void Game::UpdateBonuses()
 {
-	for (auto it = bonuses.begin(); it != bonuses.end();)
+	for (auto bonus : bonuses)
 	{
-		Bonus* bonus = *it;
 		bonus->Update(elapsedTime, blocks);
-		cout << "is update";
-		if (bonus->collisionRect.intersects(player.collisionRect))
-		{
-			it = bonuses.erase(it);
-			delete(bonus);
-		}
-		else
-		{
-			++it;
-		}
 	}
 }
 
@@ -579,7 +595,7 @@ void Game::DrawEnemies(sf::RenderWindow& window)
 {
 	for (auto enemy : enemies)
 	{
-		enemy->Draw(window);
+		enemy->Draw(window, GetCameraArea());
 	}
 }
 
@@ -587,6 +603,6 @@ void Game::DrawBonuses(sf::RenderWindow& window)
 {
 	for (auto bonus : bonuses)
 	{
-		bonus->Draw(window);
+		bonus->Draw(window, GetCameraArea());
 	}
 }

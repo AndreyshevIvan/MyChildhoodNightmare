@@ -1,6 +1,7 @@
 #include "player.h"
 
 using namespace sf;
+using namespace std;
 
 bool Player::InitPlayer()
 {
@@ -12,7 +13,7 @@ bool Player::InitPlayer()
 	collisionRect.width = PLAYER_SIZE.x / 2.0f;
 	collisionRect.height = PLAYER_SIZE.y - 10;
 
-	bodyShape.setFillColor(Color::Green);
+	bodyShape.setTexture(&bodyTexture);
 	bodyShape.setSize(PLAYER_SIZE);
 	bodyShape.setOrigin(PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y);
 
@@ -65,20 +66,66 @@ void Player::SwitchWeapon()
 	}
 }
 
-void Player::AddEffect(Bonus const& bonus)
+bool Player::AddBonusEffect(Bonus const& bonus)
 {
-	auto type = bonus.bonusType;
-	switch (type)
+	switch (bonus.bonusType)
 	{
 	case BonusType::AMMO:
+		if (bonus.ammoType == AmmoType::AK)
+		{
+			if (ammo[2] == PLAYER_MAX_AMMO)
+			{
+				return false;
+			}
+			else if (ammo[2] + BONUS_AK_AMMO_COUNT > PLAYER_MAX_AMMO)
+			{
+				ammo[2] = PLAYER_MAX_AMMO;
+			}
+			else
+			{
+				ammo[2] += BONUS_AK_AMMO_COUNT;
+			}
+		}
+		else if (bonus.ammoType == AmmoType::SHOOTGUN)
+		{
+			if (ammo[1] == PLAYER_MAX_AMMO)
+			{
+				return false;
+			}
+			else if (ammo[1] + BONUS_SHOOTGUN_AMMO_COUNT > PLAYER_MAX_AMMO)
+			{
+				ammo[1] = PLAYER_MAX_AMMO;
+			}
+			else
+			{
+				ammo[1] += BONUS_SHOOTGUN_AMMO_COUNT;
+			}
+		}
 		break;
 	case BonusType::HEALTH:
+		if (health == PLAYER_START_HEALTH)
+		{
+			return false;
+		}
+		else if (health + BONUS_HP_COUNT > PLAYER_START_HEALTH)
+		{
+			health = PLAYER_START_HEALTH;
+		}
+		else
+		{
+			health += BONUS_HP_COUNT;
+		}
 		break;
 	case BonusType::SPELL:
+		break;
+	case BonusType::ITEM_BOX:
+		boxes += 1;
 		break;
 	default:
 		break;
 	}
+
+	return true;
 }
 
 void Player::Attack()
@@ -119,5 +166,16 @@ void Player::Attack()
 	default:
 		break;
 	}
+}
 
+void Player::UpdateTexture()
+{
+	if (orientationStatus == OrientationStatus::LEFT)
+	{
+		bodyShape.setTextureRect(sf::IntRect(0, 0, (int)PLAYER_SIZE.x, (int)PLAYER_SIZE.y));
+	}
+	else
+	{
+		bodyShape.setTextureRect(sf::IntRect((int)PLAYER_SIZE.x, 0, (int)PLAYER_SIZE.x, (int)PLAYER_SIZE.y));
+	}
 }
