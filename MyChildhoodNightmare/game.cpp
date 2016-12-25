@@ -54,6 +54,8 @@ void Game::StartGame(Level& level)
 
 	currentLevel = &level;
 
+	interface.CreateBoxes(boxesCoundMap.find(currentLevel)->second);
+
 	blocks = currentLevel->GetObjects("solid");
 	lava = currentLevel->GetObjects("lava");
 
@@ -182,7 +184,7 @@ void Game::ControlPlayer()
 		menu.SetMenu(CurrentMenu::PAUSE, camera.getCenter());
 		currentScene = &menuScene;
 	}
-	else
+	else if (player.existStatus != ExistenceStatus::DEAD)
 	{
 		if (Keyboard::isKeyPressed(Keyboard::Space))
 		{
@@ -334,7 +336,13 @@ void Game::UpdatePlayer()
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
-		currentScene = &gameOverScene;
+		auto bodyRotation = player.bodyShape.getRotation();
+		player.bodyShape.setRotation(bodyRotation + DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
+
+		if (gameOverColdown >= GAME_OVER_COLDOWN)
+		{
+			currentScene = &gameOverScene;
+		}
 	}
 
 	CheckCompletedLevel();
@@ -388,8 +396,11 @@ void Game::EnemyBulletsPlayerCollides()
 	{
 		if (player.collisionRect.intersects(bullet->collisionRect))
 		{
-			player.health -= bullet->demage;
-			bullet->isLive = false;
+			if (player.injuredColdown >= INJURED_COLDOWN)
+			{
+				player.health -= bullet->demage;
+				bullet->isLive = false;
+			}
 		}
 	}
 }
@@ -502,6 +513,10 @@ void Game::UpdateColdowns()
 	{
 		buttonColdown += elapsedTime;
 	}
+	if (player.existStatus == ExistenceStatus::DEAD)
+	{
+		gameOverColdown += elapsedTime;
+	}
 
 	for (auto enemy : enemies)
 	{
@@ -551,6 +566,7 @@ void Game::UpdateInterface()
 	interface.UpdateBarsPos(camera.getCenter());
 	interface.UpdatePlayerHP(player.health);
 	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
+	interface.UpdatePlayerBoxes(player.boxes);
 }
 
 void Game::UpdateBackground()

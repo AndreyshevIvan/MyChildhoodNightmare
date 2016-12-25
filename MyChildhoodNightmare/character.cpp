@@ -114,4 +114,5 @@ void Character::Clear()
 		it = characterBullets.erase(it);
 		delete(bullet);
 	}
+	bodyShape.setRotation(0);
 }

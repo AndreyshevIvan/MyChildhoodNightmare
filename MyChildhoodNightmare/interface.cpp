@@ -16,7 +16,8 @@ bool PlayerInterface::Init()
 		!previewTextures[0].loadFromFile("resources/house.png") ||
 		!previewTextures[1].loadFromFile("resources/cellar.png") ||
 		!previewTextures[2].loadFromFile("resources/teaserBox.png") ||
-		!previewTextures[3].loadFromFile("resources/notAlone.png"))
+		!previewTextures[3].loadFromFile("resources/notAlone.png") ||
+		!boxTexture.loadFromFile("resources/box.png"))
 	{
 		return false;
 	}
@@ -49,6 +50,22 @@ bool PlayerInterface::Init()
 	return true;
 }
 
+void PlayerInterface::CreateBoxes(int maxBoxes)
+{
+	boxes.clear();
+
+	for (int i = 0; i < maxBoxes; i++)
+	{
+		boxes.push_back(new sf::RectangleShape(BOX_SIZE));
+	}
+
+	for (auto box : boxes)
+	{
+		box->setTexture(&boxTexture);
+		//box->setOrigin(BOX_SIZE.x / 2.0f, BOX_SIZE.y / 2.0f);
+	}
+}
+
 void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 {
 	sf::Vector2f playerHealthPos = cameraPos + PLAYER_BAR_POS;
@@ -71,6 +88,11 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 	);
 
 	filter.setPosition(cameraPos);
+
+	for (auto box : boxes)
+	{
+		box->setPosition(cameraPos + PLAYER_BAR_POS + PLAYER_BOXES_MARGIN);
+	}
 }
 
 void PlayerInterface::UpdatePlayerHP(int health)
@@ -127,31 +149,53 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 	previewPartColdown += elapsedTime;
 	previewImage.setPosition({ position.x, position.y });
 	previewText.setOrigin(previewText.getGlobalBounds().width / 2.0f, previewText.getGlobalBounds().height / 2.0f);
-	previewText.setPosition({ position.x, position.y + TEXT_MARGIN });
+	previewText.setPosition({ position.x, position.y + PREVIEW_TEXT_MARGIN });
 
 	switch (currentPart)
 	{
 	case PreviewStatus::HOUSE:
 		previewImage.setTexture(&previewTextures[0]);
-		previewText.setString("This old house lived a wicked family. Which was one small child");
+		previewText.setString("There was one old house and wicked family lived in it.");
 		break;
 	case PreviewStatus::CELLAR:
 		previewImage.setTexture(&previewTextures[1]);
-		previewText.setString("Once the child was locked in a scary cellar");
+		previewText.setString("They had a little child who once was locked in a scary cellar... ");
 		break;
 	case PreviewStatus::BOX:
 		previewImage.setTexture(&previewTextures[2]);
-		previewText.setString("The child began to look for boxes to get through the window");
+		previewText.setString("The only way out of this place was through the window by putting boxes on each other...");
 		break;
 	case PreviewStatus::MONSTERS:
 		previewImage.setTexture(&previewTextures[3]);
-		previewText.setString("In the cellar, he met his nightmares...");
+		previewText.setString("But it turned out to be not so easy when his nightmares started overtaking him...");
 		break;
 	default:
 		break;
 	}
 
 	return false;
+}
+
+void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
+{
+	(void)currentBoxes;
+
+	float firstPosX = boxes[0]->getPosition().x;
+	int boxNumber = 0;
+
+	for (auto box : boxes)
+	{
+		if (boxNumber < currentBoxes)
+		{
+			box->setFillColor(Color(255, 255, 255, 255));
+		}
+		else
+		{
+			box->setFillColor(Color(255, 255, 255, 40));
+		}
+		box->setPosition({ firstPosX + boxNumber * BOXES_MIDLE_MARGIN, box->getPosition().y });
+		boxNumber += 1;
+	}
 }
 
 void PlayerInterface::Draw(RenderWindow& window)
@@ -161,6 +205,12 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);
 	window.draw(playerAmmo);
+
+	for (auto it = boxes.begin(); it != boxes.end(); it++)
+	{
+		sf::RectangleShape* box = *it;
+		window.draw(*box);
+	}
 }
 
 void PlayerInterface::DrawPart(sf::RenderWindow& window)

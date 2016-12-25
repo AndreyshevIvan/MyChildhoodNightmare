@@ -23,6 +23,7 @@ struct Game
 	sf::Clock clock;
 	float elapsedTime;
 	float buttonColdown;
+	float gameOverColdown = 0;
 
 	Player player;
 	std::vector<Enemy*> enemies;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="300" height="70" tilewidth="32" tileheight="32" nextobjectid="808">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="300" height="70" tilewidth="32" tileheight="32" nextobjectid="809">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="100" columns="10">
   <image source="tileset.png" width="320" height="320"/>
  </tileset>
@@ -84262,11 +84262,12 @@
   <object id="596" name="solid" x="3779.33" y="1153.33" width="103.333" height="99.3337"/>
   <object id="807" name="solid" x="7932.33" y="1432.83" width="934.333" height="67.3337"/>
  </objectgroup>
- <objectgroup name="lawa">
+ <objectgroup name="lava">
   <object id="589" name="lava" x="1302" y="1133" width="2621" height="117"/>
   <object id="590" name="lava" x="3183.5" y="2162.33" width="891" height="107.667"/>
   <object id="591" name="lava" x="6490.5" y="2019.17" width="1032" height="107.667"/>
   <object id="592" name="lava" x="8122.5" y="2037.17" width="1122" height="87.667"/>
+  <object id="808" name="lava" x="4967.5" y="1172.67" width="3225" height="66.667"/>
  </objectgroup>
  <objectgroup name="levels">
   <object id="216" name="level2" x="9378.39" y="1084.91" width="53.3333" height="72.3333"/>
@@ -84321,8 +84322,8 @@
  </objectgroup>
  <objectgroup name="player_spawn"/>
  <objectgroup name="items_spawns">
-  <object id="804" name="item_box_spawn" x="9164" y="1628.67" width="38.6667" height="46.6667"/>
-  <object id="805" name="item_box_spawn" x="9141" y="911.121" width="52" height="64"/>
-  <object id="806" name="item_box_spawn" x="4260" y="106" width="52" height="64"/>
+  <object id="804" name="item_box_spawn" x="779" y="1024.67" width="38.6667" height="46.6667"/>
+  <object id="805" name="item_box_spawn" x="561" y="711.121" width="52" height="64"/>
+  <object id="806" name="item_box_spawn" x="336" y="1014" width="52" height="64"/>
  </objectgroup>
 </map>

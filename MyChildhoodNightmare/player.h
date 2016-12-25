@@ -12,6 +12,7 @@ const int PLAYER_MAX_AMMO = 99;
 const float PLAYER_START_SHOOT_RANGE = 500;
 
 const float INJURED_COLDOWN = 1.5;
+const float DEAD_ROTATION = 90;
 
 enum struct Weapon
 {

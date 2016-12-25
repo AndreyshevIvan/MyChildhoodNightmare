@@ -100,5 +100,4 @@ void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses)
 	{
 		bonuses.push_back(new Bonus(position));
 	}
-	cout << probability << "\n";
 }

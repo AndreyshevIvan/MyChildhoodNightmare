@@ -24,7 +24,7 @@ bool Menu::InitMenuItems()
 
 		mainMenuItems = {
 			sf::Text("Start", itemsFont, FONT_SIZE),
-			sf::Text("Difficult", itemsFont, FONT_SIZE),
+			sf::Text("Difficulty", itemsFont, FONT_SIZE),
 			sf::Text("Leave", itemsFont, FONT_SIZE)
 		};
 
