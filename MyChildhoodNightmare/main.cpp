@@ -8,6 +8,7 @@ void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
 void InitMenuScene(Game& game);
 void InitGameOverScene(Game& game);
+void InitPreviewScene(Game& game);
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 
@@ -85,8 +86,9 @@ void InitScenes(Game& game)
 	InitGamePlayScene(game);
 	InitMenuScene(game);
 	InitGameOverScene(game);
+	InitPreviewScene(game);
 
-	game.currentScene = &game.menuScene;
+	game.currentScene = &game.previewScene;
 }
 
 void InitGamePlayScene(Game& game)
@@ -148,5 +150,26 @@ void InitGameOverScene(Game& game)
 	};
 	game.gameOverScene.onDraw = [&](sf::RenderWindow& window) {
 		window.draw(game.interface.gameOver);
+	};
+}
+
+void InitPreviewScene(Game& game)
+{
+	game.previewScene.toHandle = [&](sf::RenderWindow& window) {
+		(void)window;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			game.currentScene = &game.menuScene;
+		}
+	};
+	game.previewScene.onUpdate = [&]() {
+		auto cameraCenter = game.camera.getCenter();
+		if (game.interface.UpdatePreview(cameraCenter, game.elapsedTime))
+		{
+			game.currentScene = &game.menuScene;
+		}
+	};
+	game.previewScene.onDraw = [&](sf::RenderWindow& window) {
+		game.interface.DrawPart(window);
 	};
 }

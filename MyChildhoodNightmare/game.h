@@ -50,6 +50,7 @@ struct Game
 	GameScene gameplayScene;
 	GameScene pauseScene;
 	GameScene gameOverScene;
+	GameScene previewScene;
 	GameScene *currentScene = nullptr;
 
 	bool InitGame();

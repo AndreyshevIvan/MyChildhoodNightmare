@@ -12,10 +12,15 @@ bool PlayerInterface::Init()
 		!playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png") ||
 		!playerAkBarTexture.loadFromFile("resources/akBar.png") ||
 		!gameOverTexture.loadFromFile("resources/gameOver.png") ||
-		!filterTexture.loadFromFile("resources/filter.png"))
+		!filterTexture.loadFromFile("resources/filter.png") ||
+		!previewTextures[0].loadFromFile("resources/house.png") ||
+		!previewTextures[1].loadFromFile("resources/cellar.png") ||
+		!previewTextures[2].loadFromFile("resources/teaserBox.png") ||
+		!previewTextures[3].loadFromFile("resources/notAlone.png"))
 	{
 		return false;
 	}
+
 	if (!font.loadFromFile("resources/nightmarealley.ttf"))
 	{
 		return false;
@@ -23,6 +28,7 @@ bool PlayerInterface::Init()
 
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
+	previewText = Text("", font, PREVIEW_FONT_SIZE);
 
 	playerHealthBar.setSize(GetTextureSize(playerHealthBarTexture));
 	playerHealthBar.setTexture(&playerHealthBarTexture);
@@ -36,6 +42,9 @@ bool PlayerInterface::Init()
 	filter.setSize(RESOLUTION);
 	filter.setTexture(&filterTexture);
 	filter.setOrigin(RESOLUTION.x / 2.0f, RESOLUTION.y / 2.0f);
+
+	previewImage.setSize(PREVIEW_IMAGE_SIZE);
+	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
 
 	return true;
 }
@@ -102,6 +111,49 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 	}
 }
 
+bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedTime)
+{
+	if (previewPartColdown >= PART_COLDOWN)
+	{
+		if (currentPart == PreviewStatus::MONSTERS)
+		{
+			return true;
+		}
+
+		previewPartColdown = 0;
+		currentPart = PreviewStatus(static_cast<int>(currentPart) + 1);
+	}
+
+	previewPartColdown += elapsedTime;
+	previewImage.setPosition({ position.x, position.y });
+	previewText.setOrigin(previewText.getGlobalBounds().width / 2.0f, previewText.getGlobalBounds().height / 2.0f);
+	previewText.setPosition({ position.x, position.y + TEXT_MARGIN });
+
+	switch (currentPart)
+	{
+	case PreviewStatus::HOUSE:
+		previewImage.setTexture(&previewTextures[0]);
+		previewText.setString("This old house lived a wicked family. Which was one small child");
+		break;
+	case PreviewStatus::CELLAR:
+		previewImage.setTexture(&previewTextures[1]);
+		previewText.setString("Once the child was locked in a scary cellar");
+		break;
+	case PreviewStatus::BOX:
+		previewImage.setTexture(&previewTextures[2]);
+		previewText.setString("The child began to look for boxes to get through the window");
+		break;
+	case PreviewStatus::MONSTERS:
+		previewImage.setTexture(&previewTextures[3]);
+		previewText.setString("In the cellar, he met his nightmares...");
+		break;
+	default:
+		break;
+	}
+
+	return false;
+}
+
 void PlayerInterface::Draw(RenderWindow& window)
 {
 	window.draw(filter);
@@ -109,6 +161,13 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);
 	window.draw(playerAmmo);
+}
+
+void PlayerInterface::DrawPart(sf::RenderWindow& window)
+{
+	window.clear(sf::Color::Black);
+	window.draw(previewImage);
+	window.draw(previewText);
 }
 
 string IntToStr(int number)
