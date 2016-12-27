@@ -12,7 +12,7 @@ const float SHADOW_MOVE_SPEED = 180;
 const float SHADOW_MOVE_SPEED_RANDOM = 80;
 const int SHADOW_DEMAGE = 25;
 
-const int CLOWN_START_HEALTH = 100;
+const int CLOWN_START_HEALTH = 2000;
 const float CLOWN_MOVE_SPEED = 0;
 const int CLOWN_TOUCH_DEMAGE = 6;
 const float CLOWN_TARGET_RANGE = 600;
