@@ -17,7 +17,6 @@ bool Game::InitGame()
 		return false;
 	}
 
-	mapSize = { level_1.GetTilemapWidth(), level_1.GetTilemapHeight() };
 	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
 
 	difficult = Difficult::EASY;
@@ -45,6 +44,7 @@ void Game::StartGame(Level& level)
 	ClearScene();
 
 	currentLevel = &level;
+	mapSize = { currentLevel->GetTilemapWidth(), currentLevel->GetTilemapHeight() };
 
 	interface.CreateBoxes(boxesCoundMap.find(currentLevel)->second);
 
@@ -77,8 +77,8 @@ void Game::StartGame(Level& level)
 void Game::CheckCompletedLevel()
 {
 	auto door_level_2 = currentLevel->GetObject("level2").rect;
-	auto door_level_3 = currentLevel->GetObject("level3").rect;
 	auto playerRect = player.collisionRect;
+	auto winBlock = currentLevel->GetObject("win").rect;
 
 	int currBoxes = player.boxes;
 	int neededBoxes = boxesCoundMap.find(currentLevel)->second;
@@ -87,9 +87,9 @@ void Game::CheckCompletedLevel()
 	{
 		StartGame(level_2);
 	}
-	else if (playerRect.intersects(door_level_3) && currBoxes == neededBoxes)
+	else if (playerRect.intersects(winBlock) && currBoxes == neededBoxes)
 	{
-		StartGame(level_3);
+		currentScene = &winScene;
 	}
 }
 
@@ -301,7 +301,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		case 1:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
 			break;
-		case 2:	
+		case 2:
 			window.close();
 			break;
 		default:
@@ -430,9 +430,16 @@ void Game::UpdateEnemies()
 		Enemy* enemy = *it;
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 		enemy->UpdateTexture();
-		if (enemy->existStatus != ExistenceStatus::LIVE)
+		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
-			CreateBonus(enemy->GetCharacterPos(), bonuses, bonusProbability);
+			if (enemy->enemyType != EnemyType::BOSS)
+			{
+				CreateBonus(enemy->GetCharacterPos(), bonuses, bonusProbability);
+			}
+			else
+			{
+				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), Items::BOX));
+			}
 			it = enemies.erase(it);
 			delete(enemy);
 		}
@@ -597,6 +604,7 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 	if (cameraCenter.y + halfWindow.y > mapSize.y)
 	{
 		camera.setCenter(cameraCenter.x, mapSize.y - halfWindow.y);
+		cameraCenter = camera.getCenter();
 	}
 
 	window.setView(camera);
@@ -610,6 +618,14 @@ void Game::UpdateInterface()
 	interface.UpdatePlayerHP(player.health);
 	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
 	interface.UpdatePlayerBoxes(player.boxes);
+
+	for (auto enemy : enemies)
+	{
+		if (enemy->enemyType == EnemyType::BOSS)
+		{
+			interface.UpdateBossBar(BOSS_START_HEALTH, enemy->health);
+		}
+	}
 }
 
 void Game::UpdateBackground()
@@ -665,6 +681,19 @@ void Game::DrawBonuses(sf::RenderWindow& window)
 		if (GetCameraArea().intersects(bonus->collisionRect))
 		{
 			bonus->DrawBonus(window);
+		}
+	}
+}
+
+void Game::DrawInterface(sf::RenderWindow& window)
+{
+	interface.Draw(window);
+
+	for (auto const& enemy : enemies)
+	{
+		if (enemy->enemyType == EnemyType::BOSS)
+		{
+			interface.DrawBossBar(window);
 		}
 	}
 }

@@ -25,7 +25,7 @@ const float BIRD_MOVE_SPEED = 80;
 const int BIRD_DEMAGE = 6;
 
 const sf::Vector2f BOSS_SIZE = { 160, 250 };
-const int BOSS_START_HEALTH = 3000;
+const int BOSS_START_HEALTH = 100;
 const int BOSS_DEMAGE = 2;
 const float BOSS_MOVE_SPEED_IDLE = 100;
 const float BOSS_MOVE_SPEED_PURSUITE = 300;

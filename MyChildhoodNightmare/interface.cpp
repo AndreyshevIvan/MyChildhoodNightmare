@@ -12,12 +12,15 @@ bool PlayerInterface::Init()
 		!playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png") ||
 		!playerAkBarTexture.loadFromFile("resources/akBar.png") ||
 		!gameOverTexture.loadFromFile("resources/gameOver.png") ||
-		!filterTexture.loadFromFile("resources/filter.png") ||
+		!blackFilterTexture.loadFromFile("resources/blackFilter.png") ||
+		!redFilterTexture.loadFromFile("resources/redFilter.png") ||
 		!previewTextures[0].loadFromFile("resources/house.png") ||
 		!previewTextures[1].loadFromFile("resources/cellar.png") ||
 		!previewTextures[2].loadFromFile("resources/teaserBox.png") ||
 		!previewTextures[3].loadFromFile("resources/notAlone.png") ||
-		!boxTexture.loadFromFile("resources/box.png"))
+		!boxTexture.loadFromFile("resources/box.png") ||
+		!bossBarTexture.loadFromFile("resources/bossBar.png") ||
+		!winTexture.loadFromFile("resources/win.png"))
 	{
 		return false;
 	}
@@ -30,19 +33,32 @@ bool PlayerInterface::Init()
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
 	previewText = Text("", font, PREVIEW_FONT_SIZE);
+	winText = Text("", font, PREVIEW_FONT_SIZE);
 
 	playerHealthBar.setSize(GetTextureSize(playerHealthBarTexture));
 	playerHealthBar.setTexture(&playerHealthBarTexture);
-
 	playerWeaponBar.setSize(PLAYER_WEAPON_BAR_SIZE);
+
+	bossBar.setSize(BOSS_BAR_SIZE);
+	bossBar.setOrigin(BOSS_BAR_SIZE.x / 2.0f, BOSS_BAR_SIZE.y / 2.0f);
+	bossBar.setTexture(&bossBarTexture);
+	bossBar.setFillColor(BOSS_HP_BAR_COLOR);
+	bossHPLine.setSize(BOSS_HP_LINE_SIZE);
+	bossHPLine.setFillColor(BOSS_HP_LINE_COLOR);
 
 	gameOver.setTexture(&gameOverTexture);
 	gameOver.setSize(GetTextureSize(gameOverTexture));
 	gameOver.setOrigin(gameOver.getSize().x / 2.0f , gameOver.getSize().y / 2.0f);
 
-	filter.setSize(RESOLUTION);
-	filter.setTexture(&filterTexture);
-	filter.setOrigin(RESOLUTION.x / 2.0f, RESOLUTION.y / 2.0f);
+	win.setTexture(&winTexture);
+	win.setSize(GetTextureSize(winTexture));
+	win.setOrigin(win.getSize().x / 2.0f, win.getSize().y / 2.0f);
+	winText.setString("You've conquered your nightmares and escaped!");
+	winText.setOrigin(winText.getGlobalBounds().width / 2.0f, winText.getGlobalBounds().height / 2.0f);
+
+	blackFilter.setSize(RESOLUTION);
+	blackFilter.setTexture(&blackFilterTexture);
+	blackFilter.setOrigin(RESOLUTION.x / 2.0f, RESOLUTION.y / 2.0f);
 
 	previewImage.setSize(PREVIEW_IMAGE_SIZE);
 	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
@@ -87,7 +103,10 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 		playerHealthPos.y + PLAYER_AMMO_MARGIN.y
 	);
 
-	filter.setPosition(cameraPos);
+	bossBar.setPosition(cameraPos + BOSS_BAR_MARGIN);
+	bossHPLine.setPosition(cameraPos + BOSS_BAR_MARGIN + BOSS_HP_LINE_MARGIN);
+
+	blackFilter.setPosition(cameraPos);
 
 	for (auto box : boxes)
 	{
@@ -149,7 +168,7 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 	previewPartColdown += elapsedTime;
 	previewImage.setPosition({ position.x, position.y });
 	previewText.setOrigin(previewText.getGlobalBounds().width / 2.0f, previewText.getGlobalBounds().height / 2.0f);
-	previewText.setPosition({ position.x, position.y + PREVIEW_TEXT_MARGIN });
+	previewText.setPosition(position + PREVIEW_TEXT_MARGIN );
 
 	switch (currentPart)
 	{
@@ -198,9 +217,21 @@ void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
 	}
 }
 
+void PlayerInterface::UpdateBossBar(int bossMaxHealth, int bossHealth)
+{
+	float HPLineSize = static_cast<float>(bossHealth) / static_cast<float>(bossMaxHealth) * BOSS_HP_LINE_SIZE.x;
+	bossHPLine.setSize({ HPLineSize , BOSS_HP_LINE_SIZE.y });
+}
+
+void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
+{
+	win.setPosition(windowCenter);
+	winText.setPosition(windowCenter + PREVIEW_TEXT_MARGIN);
+}
+
 void PlayerInterface::Draw(RenderWindow& window)
 {
-	window.draw(filter);
+	window.draw(blackFilter);
 	window.draw(playerHealthBar);
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);
@@ -218,6 +249,19 @@ void PlayerInterface::DrawPart(sf::RenderWindow& window)
 	window.clear(sf::Color::Black);
 	window.draw(previewImage);
 	window.draw(previewText);
+}
+
+void PlayerInterface::DrawBossBar(sf::RenderWindow& window)
+{
+	window.draw(bossHPLine);
+	window.draw(bossBar);
+}
+
+void PlayerInterface::DrawWin(sf::RenderWindow& window)
+{
+	window.clear(sf::Color::Black);
+	window.draw(win);
+	window.draw(winText);
 }
 
 string IntToStr(int number)

@@ -84317,15 +84317,12 @@
  </objectgroup>
  <objectgroup name="player_spawn">
   <object id="835" name="bonus_spawn_easy" x="8227.09" y="1005.91" width="42.6667" height="34"/>
-  <object id="839" name="player_spawn" x="8207.58" y="820.424" width="69.697" height="63.6364"/>
+  <object id="839" name="player_spawn" x="307.576" y="1011.09" width="69.697" height="63.6364"/>
  </objectgroup>
  <objectgroup name="items_spawns">
   <object id="804" name="item_box_spawn" x="3751.5" y="218.667" width="38.6667" height="46.6667"/>
   <object id="805" name="item_box_spawn" x="4275.67" y="198.455" width="43.3333" height="36.6667"/>
   <object id="806" name="item_box_spawn" x="9169.76" y="1631.41" width="41.5" height="45.5"/>
-  <object id="844" name="item_box_spawn" x="8525.92" y="975.917" width="41.5" height="45.5"/>
-  <object id="845" name="item_box_spawn" x="8707.25" y="925.25" width="41.5" height="45.5"/>
-  <object id="846" name="item_box_spawn" x="8624.58" y="865.25" width="41.5" height="45.5"/>
  </objectgroup>
  <objectgroup name="bonuses_spawns_easy">
   <object id="813" name="bonus_spawn_easy" x="1686.67" y="736.333" width="42.6667" height="34"/>

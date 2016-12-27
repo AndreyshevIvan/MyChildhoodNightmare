@@ -44,8 +44,7 @@ struct Game
 
 	std::map<Level*, int> boxesCoundMap = {
 			{ &level_1, 3 },
-			{ &level_2, 2 },
-			{ &level_3, 1 }
+			{ &level_2, 1 }
 	};
 
 	Menu menu;
@@ -57,6 +56,7 @@ struct Game
 	GameScene pauseScene;
 	GameScene gameOverScene;
 	GameScene previewScene;
+	GameScene winScene;
 	GameScene *currentScene = nullptr;
 
 	int bonusProbability = BONUS_PROBABILITY_EASY;
@@ -98,6 +98,7 @@ struct Game
 	void DrawBullets(sf::RenderWindow& window);
 	void DrawEnemies(sf::RenderWindow& window);
 	void DrawBonuses(sf::RenderWindow& window);
+	void DrawInterface(sf::RenderWindow& window);
 
 	void ClearScene();
 };
