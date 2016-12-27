@@ -5,7 +5,7 @@ const sf::Vector2f PLAYER_BAR_POS = { -620, -330 };
 
 const sf::Vector2f PLAYER_HEALTH_BAR_SIZE = { 180, 70 };
 const sf::Vector2f PLAYER_WEAPON_BAR_SIZE = { 110, 80 };
-const sf::Vector2f PREVIEW_IMAGE_SIZE = { 300, 300 };
+const sf::Vector2f PREVIEW_IMAGE_SIZE = { 400, 400 };
 const sf::Vector2f BOX_SIZE = { 58, 50 };
 
 const int PLAYER_HP_FONT_SIZE = 50;
@@ -15,7 +15,7 @@ const int PREVIEW_FONT_SIZE = 35;
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y };
 const sf::Vector2f PLAYER_AMMO_MARGIN = { 88, 121 };
-const float PREVIEW_TEXT_MARGIN = 170;
+const float PREVIEW_TEXT_MARGIN = 220;
 const float BOXES_MIDLE_MARGIN = 60;
 const sf::Vector2f PLAYER_BOXES_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y + PLAYER_WEAPON_BAR_SIZE.y + 10 };
 

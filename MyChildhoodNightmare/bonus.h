@@ -6,7 +6,11 @@ const sf::Vector2f BONUS_BODY_SIZE = { 40, 40 };
 const int SPELL_COUNT = 3;
 const int BONUS_COUNT = 4;
 const int BONUS_WEAPON_COUNT = 2;
-const int BONUS_PROBABILITY = 60;
+
+const int BONUS_PROBABILITY_EASY = 75;
+const int BONUS_PROBABILITY_NORMAL = 50;
+const int BONUS_PROBABILITY_HARD = 30;
+
 const float BONUS_FALL_SPEED = 200;
 
 const int BONUS_AK_AMMO_COUNT = 24;
@@ -63,4 +67,4 @@ struct Bonus
 	void DrawBonus(sf::RenderWindow& window);
 };
 
-void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses);
+void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability);

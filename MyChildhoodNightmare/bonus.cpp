@@ -92,11 +92,11 @@ void Bonus::DrawBonus(sf::RenderWindow& window)
 	window.draw(bodyShape);
 }
 
-void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses)
+void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability)
 {
-	int probability = rand() % 100;
+	int digit = rand() % 100;
 
-	if (probability < BONUS_PROBABILITY)
+	if (digit < probability)
 	{
 		bonuses.push_back(new Bonus(position));
 	}

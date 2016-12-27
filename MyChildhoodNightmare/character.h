@@ -68,6 +68,9 @@ struct Character
 	void UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
 	void UpdateHealthStatus();
+	void UpdateOrientation();
+	
+	void UpdateTexture();
 
 	virtual void DrawCharacter(sf::RenderWindow& window);
 

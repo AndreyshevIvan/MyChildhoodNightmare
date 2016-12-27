@@ -23,6 +23,7 @@ bool Player::InitPlayer()
 
 	injuredColdown = INJURED_COLDOWN;
 
+	boxes = 0;
 	existStatus = ExistenceStatus::LIVE;
 	demage = 30;
 	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
@@ -158,17 +159,5 @@ void Player::Attack()
 		break;
 	default:
 		break;
-	}
-}
-
-void Player::UpdateTexture()
-{
-	if (orientationStatus == OrientationStatus::LEFT)
-	{
-		bodyShape.setTextureRect(sf::IntRect(0, 0, (int)PLAYER_SIZE.x, (int)PLAYER_SIZE.y));
-	}
-	else
-	{
-		bodyShape.setTextureRect(sf::IntRect((int)PLAYER_SIZE.x, 0, (int)PLAYER_SIZE.x, (int)PLAYER_SIZE.y));
 	}
 }

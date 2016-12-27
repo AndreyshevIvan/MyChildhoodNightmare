@@ -12,8 +12,6 @@ bool Game::InitGame()
 		return false;
 	}
 
-	currentLevel = &level_1;
-
 	if (!player.InitPlayer() || !menu.InitMenuItems() || !interface.Init())
 	{
 		return false;
@@ -39,12 +37,6 @@ bool Game::InitGame()
 
 	buttonColdown = 0;
 
-	boxesCoundMap = {
-		{ &level_1, 3 },
-		{ &level_2, 3 },
-		{ &level_3, 1 }
-	};
-
 	return true;
 }
 
@@ -62,6 +54,21 @@ void Game::StartGame(Level& level)
 	player.Clear();
 	player.InitPlayer();
 
+	switch (difficult)
+	{
+	case Difficult::EASY:
+		bonusProbability = BONUS_PROBABILITY_EASY;
+		break;
+	case Difficult::NORMAL:
+		bonusProbability = BONUS_PROBABILITY_NORMAL;
+		break;
+	case Difficult::HARD:
+		bonusProbability = BONUS_PROBABILITY_HARD;
+		break;
+	default:
+		break;
+	}
+
 	SpawnEntities();
 
 	currentScene = &gameplayScene;
@@ -69,7 +76,6 @@ void Game::StartGame(Level& level)
 
 void Game::CheckCompletedLevel()
 {
-	bool IsChange = false;
 	auto door_level_2 = currentLevel->GetObject("level2").rect;
 	auto door_level_3 = currentLevel->GetObject("level3").rect;
 	auto playerRect = player.collisionRect;
@@ -79,12 +85,10 @@ void Game::CheckCompletedLevel()
 
 	if (playerRect.intersects(door_level_2) && currBoxes == neededBoxes)
 	{
-		IsChange = true;
 		StartGame(level_2);
 	}
 	else if (playerRect.intersects(door_level_3) && currBoxes == neededBoxes)
 	{
-		IsChange = true;
 		StartGame(level_3);
 	}
 }
@@ -108,11 +112,19 @@ void Game::ClearScene()
 
 void Game::SpawnEntities()
 {
+	SpawnBonuses();
+
 	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
 	std::vector<Object> birdsSpawns = currentLevel->GetObjects("enemy_bird_spawn");
-	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
 	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
+	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
+
+	for (auto const& bossSpawn : bosesSpawns)
+	{
+		sf::Vector2f pos = { bossSpawn.rect.left, bossSpawn.rect.top };
+		enemies.push_back(new Enemy(pos, EnemyType::BOSS));
+	}
 
 	for (auto const& shadowSpawn : shadowsSpawns)
 	{
@@ -132,12 +144,6 @@ void Game::SpawnEntities()
 		enemies.push_back(new Enemy(pos, EnemyType::BIRD));
 	}
 
-	for (auto const& bonusSpawn : bonusesSpawns)
-	{
-		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
-		bonuses.push_back(new Bonus(bonusPos));
-	}
-
 	for (auto const& itemsSpawn : itemsBoxSpawns)
 	{
 		sf::Vector2f itemPos = { itemsSpawn.rect.left, itemsSpawn.rect.top };
@@ -146,6 +152,42 @@ void Game::SpawnEntities()
 
 	sf::FloatRect posRect = currentLevel->GetObject("player_spawn").rect;
 	player.Spawn({ posRect.left, posRect.top });
+}
+
+void Game::SpawnBonuses()
+{
+	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
+
+	for (auto const& bonusSpawn : bonusesSpawns)
+	{
+		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
+		bonuses.push_back(new Bonus(bonusPos));
+	}
+
+	std::vector<Object> bonusesSpawnsEasy;
+	std::vector<Object> bonusesSpawnsNormal;
+
+	if (difficult == Difficult::EASY)
+	{
+		bonusesSpawnsEasy = currentLevel->GetObjects("bonus_spawn_easy");
+		bonusesSpawnsNormal = currentLevel->GetObjects("bonus_spawn_normal");
+	}
+	else if (difficult == Difficult::NORMAL)
+	{
+		bonusesSpawnsNormal = currentLevel->GetObjects("bonus_spawn_normal");
+	}
+
+	for (auto const& bonusSpawn : bonusesSpawnsEasy)
+	{
+		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
+		bonuses.push_back(new Bonus(bonusPos));
+	}
+
+	for (auto const& bonusSpawn : bonusesSpawnsNormal)
+	{
+		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
+		bonuses.push_back(new Bonus(bonusPos));
+	}
 }
 
 void Game::SetElapsedTime()
@@ -194,13 +236,11 @@ void Game::ControlPlayer()
 			Keyboard::isKeyPressed(Keyboard::Left))
 		{
 			player.runStatus = RUN_LEFT;
-			player.orientationStatus = LEFT;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::D) ||
 			Keyboard::isKeyPressed(Keyboard::Right))
 		{
 			player.runStatus = RUN_RIGHT;
-			player.orientationStatus = RIGHT;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::O) && buttonColdown >= BUTTONS_COLDOWN)
 		{
@@ -329,6 +369,7 @@ void Game::ControlGameOver(sf::RenderWindow& window)
 
 void Game::UpdatePlayer()
 {
+	player.UpdateOrientation();
 	player.UpdatePos(elapsedTime, blocks);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
@@ -341,6 +382,7 @@ void Game::UpdatePlayer()
 
 		if (gameOverColdown >= GAME_OVER_COLDOWN)
 		{
+			gameOverColdown = 0;
 			currentScene = &gameOverScene;
 		}
 	}
@@ -378,6 +420,34 @@ void Game::UpdateBullets()
 		{
 			++it;
 		}
+	}
+}
+
+void Game::UpdateEnemies()
+{
+	for (auto it = enemies.begin(); it != enemies.end();)
+	{
+		Enemy* enemy = *it;
+		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
+		enemy->UpdateTexture();
+		if (enemy->existStatus != ExistenceStatus::LIVE)
+		{
+			CreateBonus(enemy->GetCharacterPos(), bonuses, bonusProbability);
+			it = enemies.erase(it);
+			delete(enemy);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void Game::UpdateBonuses()
+{
+	for (auto bonus : bonuses)
+	{
+		bonus->Update(elapsedTime, blocks);
 	}
 }
 
@@ -465,33 +535,6 @@ void Game::EnemyPlayerCollides()
 				player.injuredColdown = 0;
 			}
 		}
-	}
-}
-
-void Game::UpdateEnemies()
-{
-	for (auto it = enemies.begin(); it != enemies.end();)
-	{
-		Enemy* enemy = *it;
-		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
-		if (enemy->existStatus != ExistenceStatus::LIVE)
-		{
-			CreateBonus(enemy->GetCharacterPos(), bonuses);
-			it = enemies.erase(it);
-			delete(enemy);
-		}
-		else
-		{
-			++it;
-		}
-	}
-}
-
-void Game::UpdateBonuses()
-{
-	for (auto bonus : bonuses)
-	{
-		bonus->Update(elapsedTime, blocks);
 	}
 }
 

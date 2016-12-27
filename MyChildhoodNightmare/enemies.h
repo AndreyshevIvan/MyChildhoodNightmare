@@ -24,6 +24,12 @@ const float BIRD_TARGET_RANGE = 1000;
 const float BIRD_MOVE_SPEED = 80;
 const int BIRD_DEMAGE = 6;
 
+const sf::Vector2f BOSS_SIZE = { 160, 250 };
+const int BOSS_START_HEALTH = 3000;
+const int BOSS_DEMAGE = 2;
+const float BOSS_MOVE_SPEED_IDLE = 100;
+const float BOSS_MOVE_SPEED_PURSUITE = 300;
+
 const int LAVA_DEMAGE = 20;
 
 enum struct EnemyType
@@ -48,6 +54,7 @@ struct Enemy : Character
 	void CreateShadow();
 	void CreateClown();
 	void CreateBird();
+	void CreateBoss();
 
 	sf::Vector2f position;
 	sf::RectangleShape targetArea;

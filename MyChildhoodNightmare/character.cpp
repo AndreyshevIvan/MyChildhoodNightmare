@@ -114,5 +114,33 @@ void Character::Clear()
 		it = characterBullets.erase(it);
 		delete(bullet);
 	}
+
 	bodyShape.setRotation(0);
+}
+
+void Character::UpdateOrientation()
+{
+	if (runStatus == MovementStatus::RUN_LEFT)
+	{
+		orientationStatus = OrientationStatus::LEFT;
+	}
+	else if (runStatus == MovementStatus::RUN_RIGHT)
+	{
+		orientationStatus = OrientationStatus::RIGHT;
+	}
+}
+
+void Character::UpdateTexture()
+{
+	auto bodyWidth = static_cast<int>(bodyShape.getSize().x);
+	auto bodyHeight = static_cast<int>(bodyShape.getSize().y);
+
+	if (orientationStatus == OrientationStatus::LEFT)
+	{
+		bodyShape.setTextureRect(sf::IntRect(0, 0, bodyWidth, bodyHeight));
+	}
+	else
+	{
+		bodyShape.setTextureRect(sf::IntRect(bodyWidth, 0, bodyWidth, bodyHeight));
+	}
 }

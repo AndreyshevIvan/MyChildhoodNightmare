@@ -26,6 +26,7 @@ struct Game
 	float gameOverColdown = 0;
 
 	Player player;
+
 	std::vector<Enemy*> enemies;
 	std::vector<Bullet*> enemyBullets;
 	std::vector<Bonus*> bonuses;
@@ -41,7 +42,11 @@ struct Game
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
 
-	std::map<Level*, int> boxesCoundMap;
+	std::map<Level*, int> boxesCoundMap = {
+			{ &level_1, 3 },
+			{ &level_2, 2 },
+			{ &level_3, 1 }
+	};
 
 	Menu menu;
 	PlayerInterface interface;
@@ -54,10 +59,14 @@ struct Game
 	GameScene previewScene;
 	GameScene *currentScene = nullptr;
 
+	int bonusProbability = BONUS_PROBABILITY_EASY;
+
 	bool InitGame();
 	void StartGame(Level& level);
 	void CheckCompletedLevel();
+
 	void SpawnEntities();
+	void SpawnBonuses();
 
 	void SetElapsedTime();
 	sf::FloatRect GetCameraArea();

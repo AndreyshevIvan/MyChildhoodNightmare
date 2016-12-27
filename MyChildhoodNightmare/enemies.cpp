@@ -17,6 +17,9 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 	case EnemyType::BIRD:
 		this->CreateBird();
 		break;
+	case EnemyType::BOSS:
+		this->CreateBoss();
+		break;
 	default:
 		break;
 	}
@@ -25,10 +28,11 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 
 	bodyShape.setTexture(&bodyTexture);
 	const sf::Vector2f BODY_SIZE = {
-		static_cast<float>(bodyTexture.getSize().x),
+		static_cast<float>(bodyTexture.getSize().x/ 2.0f),
 		static_cast<float>(bodyTexture.getSize().y)
 	};
 
+	bodyShape.setTextureRect(sf::IntRect(0, 0 , static_cast<int>(BODY_SIZE.x), static_cast<int>(BODY_SIZE.y)));
 	bodyShape.setSize(BODY_SIZE);
 	bodyShape.setOrigin(BODY_SIZE.x / 2.0f, BODY_SIZE.y);
 
@@ -102,6 +106,26 @@ void Enemy::CreateBird()
 	};
 }
 
+void Enemy::CreateBoss()
+{
+	enemyType = EnemyType::BOSS;
+
+	bodyTexture.loadFromFile("resources/enemyBoss.png");
+
+	health = BOSS_START_HEALTH;
+	demage = BOSS_DEMAGE;
+
+	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+		(void)bullets;
+		(void)player;
+	};
+
+	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+		(void)blocks;
+		(void)elapsedTime;
+	};
+}
+
 void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets)
 {
 	UpdateHealthStatus();
@@ -116,6 +140,8 @@ void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object
 		Pursuit(player, bullets);
 	}
 
+	UpdateOrientation();
+
 	if (enemyType == EnemyType::BIRD)
 	{
 		UpdateBirdPos(elapsedTime, blocks);
@@ -124,6 +150,8 @@ void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object
 	{
 		UpdatePos(elapsedTime, blocks);
 	}
+
+
 
 	UpdateHands();
 }
@@ -202,34 +230,37 @@ void Enemy::UpdateBossActivityStatus(Player const& player)
 
 void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 {
-	sf::FloatRect handLeftMiddle_copy = handLeftMiddle;
-	sf::FloatRect handLeftBottom_copy = handLeftBottom;
-
-	sf::FloatRect handRightMiddle_copy = handRightMiddle;
-	sf::FloatRect handRightBottom_copy = handRightBottom;
-
-	auto mevoment = elapsedTime * moveSpeed;
-
-	if (runStatus == MovementStatus::RUN_LEFT)
+	if (jumpStatus != JumpingStatus::FLY)
 	{
-		handLeftMiddle_copy.left -= mevoment;
-		handLeftBottom_copy.left -= mevoment;
+		sf::FloatRect handLeftMiddle_copy = handLeftMiddle;
+		sf::FloatRect handLeftBottom_copy = handLeftBottom;
 
-		if (IsCollidesWithLevel(handLeftMiddle_copy, blocks) ||
-			!IsCollidesWithLevel(handLeftBottom_copy, blocks))
+		sf::FloatRect handRightMiddle_copy = handRightMiddle;
+		sf::FloatRect handRightBottom_copy = handRightBottom;
+
+		auto mevoment = elapsedTime * moveSpeed;
+
+		if (runStatus == MovementStatus::RUN_LEFT)
 		{
-			currentRunStatus = MovementStatus::RUN_RIGHT;
+			handLeftMiddle_copy.left -= mevoment;
+			handLeftBottom_copy.left -= mevoment;
+
+			if (IsCollidesWithLevel(handLeftMiddle_copy, blocks) ||
+				!IsCollidesWithLevel(handLeftBottom_copy, blocks))
+			{
+				currentRunStatus = MovementStatus::RUN_RIGHT;
+			}
 		}
-	}
-	else if (runStatus == MovementStatus::RUN_RIGHT)
-	{
-		handRightMiddle_copy.left += mevoment;
-		handRightBottom_copy.left += mevoment;
-
-		if (IsCollidesWithLevel(handRightMiddle_copy, blocks) ||
-			!IsCollidesWithLevel(handRightBottom_copy, blocks))
+		else if (runStatus == MovementStatus::RUN_RIGHT)
 		{
-			currentRunStatus = MovementStatus::RUN_LEFT;
+			handRightMiddle_copy.left += mevoment;
+			handRightBottom_copy.left += mevoment;
+
+			if (IsCollidesWithLevel(handRightMiddle_copy, blocks) ||
+				!IsCollidesWithLevel(handRightBottom_copy, blocks))
+			{
+				currentRunStatus = MovementStatus::RUN_LEFT;
+			}
 		}
 	}
 }
@@ -249,6 +280,15 @@ void Enemy::ClownShoot(Player const& player, std::vector<Bullet*>& bullets)
 void Enemy::UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks)
 {
 	sf::FloatRect collisionRect_copy = collisionRect;
+
+	if (birdMove.x < 0)
+	{
+		runStatus = MovementStatus::RUN_LEFT;
+	}
+	else if (birdMove.x > 0)
+	{
+		runStatus = MovementStatus::RUN_RIGHT;
+	}
 
 	collisionRect_copy.left += elapsedTime * BIRD_MOVE_SPEED * birdMove.x / 2.0f;
 	if (!IsCollidesWithLevel(collisionRect_copy, blocks))

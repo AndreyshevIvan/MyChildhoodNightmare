@@ -44,5 +44,4 @@ struct Player : Character
 	bool AddBonusEffect(Bonus const& bonus);
 
 	void UpdateStatuses();
-	void UpdateTexture();
 };
