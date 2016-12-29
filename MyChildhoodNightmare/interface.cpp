@@ -5,6 +5,13 @@ using namespace sf;
 
 const sf::Vector2f RESOLUTION = { 1366 , 768 };
 
+enum
+{
+	SWORD = 0,
+	SHOOTGUN = 1,
+	AK = 2,
+};
+
 bool PlayerInterface::Init()
 {
 	if (!playerHealthBarTexture.loadFromFile("resources/healthBar.png") ||
@@ -78,7 +85,6 @@ void PlayerInterface::CreateBoxes(int maxBoxes)
 	for (auto box : boxes)
 	{
 		box->setTexture(&boxTexture);
-		//box->setOrigin(BOX_SIZE.x / 2.0f, BOX_SIZE.y / 2.0f);
 	}
 }
 
@@ -124,13 +130,13 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 {
 	switch (weapon)
 	{
-	case 0:
+	case SWORD:
 		playerWeaponBar.setTexture(&playerMeleeBarTexture);
 		break;
-	case 1:
+	case SHOOTGUN:
 		playerWeaponBar.setTexture(&playerShootgunBarTexture);
 		break;
-	case 2:
+	case AK:
 		playerWeaponBar.setTexture(&playerAkBarTexture);
 		break;
 	default:
@@ -219,8 +225,8 @@ void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
 
 void PlayerInterface::UpdateBossBar(int bossMaxHealth, int bossHealth)
 {
-	float HPLineSize = static_cast<float>(bossHealth) / static_cast<float>(bossMaxHealth) * BOSS_HP_LINE_SIZE.x;
-	bossHPLine.setSize({ HPLineSize , BOSS_HP_LINE_SIZE.y });
+	float healthLineSize = static_cast<float>(bossHealth) / static_cast<float>(bossMaxHealth) * BOSS_HP_LINE_SIZE.x;
+	bossHPLine.setSize({ healthLineSize , BOSS_HP_LINE_SIZE.y });
 }
 
 void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
@@ -266,17 +272,14 @@ void PlayerInterface::DrawWin(sf::RenderWindow& window)
 
 string IntToStr(int number)
 {
-	string result = "";
-
-	while (number > 0)
+	if (number >= 0)
 	{
-		int digit = number % 10;
-		number = (number - digit) / 10;
-
-		result = char(digit + '0') + result;
+		return std::to_string(number);
 	}
-
-	return result;
+	else
+	{
+		return "0";
+	}
 }
 
 sf::Vector2f GetTextureSize(sf::Texture const& texture)

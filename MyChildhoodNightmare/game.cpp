@@ -3,6 +3,32 @@
 using namespace std;
 using namespace sf;
 
+enum
+{
+	// Start menu buttons
+	START_MENU_START = 0,
+	START_MENU_OPTIONS,
+	START_MENU_CLOSE,
+	// Options menu buttons
+	OPTIONS_MENU_EASY = 0,
+	OPTIONS_MENU_NORMAL,
+	OPTIONS_MENU_HARD,
+	OPTIONS_MENU_BACK,
+	// Pause menu buttons
+	PAUSE_MENU_RESUME = 0,
+	PAUSE_MENU_RESTART,
+	PAUSE_MENU_EXIT,
+};
+
+template <class TContainer, class TPredicate>
+void erase_if(TContainer &container, TPredicate && predicate)
+{
+	auto newEnd = std::remove_if(std::begin(container), std::end(container), [&](auto &pBullet) {
+		return predicate(pBullet);
+	});
+	container.erase(newEnd, container.end());
+}
+
 bool Game::InitGame()
 {
 	if (!level_1.LoadFromFile("resources/firstTileset.tmx") ||
@@ -209,14 +235,9 @@ sf::FloatRect Game::GetCameraArea()
 
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	for (unsigned i = 0; i < blocks.size(); i++)
-	{
-		if (rect.intersects(blocks[i].rect) && blocks[i].name == "solid")
-		{
-			return true;
-		}
-	}
-	return false;
+	return std::any_of(blocks.begin(), blocks.end(), [&](const Object &block) {
+		return (rect.intersects(block.rect) && block.name == "solid");
+	});
 }
 
 void Game::ControlPlayer()
@@ -263,27 +284,21 @@ void Game::ControlMenu(sf::RenderWindow& window)
 		menu.buttonsColdown = 0;
 		currentScene = &gameplayScene;
 	}
-	else
-	{
-		if (Keyboard::isKeyPressed(Keyboard::F) &&
+	else if ((Keyboard::isKeyPressed(Keyboard::F) || Keyboard::isKeyPressed(Keyboard::Return)) &&
 			menu.buttonsColdown >= BUTTONS_COLDOWN)
-		{
-			menu.buttonsColdown = 0;
-			ControlMenuLogic(window);
-		}
-		else
-		{
-			if (Keyboard::isKeyPressed(Keyboard::Up) &&
-				menu.buttonsColdown >= BUTTONS_COLDOWN)
-			{
-				menu.SwitchButtonUp();
-			}
-			else if (Keyboard::isKeyPressed(Keyboard::Down) &&
-				menu.buttonsColdown >= BUTTONS_COLDOWN)
-			{
-				menu.SwitchButtonDown();
-			}
-		}
+	{
+		menu.buttonsColdown = 0;
+		ControlMenuLogic(window);
+	}
+	else if (Keyboard::isKeyPressed(Keyboard::Up) &&
+			menu.buttonsColdown >= BUTTONS_COLDOWN)
+	{
+		menu.SwitchButtonUp();
+	}
+	else if (Keyboard::isKeyPressed(Keyboard::Down) &&
+		menu.buttonsColdown >= BUTTONS_COLDOWN)
+	{
+		menu.SwitchButtonDown();
 	}
 }
 
@@ -292,16 +307,15 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 	switch (menu.currentMenu)
 	{
 	case CurrentMenu::START:
-
 		switch (menu.currentButton)
 		{
-		case 0:
+		case START_MENU_START:
 			StartGame(level_1);
 			break;
-		case 1:
+		case START_MENU_OPTIONS:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
 			break;
-		case 2:
+		case START_MENU_CLOSE:
 			window.close();
 			break;
 		default:
@@ -313,16 +327,16 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 
 		switch (menu.currentButton)
 		{
-		case 0:
+		case OPTIONS_MENU_EASY:
 			difficult = Difficult::EASY;
 			break;
-		case 1:
+		case OPTIONS_MENU_NORMAL:
 			difficult = Difficult::NORMAL;
 			break;
-		case 2:
+		case OPTIONS_MENU_HARD:
 			difficult = Difficult::HARD;
 			break;
-		case 3:
+		case OPTIONS_MENU_BACK:
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			break;
 		default:
@@ -332,16 +346,15 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		break;
 
 	case CurrentMenu::PAUSE:
-
 		switch (menu.currentButton)
 		{
-		case 0:
+		case PAUSE_MENU_RESUME:
 			currentScene = &gameplayScene;
 			break;
-		case 1:
+		case PAUSE_MENU_RESTART:
 			StartGame(*currentLevel);
 			break;
-		case 2:
+		case PAUSE_MENU_EXIT:
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			break;
 		default:
@@ -392,35 +405,23 @@ void Game::UpdatePlayer()
 
 void Game::UpdateBullets()
 {
-	for (auto it = player.characterBullets.begin(); it != player.characterBullets.end();)
-	{
-		Bullet* bullet = *it;
-		bullet->Update(elapsedTime);
-		if (IsCollidesWithLevel(bullet->collisionRect) || !bullet->isLive)
+	auto updateBullets = [&](vector<Bullet *> &bullets) {
+		for (Bullet *pBullet : bullets)
 		{
-			it = player.characterBullets.erase(it);
-			delete(bullet);
+			pBullet->Update(elapsedTime);
 		}
-		else
-		{
-			++it;
-		}
-	}
+		erase_if(bullets, [&](Bullet *pBullet) {
+			bool dead = (IsCollidesWithLevel(pBullet->collisionRect) || !pBullet->isLive);
+			if (dead)
+			{
+				delete(pBullet);
+			}
+			return dead;
+		});
+	};
 
-	for (auto it = enemyBullets.begin(); it != enemyBullets.end();)
-	{
-		Bullet* bullet = *it;
-		bullet->Update(elapsedTime);
-		if (IsCollidesWithLevel(bullet->collisionRect) || !bullet->isLive)
-		{
-			it = enemyBullets.erase(it);
-			delete(bullet);
-		}
-		else
-		{
-			++it;
-		}
-	}
+	updateBullets(player.characterBullets);
+	updateBullets(enemyBullets);
 }
 
 void Game::UpdateEnemies()

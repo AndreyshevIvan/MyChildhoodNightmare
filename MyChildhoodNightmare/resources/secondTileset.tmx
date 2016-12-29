@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="116" height="42" tilewidth="32" tileheight="32" nextobjectid="41">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="116" height="42" tilewidth="32" tileheight="32" nextobjectid="42">
  <tileset firstgid="1" name="tileset_2" tilewidth="32" tileheight="32" tilecount="100" columns="10">
   <image source="tileset.png" width="320" height="320"/>
  </tileset>
@@ -19526,10 +19526,9 @@
  </objectgroup>
  <objectgroup name="spawns">
   <object id="10" name="enemy_boss_spawn" x="2374" y="521.394" width="65.3333" height="56"/>
+  <object id="41" name="player_spawn" x="252.97" y="1068.85" width="45.4545" height="60.6061"/>
  </objectgroup>
- <objectgroup name="items_spawns">
-  <object id="39" name="item_box_spawn" x="256" y="1083" width="36" height="45"/>
- </objectgroup>
+ <objectgroup name="items_spawns"/>
  <objectgroup name="bonuses_spawns">
   <object id="33" name="bonus_spawn_easy" x="1316" y="716" width="48" height="49.3333"/>
   <object id="34" name="bonus_spawn_normal" x="1413.33" y="705.333" width="60" height="56"/>

@@ -47838,8 +47838,8 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="44"/>
+   <tile gid="46"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -48128,8 +48128,8 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="44"/>
-   <tile gid="46"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -84047,7 +84047,7 @@
   <object id="325" name="solid" x="2397.5" y="705.166" width="63.6663" height="33.6673"/>
   <object id="326" name="solid" x="2945.83" y="577.833" width="56.9997" height="25.0007"/>
   <object id="327" name="solid" x="3075.83" y="482.833" width="52.9997" height="25.6673"/>
-  <object id="328" name="solid" x="3681.83" y="642.833" width="57.333" height="27.334"/>
+  <object id="328" name="solid" x="4000.5" y="610.833" width="57.333" height="27.334"/>
   <object id="329" name="solid" x="2563.83" y="641.833" width="280.333" height="29.334"/>
   <object id="331" name="solid" x="3234.83" y="419.333" width="280.333" height="29.334"/>
   <object id="332" name="solid" x="3556.83" y="323.333" width="280.333" height="23.334"/>
@@ -84276,7 +84276,7 @@
   <object id="787" name="bonus_spawn" x="2255" y="1035" width="44" height="46"/>
   <object id="788" name="bonus_spawn" x="1772" y="1039" width="44" height="46"/>
   <object id="789" name="bonus_spawn" x="2004" y="851" width="44" height="46"/>
-  <object id="791" name="bonus_spawn" x="3902" y="831" width="44" height="46"/>
+  <object id="791" name="bonus_spawn" x="3908" y="646" width="44" height="46"/>
   <object id="792" name="bonus_spawn" x="3683.33" y="2005.67" width="30.6667" height="32.6667"/>
   <object id="793" name="bonus_spawn" x="3104.67" y="2029.67" width="44" height="46"/>
   <object id="794" name="bonus_spawn" x="6896" y="1869" width="44" height="46"/>
@@ -84287,7 +84287,7 @@
   <object id="843" name="bonus_spawn_easy" x="4528.67" y="213" width="42.6667" height="34"/>
  </objectgroup>
  <objectgroup name="enemies_spawns">
-  <object id="750" name="enemy_clown_spawn" x="1194.12" y="956.121" width="46" height="44"/>
+  <object id="750" name="enemy_clown_spawn" x="1194.12" y="937.454" width="46" height="44"/>
   <object id="751" name="enemy_clown_spawn" x="1927.79" y="840.545" width="46" height="44"/>
   <object id="752" name="enemy_clown_spawn" x="3671.67" y="201.152" width="46" height="44"/>
   <object id="753" name="enemy_clown_spawn" x="4657.79" y="201.758" width="46" height="44"/>
@@ -84327,7 +84327,7 @@
  <objectgroup name="bonuses_spawns_easy">
   <object id="813" name="bonus_spawn_easy" x="1686.67" y="736.333" width="42.6667" height="34"/>
   <object id="814" name="bonus_spawn_easy" x="2428" y="609.667" width="42.6667" height="34"/>
-  <object id="815" name="bonus_spawn_easy" x="3709.33" y="555" width="42.6667" height="34"/>
+  <object id="815" name="bonus_spawn_easy" x="4030.67" y="528.333" width="42.6667" height="34"/>
   <object id="816" name="bonus_spawn_easy" x="5357.33" y="1596.33" width="42.6667" height="34"/>
   <object id="817" name="bonus_spawn_easy" x="4584" y="1779" width="42.6667" height="34"/>
   <object id="818" name="bonus_spawn_easy" x="3128" y="1973.67" width="42.6667" height="34"/>

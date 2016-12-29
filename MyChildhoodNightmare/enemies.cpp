@@ -335,14 +335,11 @@ void Enemy::UpdateHands()
 {
 	float leftHandX = GetCharacterPos().x - bodyShape.getSize().x / 2.0f - HAND_MARGIN_X;
 	float rightHandX = GetCharacterPos().x + bodyShape.getSize().x / 2.0f + HAND_MARGIN_X;
-	float topHandY = GetCharacterPos().y - bodyShape.getSize().y;
 	float bottomHandY = GetCharacterPos().y + 10;
 
-	handLeftTop = sf::FloatRect({ leftHandX, topHandY }, HAND_SIZE);
 	handLeftMiddle = sf::FloatRect({ leftHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
 	handLeftBottom = sf::FloatRect({ leftHandX, bottomHandY }, HAND_SIZE );
 
-	handRightTop = sf::FloatRect({ rightHandX, topHandY }, HAND_SIZE);
 	handRightMiddle = sf::FloatRect({ rightHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
 	handRightBottom = sf::FloatRect({ rightHandX, bottomHandY }, HAND_SIZE);
 }

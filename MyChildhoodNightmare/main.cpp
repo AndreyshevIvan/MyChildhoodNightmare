@@ -34,7 +34,7 @@ int main()
 	}
 	else
 	{
-		std::cout << "ERROR: ANY FILES NOT FOUND.";
+		std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS.";
 		system("pause");
 		return 1;
 	}
@@ -47,6 +47,11 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 	while (window.isOpen())
 	{
 		game.SetElapsedTime();
+
+		if (game.elapsedTime > 0.1)
+		{
+			game.elapsedTime = 1 / 60;
+		}
 
 		HandleEvents(window, game);
 		Update(game);

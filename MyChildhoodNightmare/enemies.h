@@ -12,7 +12,7 @@ const float SHADOW_MOVE_SPEED = 180;
 const float SHADOW_MOVE_SPEED_RANDOM = 80;
 const int SHADOW_DEMAGE = 25;
 
-const int CLOWN_START_HEALTH = 2000;
+const int CLOWN_START_HEALTH = 200;
 const float CLOWN_MOVE_SPEED = 0;
 const int CLOWN_TOUCH_DEMAGE = 6;
 const float CLOWN_TARGET_RANGE = 600;
@@ -25,7 +25,7 @@ const float BIRD_MOVE_SPEED = 80;
 const int BIRD_DEMAGE = 6;
 
 const sf::Vector2f BOSS_SIZE = { 160, 250 };
-const int BOSS_START_HEALTH = 100;
+const int BOSS_START_HEALTH = 2000;
 const int BOSS_DEMAGE = 2;
 const float BOSS_MOVE_SPEED_IDLE = 100;
 const float BOSS_MOVE_SPEED_PURSUITE = 300;
@@ -63,11 +63,9 @@ struct Enemy : Character
 
 	MovementStatus currentRunStatus;
 
-	sf::FloatRect handLeftTop;
 	sf::FloatRect handLeftMiddle;
 	sf::FloatRect handLeftBottom;
 
-	sf::FloatRect handRightTop;
 	sf::FloatRect handRightMiddle;
 	sf::FloatRect handRightBottom;
 
