@@ -13,6 +13,7 @@ const sf::Vector2f BOSS_HP_LINE_SIZE = { 630, 30 };
 const int PLAYER_HP_FONT_SIZE = 50;
 const int PLAYER_AMMO_FONT_SIZE = 28;
 const int PREVIEW_FONT_SIZE = 35;
+const int HELP_FONT_SIZE = 15;
 
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y };
@@ -21,7 +22,7 @@ const sf::Vector2f PREVIEW_TEXT_MARGIN = { 0, 220 };
 const sf::Vector2f PLAYER_BOXES_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y + PLAYER_WEAPON_BAR_SIZE.y + 10 };
 const sf::Vector2f BOSS_BAR_MARGIN = { 0, -280 };
 const sf::Vector2f BOSS_HP_LINE_MARGIN = { -BOSS_HP_LINE_SIZE.x / 2.0f + 33, -33 };
-const sf::Vector2f WIN_TEXT_MARGIN = {};
+const sf::Vector2f HELP_TEXT_MARGIN = { -665 , 350 };
 const float BOXES_MIDLE_MARGIN = 60;
 
 const int PART_COUNT = 3;
@@ -38,6 +39,7 @@ enum struct PreviewStatus
 	CELLAR,
 	BOX,
 	MONSTERS,
+	CONTROLLER,
 };
 
 struct PlayerInterface
@@ -62,8 +64,10 @@ struct PlayerInterface
 	sf::Texture redFilterTexture;
 
 	sf::RectangleShape previewImage;
-	sf::Texture previewTextures[4];
+	sf::Texture previewTextures[5];
 	sf::Text previewText;
+	PreviewStatus currentPreviewScene;
+	sf::Text helpText;
 
 	std::vector<sf::RectangleShape*> boxes;
 	sf::Texture boxTexture;
@@ -92,8 +96,9 @@ struct PlayerInterface
 	void UpdatePlayerBoxes(int currentBoxes);
 	void UpdateBossBar(int bossMaxHealth, int bossHealth);
 	void UpdateWin(sf::Vector2f const& windowCenter);
-
+	
 	bool UpdatePreview(sf::Vector2f const& position, float elapsedTime);
+	void UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos);
 
 	void Draw(sf::RenderWindow& window);
 	void DrawPart(sf::RenderWindow& window);

@@ -15,13 +15,14 @@ const int SHADOW_DEMAGE = 25;
 const int CLOWN_START_HEALTH = 200;
 const float CLOWN_MOVE_SPEED = 0;
 const int CLOWN_TOUCH_DEMAGE = 6;
-const float CLOWN_TARGET_RANGE = 600;
+const float CLOWN_TARGET_RANGE = 500;
+const float CLOWN_SHOOT_RANGE = CLOWN_TARGET_RANGE;
 const int CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
 
 const int BIRD_START_HEALTH = 100;
 const float BIRD_TARGET_RANGE = 1000;
-const float BIRD_MOVE_SPEED = 80;
+const float BIRD_MOVE_SPEED = 110;
 const int BIRD_DEMAGE = 6;
 
 const sf::Vector2f BOSS_SIZE = { 160, 250 };

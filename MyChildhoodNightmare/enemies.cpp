@@ -74,7 +74,7 @@ void Enemy::CreateClown()
 
 	health = CLOWN_START_HEALTH;
 	demage = CLOWN_TOUCH_DEMAGE;
-	shootRange = CLOWN_TARGET_RANGE;
+	shootRange = CLOWN_SHOOT_RANGE;
 
 	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
 		ClownShoot(player, bullets);
@@ -290,7 +290,7 @@ void Enemy::UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks)
 		runStatus = MovementStatus::RUN_RIGHT;
 	}
 
-	collisionRect_copy.left += elapsedTime * BIRD_MOVE_SPEED * birdMove.x / 2.0f;
+	collisionRect_copy.left += elapsedTime * BIRD_MOVE_SPEED * birdMove.x;
 	if (!IsCollidesWithLevel(collisionRect_copy, blocks))
 	{
 		collisionRect.left = collisionRect_copy.left;

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 const float BULLET_SPEED = 700;
-const sf::Vector2f BULLET_SIZE = { 30, 8 };
+const sf::Vector2f BULLET_SIZE = { 10, 8 };
 
 const float MAX_WEAPON_COLDOWN = 1;
 const float MELEE_COLDOWN = 0.4f;

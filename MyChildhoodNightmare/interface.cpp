@@ -41,6 +41,7 @@ bool PlayerInterface::Init()
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
 	previewText = Text("", font, PREVIEW_FONT_SIZE);
 	winText = Text("", font, PREVIEW_FONT_SIZE);
+	helpText = Text("", font, HELP_FONT_SIZE);
 
 	playerHealthBar.setSize(GetTextureSize(playerHealthBarTexture));
 	playerHealthBar.setTexture(&playerHealthBarTexture);
@@ -180,11 +181,11 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 	{
 	case PreviewStatus::HOUSE:
 		previewImage.setTexture(&previewTextures[0]);
-		previewText.setString("There was one old house and wicked family lived in it.");
+		previewText.setString("There was one old house and wicked family lived in it...");
 		break;
 	case PreviewStatus::CELLAR:
 		previewImage.setTexture(&previewTextures[1]);
-		previewText.setString("They had a little child who once was locked in a scary cellar... ");
+		previewText.setString("They had a little child who once was locked in a scary cellar...");
 		break;
 	case PreviewStatus::BOX:
 		previewImage.setTexture(&previewTextures[2]);
@@ -198,7 +199,16 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 		break;
 	}
 
+	UpdateHelpButton("Press \"ENTER\" to skip", position);
+
 	return false;
+}
+
+void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
+{
+	(void)helpStr;
+	helpText.setString(helpStr);
+	helpText.setPosition(cameraPos + HELP_TEXT_MARGIN);
 }
 
 void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
@@ -233,6 +243,7 @@ void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
 {
 	win.setPosition(windowCenter);
 	winText.setPosition(windowCenter + PREVIEW_TEXT_MARGIN);
+	UpdateHelpButton("Press \"ENTER\" to go main menu", windowCenter);
 }
 
 void PlayerInterface::Draw(RenderWindow& window)
@@ -255,6 +266,7 @@ void PlayerInterface::DrawPart(sf::RenderWindow& window)
 	window.clear(sf::Color::Black);
 	window.draw(previewImage);
 	window.draw(previewText);
+	window.draw(helpText);
 }
 
 void PlayerInterface::DrawBossBar(sf::RenderWindow& window)
@@ -268,6 +280,7 @@ void PlayerInterface::DrawWin(sf::RenderWindow& window)
 	window.clear(sf::Color::Black);
 	window.draw(win);
 	window.draw(winText);
+	window.draw(helpText);
 }
 
 string IntToStr(int number)

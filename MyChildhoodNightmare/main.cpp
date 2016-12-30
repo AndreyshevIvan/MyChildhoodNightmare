@@ -25,6 +25,7 @@ int main()
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
 	srand(static_cast<unsigned>(time(NULL)));
 
+
 	Game game;
 
 	if (game.InitGame())
@@ -44,6 +45,7 @@ int main()
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game)
 {
+
 	while (window.isOpen())
 	{
 		game.SetElapsedTime();
@@ -164,7 +166,7 @@ void InitPreviewScene(Game& game)
 {
 	game.previewScene.toHandle = [&](sf::RenderWindow& window) {
 		(void)window;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		{
 			game.currentScene = &game.menuScene;
 		}
@@ -185,7 +187,7 @@ void InitWinScene(Game& game)
 {
 	game.winScene.toHandle = [&](sf::RenderWindow& window) {
 		(void)window;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		{
 			game.menu.SetMenu(CurrentMenu::START, game.camera.getCenter());
 			game.currentScene = &game.menuScene;
