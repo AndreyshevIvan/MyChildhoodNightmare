@@ -64,10 +64,13 @@ struct PlayerInterface
 	sf::Texture redFilterTexture;
 
 	sf::RectangleShape previewImage;
-	sf::Texture previewTextures[5];
+	sf::Texture previewTextures[4];
 	sf::Text previewText;
 	PreviewStatus currentPreviewScene;
 	sf::Text helpText;
+
+	sf::RectangleShape controlKeysImage;
+	sf::Texture controlKeysTexture;
 
 	std::vector<sf::RectangleShape*> boxes;
 	sf::Texture boxTexture;
@@ -99,6 +102,9 @@ struct PlayerInterface
 	
 	bool UpdatePreview(sf::Vector2f const& position, float elapsedTime);
 	void UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos);
+
+	void UpdateControlKeys(sf::Vector2f const& position);
+	void DrawControlKeys(sf::RenderWindow& window);
 
 	void Draw(sf::RenderWindow& window);
 	void DrawPart(sf::RenderWindow& window);

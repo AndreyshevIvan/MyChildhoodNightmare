@@ -97,7 +97,14 @@ void Game::StartGame(Level& level)
 
 	SpawnEntities();
 
-	currentScene = &gameplayScene;
+	if (currentLevel == &level_1)
+	{
+		currentScene = &viewControlScene;
+	}
+	else
+	{
+		currentScene = &gameplayScene;
+	}
 }
 
 void Game::CheckCompletedLevel()
