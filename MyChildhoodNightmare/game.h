@@ -56,7 +56,6 @@ struct Game
 	GameScene pauseScene;
 	GameScene gameOverScene;
 	GameScene previewScene;
-	GameScene viewControlScene;
 	GameScene winScene;
 	GameScene *currentScene = nullptr;
 

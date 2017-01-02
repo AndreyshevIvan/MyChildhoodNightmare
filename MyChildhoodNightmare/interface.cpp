@@ -27,8 +27,7 @@ bool PlayerInterface::Init()
 		!previewTextures[3].loadFromFile("resources/notAlone.png") ||
 		!boxTexture.loadFromFile("resources/box.png") ||
 		!bossBarTexture.loadFromFile("resources/bossBar.png") ||
-		!winTexture.loadFromFile("resources/win.png") ||
-		!controlKeysTexture.loadFromFile("resources/controlKeys.png"))
+		!winTexture.loadFromFile("resources/win.png"))
 	{
 		return false;
 	}
@@ -71,10 +70,6 @@ bool PlayerInterface::Init()
 
 	previewImage.setSize(PREVIEW_IMAGE_SIZE);
 	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
-
-	controlKeysImage.setSize(PREVIEW_IMAGE_SIZE);
-	controlKeysImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
-	controlKeysImage.setTexture(&controlKeysTexture);
 
 	return true;
 }
@@ -209,11 +204,6 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 	return false;
 }
 
-void PlayerInterface::UpdateControlKeys(sf::Vector2f const& position)
-{
-	controlKeysImage.setPosition({ position.x, position.y });
-}
-
 void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
 {
 	(void)helpStr;
@@ -277,12 +267,6 @@ void PlayerInterface::DrawPart(sf::RenderWindow& window)
 	window.draw(previewImage);
 	window.draw(previewText);
 	window.draw(helpText);
-}
-
-void PlayerInterface::DrawControlKeys(sf::RenderWindow& window)
-{
-	window.clear(sf::Color::Black);
-	window.draw(controlKeysImage);
 }
 
 void PlayerInterface::DrawBossBar(sf::RenderWindow& window)
