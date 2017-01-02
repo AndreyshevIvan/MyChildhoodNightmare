@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="300" height="70" tilewidth="32" tileheight="32" nextobjectid="865">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="300" height="70" tilewidth="32" tileheight="32" nextobjectid="871">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="tileset.png" width="640" height="640"/>
  </tileset>
@@ -84020,7 +84020,6 @@
   </data>
  </layer>
  <objectgroup name="solids">
-  <object id="192" name="solid" x="1368" y="377" width="87.3333" height="74"/>
   <object id="301" name="solid" x="-15.6666" y="-963" width="35.3333" height="3194"/>
   <object id="302" name="solid" x="22.3334" y="1157.67" width="1279.33" height="558"/>
   <object id="303" name="solid" x="545.667" y="1029" width="94.333" height="152.667"/>
@@ -84323,13 +84322,19 @@
   <object id="771" name="enemy_shadow_spawn" x="5810.33" y="1985.88" width="46" height="44"/>
   <object id="772" name="enemy_shadow_spawn" x="6304.27" y="1984.06" width="46" height="44"/>
   <object id="773" name="enemy_bird_spawn" x="1095.18" y="368.909" width="46" height="44"/>
-  <object id="774" name="enemy_bird_spawn" x="2201.24" y="287.091" width="46" height="44"/>
+  <object id="774" name="enemy_bird_spawn" x="5905.24" y="1617.09" width="46" height="44"/>
   <object id="775" name="enemy_bird_spawn" x="4328.52" y="699.212" width="46" height="44"/>
   <object id="776" name="enemy_bird_spawn" x="8667.91" y="1568.91" width="46" height="44"/>
   <object id="777" name="enemy_bird_spawn" x="7380.03" y="262.848" width="46" height="44"/>
   <object id="778" name="enemy_bird_spawn" x="8416.39" y="626.485" width="46" height="44"/>
   <object id="863" name="enemy_spider_spawn" x="1974" y="543" width="65.3333" height="67.3333"/>
   <object id="864" name="enemy_spider_spawn" x="608" y="800.333" width="65.3333" height="67.3333"/>
+  <object id="865" name="enemy_spider_spawn" x="6632.33" y="639.333" width="65.3333" height="67.3333"/>
+  <object id="866" name="enemy_spider_spawn" x="6170.33" y="1856.33" width="65.3333" height="67.3333"/>
+  <object id="867" name="enemy_spider_spawn" x="8020.33" y="1504.33" width="65.3333" height="67.3333"/>
+  <object id="868" name="enemy_spider_spawn" x="8893.33" y="1535.33" width="65.3333" height="67.3333"/>
+  <object id="869" name="enemy_spider_spawn" x="4253.33" y="1952.33" width="65.3333" height="67.3333"/>
+  <object id="870" name="enemy_spider_spawn" x="3535.33" y="1887.33" width="65.3333" height="67.3333"/>
  </objectgroup>
  <objectgroup name="player_spawn">
   <object id="835" name="bonus_spawn_easy" x="8227.09" y="1005.91" width="42.6667" height="34"/>

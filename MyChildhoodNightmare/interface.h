@@ -27,7 +27,7 @@ const float BOXES_MIDLE_MARGIN = 60;
 
 const int PART_COUNT = 3;
 
-const float PART_COLDOWN = 4.0f;
+const float PART_COLDOWN = 3.45f;
 const float GAME_OVER_COLDOWN = 2;
 
 const sf::Color BOSS_HP_LINE_COLOR = sf::Color(98, 10, 10, 255);

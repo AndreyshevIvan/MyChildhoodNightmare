@@ -41,7 +41,10 @@ bool Game::InitGame()
 	}
 
 
-	if (!player.InitPlayer() || !menu.InitMenuItems() || !interface.Init())
+	if (!player.InitPlayer() ||
+		!menu.InitMenuItems() ||
+		!interface.Init() ||
+		!gameSound.Init())
 	{
 		return false;
 	}
@@ -292,6 +295,11 @@ void Game::ControlPlayer()
 
 void Game::ControlMenu(sf::RenderWindow& window)
 {
+	if (gameSound.mainMenu.getStatus() != sf::Sound::Playing)
+	{
+		gameSound.mainMenu.play();
+	}
+
 	if (Keyboard::isKeyPressed(Keyboard::Escape) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN &&
 		menu.currentMenu == CurrentMenu::PAUSE)
@@ -325,7 +333,8 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case START_MENU_START:
-			StartGame(level_0);
+			gameSound.mainMenu.stop();
+			StartGame(level_2);
 			break;
 		case START_MENU_OPTIONS:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -339,7 +348,6 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		menu.currentButton = 0;
 		break;
 	case CurrentMenu::DIFFICULT:
-
 		switch (menu.currentButton)
 		{
 		case OPTIONS_MENU_EASY:
@@ -364,12 +372,15 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case PAUSE_MENU_RESUME:
+			gameSound.mainMenu.stop();
 			currentScene = &gameplayScene;
 			break;
 		case PAUSE_MENU_RESTART:
+			gameSound.mainMenu.stop();
 			StartGame(*currentLevel);
 			break;
 		case PAUSE_MENU_EXIT:
+			gameSound.mainMenu.stop();
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			break;
 		default:
@@ -405,6 +416,11 @@ void Game::UpdatePlayer()
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
+		if (gameSound.playerDeath.getStatus() != sf::Music::Playing)
+		{
+			gameSound.playerDeath.play();
+		}
+
 		auto bodyRotation = player.bodyShape.getRotation();
 		player.bodyShape.setRotation(bodyRotation + DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
 
@@ -553,7 +569,7 @@ void Game::EnemyPlayerCollides()
 		{
 			if (player.injuredColdown >= INJURED_COLDOWN)
 			{
-				player.health -= enemy->demage;
+				player.health -= enemy->touchDemage;
 				player.injuredColdown = 0;
 			}
 		}
@@ -585,7 +601,12 @@ void Game::UpdateColdowns()
 
 	for (auto enemy : enemies)
 	{
-		if (enemy->shootColdown <= CLOWN_SHOOT_COLDOWN)
+		if (enemy->enemyType == EnemyType::CLOWN && enemy->shootColdown <= CLOWN_SHOOT_COLDOWN)
+		{
+			enemy->shootColdown += elapsedTime;
+		}
+
+		if (enemy->enemyType == EnemyType::BOSS && enemy->shootColdown <= BOSS_SHOOT_COLDOWN)
 		{
 			enemy->shootColdown += elapsedTime;
 		}

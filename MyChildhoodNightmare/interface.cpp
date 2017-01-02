@@ -1,4 +1,4 @@
-#include "interface.h"
+﻿#include "interface.h"
 
 using namespace std;
 using namespace sf;

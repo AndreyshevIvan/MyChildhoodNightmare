@@ -1,20 +1,59 @@
 #include "bullets.h"
 
+Bullet::Bullet(sf::Vector2f const& startPos, int demage, int orientation, float maxRange, BulletType const& type)
+{
+	switch (type)
+	{
+	case BulletType::PLAYER_AK:
+		bodyTexture.loadFromFile("resources/bullets_player_ak.png");
+		break;
+	case BulletType::PLAYER_SHOOTGUN:
+		bodyTexture.loadFromFile("resources/bullets_player_shootgun.png");
+		break;
+	case BulletType::CLOWN_BULLET:
+		bodyTexture.loadFromFile("resources/bullets_clown.png");
+		break;
+	case BulletType::BOSS_BULLET:
+		bodyTexture.loadFromFile("resources/bullets_boss.png");
+		speed = BOSS_BULLET_SPEED;
+		break;
+	default:
+		break;
+	}
+
+	collisionRect.left = startPos.x;
+	collisionRect.top = startPos.y - 50;
+	collisionRect.width = BULLET_SIZE.x;
+	collisionRect.height = BULLET_SIZE.y;
+
+	bodyShape.setTexture(&bodyTexture);
+	bodyShape.setSize(BULLET_SIZE);
+	bodyShape.setPosition({ collisionRect.left, collisionRect.top });
+	movmentOrientation = orientation;
+
+	this->type = type;
+	this->maxRange = maxRange;
+	this->demage = demage;
+}
+
 void Bullet::Update(float elapsedTime)
 {
-	float movement = BULLET_SPEED * elapsedTime;
+	float movementX = speed * elapsedTime;
+	float movementY = 0;
 
 	if (movmentOrientation == 1)
 	{
-		collisionRect.left -= movement;
+		collisionRect.left -= movementX;
 	}
 	else
 	{
-		collisionRect.left += movement;
+		collisionRect.left += movementX;
 	}
 
+	collisionRect.top -= movementY;
+
 	bodyShape.setPosition(sf::Vector2f{ collisionRect.left, collisionRect.top });
-	currentRange += movement;
+	currentRange += movementX;
 	if (currentRange >= maxRange)
 	{
 		isLive = false;

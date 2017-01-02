@@ -5,6 +5,7 @@
 #include "interface.h"
 #include "enemies.h"
 #include "bonus.h"
+#include "sound.h"
 
 const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
@@ -40,6 +41,8 @@ struct Game
 	Level level_1;
 	Level level_2;
 	Level level_3;
+
+	GameSound gameSound;
 
 	sf::RectangleShape currentBackground;
 	sf::RectangleShape background_level_1;

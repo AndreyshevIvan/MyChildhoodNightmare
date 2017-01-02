@@ -55,7 +55,7 @@ void Enemy::CreateShadow()
 	bodyShape.setSize(SHADOW_SIZE);
 
 	health = SHADOW_START_HEALTH;
-	demage = SHADOW_DEMAGE;
+	touchDemage = SHADOW_TOUCH_DEMAGE;
 	
 	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
 	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
@@ -81,7 +81,8 @@ void Enemy::CreateClown()
 	bodyShape.setSize(CLOWN_SIZE);
 
 	health = CLOWN_START_HEALTH;
-	demage = CLOWN_TOUCH_DEMAGE;
+	shootDemage = CLOWN_SHOOT_DEMAGE;
+	touchDemage = CLOWN_TOUCH_DEMAGE;
 	shootRange = CLOWN_SHOOT_RANGE;
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
@@ -103,7 +104,7 @@ void Enemy::CreateGhost()
 	bodyShape.setSize(GHOST_SIZE);
 
 	health = GHOST_START_HEALTH;
-	demage = GHOST_DEMAGE;
+	touchDemage = GHOST_TOUCH_DEMAGE;
 	moveSpeed = GHOST_MOVE_SPEED;
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
@@ -126,7 +127,7 @@ void Enemy::CreateSpider()
 	bodyShape.setSize(SPIDER_SIZE);
 
 	health = SPIDER_START_HEALTH;
-	demage = SPIDER_DEMAGE;
+	touchDemage = SPIDER_TOUCH_DEMAGE;
 	moveSpeed = SPIDER_MOVE_SPEED;
 	jumpSpeed = SIDER_JUMP_SPEED;
 
@@ -152,11 +153,15 @@ void Enemy::CreateBoss()
 	enemyType = EnemyType::BOSS;
 
 	bodyTexture.loadFromFile("resources/enemyBoss.png");
+	bodyShape.setSize(BOSS_SIZE);
 
 	health = BOSS_START_HEALTH;
-	demage = BOSS_DEMAGE;
+	shootDemage = BOSS_SHOOT_DEMAGE;
+	touchDemage = BOSS_TOUCH_DEMAGE;
+	shootRange = BOSS_TARGET_RANGE;
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+		BossPursuite(player, bullets);
 		(void)bullets;
 		(void)player;
 		(void)blocks;
@@ -197,6 +202,7 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Obj
 		UpdatePos(elapsedTime, blocks);
 	}
 
+	bodyShape.setPosition(GetCharacterPos());
 	UpdateHands();
 	if (!(enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE))
 	{
@@ -241,7 +247,6 @@ void Enemy::UpdateClownActivityStatus(Character const& player)
 	
 	targetArea.setSize({ 2.0f * CLOWN_TARGET_RANGE, halfBody });
 	targetArea.setPosition(GetCharacterPos().x - CLOWN_TARGET_RANGE, GetCharacterPos().y - halfBody - halfBody / 2.0f);
-	targetArea.setFillColor(sf::Color(40, 10, 30, 100));
 
 	if (player.collisionRect.intersects((sf::FloatRect)targetArea.getGlobalBounds()))
 	{
@@ -276,6 +281,7 @@ void Enemy::UpdateGhostActivityStatus(Character const& player)
 
 void Enemy::UpdateBossActivityStatus(Character const& player)
 {
+	activityStatus = EnemyActivity::PURSUIT;
 	(void)player;
 }
 
@@ -367,7 +373,7 @@ void Enemy::ClownShoot(Character const& player, std::vector<Bullet*>& bullets)
 
 	if (shootColdown >= CLOWN_SHOOT_COLDOWN)
 	{
-		bullets.push_back(new Bullet(GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId, shootRange, BulletType::CLOWN_BULLET));
+		bullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::CLOWN_BULLET));
 		shootColdown = 0;
 	}
 }
@@ -413,6 +419,34 @@ void Enemy::GhostPursuite(Character const& player)
 	}
 
 	ghostMove = { moveX , moveY };
+}
+
+void Enemy::BossPursuite(Character const& player, std::vector<Bullet*>& bullets)
+{
+	(void)player;
+	targetArea.setSize({ BOSS_TARGET_RANGE, BOSS_SIZE.y });
+	targetArea.setOrigin(targetArea.getSize().x, targetArea.getSize().y);
+	targetArea.setPosition(GetCharacterPos());
+
+	if (player.collisionRect.intersects(targetArea.getGlobalBounds()))
+	{
+		BossAttack(bullets, player.GetCharacterPos());
+	}
+}
+
+void Enemy::BossIdle()
+{
+
+}
+
+void Enemy::BossAttack(std::vector<Bullet*>& bullets, sf::Vector2f const& targetPos)
+{
+	if (shootColdown >= BOSS_SHOOT_COLDOWN)
+	{
+		sf::Vector2f bulletStartPosMirror = { GetCharacterPos().x , targetPos.y };
+		bullets.push_back(new Bullet(bulletStartPosMirror, shootDemage, 1, shootRange, BulletType::BOSS_BULLET));
+		shootColdown = 0;
+	}
 }
 
 void Enemy::UpdateHands()

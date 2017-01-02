@@ -154,6 +154,7 @@
     <ClCompile Include="character.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="tinyxml\level.cpp" />
     <ClCompile Include="tinyxml\tinystr.cpp" />
     <ClCompile Include="tinyxml\tinyxml.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="interface.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="sound.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tinyxml\level.h" />
     <ClInclude Include="tinyxml\tinystr.h" />

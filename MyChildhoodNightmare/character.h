@@ -4,8 +4,6 @@
 #include "bonus.h"
 
 const float FLYING_SLOWDOWN = 0.6f;
-const float MIN_HEIGHT_FOR_DEMAGE = 16;
-const float DEMAGE_PER_HEIGHT = 0.8f;
 const float CHARACTERS_JUMP_SPEED = 400;
 const float CHARACTERS_JUMP_HEIGHT = 80;
 const float MIN_SHOOT_RANGE = 140;
@@ -51,7 +49,8 @@ struct Character
 	float moveSpeed;
 	float jumpSpeed = 0;
 	float weaponDemage;
-	int demage;
+	int touchDemage;
+	int shootDemage;
 	int health;
 	float shootColdown = 0;
 	float currentFrame = 0;
