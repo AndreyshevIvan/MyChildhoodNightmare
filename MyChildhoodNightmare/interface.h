@@ -14,6 +14,7 @@ const int PLAYER_HP_FONT_SIZE = 50;
 const int PLAYER_AMMO_FONT_SIZE = 28;
 const int PREVIEW_FONT_SIZE = 35;
 const int HELP_FONT_SIZE = 15;
+const int DEMAGE_ANNOUNCEMENT_FONT_SIZE = 20;
 
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, PLAYER_HEALTH_BAR_SIZE.y };
@@ -24,14 +25,20 @@ const sf::Vector2f BOSS_BAR_MARGIN = { 0, -280 };
 const sf::Vector2f BOSS_HP_LINE_MARGIN = { -BOSS_HP_LINE_SIZE.x / 2.0f + 33, -33 };
 const sf::Vector2f HELP_TEXT_MARGIN = { -665 , 350 };
 const float BOXES_MIDLE_MARGIN = 60;
+const int MAX_DEMAGE_ANNOUNCEMENT_MARGIN = 40;
 
 const int PART_COUNT = 3;
 
-const float PART_COLDOWN = 3.45f;
+const float PART_DURATION = 3.45f;
+const float PART_TRANSPARENCY_DURATION = 3.15f;
 const float GAME_OVER_COLDOWN = 2;
+const float DEMAGE_ANNOUNCEMENT_DURATION = 1;
+const float DEMAGE_ANNOUNCEMENT_TRANSPARENCY_DURATION = 0.5f;
 
 const sf::Color BOSS_HP_LINE_COLOR = sf::Color(98, 10, 10, 255);
 const sf::Color BOSS_HP_BAR_COLOR = sf::Color(255, 255, 255, 240);
+
+const float DEMAGE_ANNOUNCEMENT_SPEED = 30;
 
 enum struct PreviewStatus
 {
@@ -83,6 +90,9 @@ struct PlayerInterface
 	sf::RectangleShape gameOver;
 	sf::Texture gameOverTexture;
 
+	std::vector<sf::Text> demageAnnouncementText;
+	std::vector<float> demageAnnouncementDuration;
+
 	float previewPartColdown = 0;
 	PreviewStatus currentPart = PreviewStatus::HOUSE;
 
@@ -100,10 +110,14 @@ struct PlayerInterface
 	bool UpdatePreview(sf::Vector2f const& position, float elapsedTime);
 	void UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos);
 
+	void CreateDemageAnnouncement(sf::Vector2f const& position, int demage);
+	void UpdateDemageAnnouncement(float elapsedTime);
+
 	void Draw(sf::RenderWindow& window);
 	void DrawPart(sf::RenderWindow& window);
 	void DrawBossBar(sf::RenderWindow& window);
 	void DrawWin(sf::RenderWindow& window);
+	void DrawDemageAnnouncement(sf::RenderWindow& window);
 };
 
 std::string IntToStr(int number);

@@ -334,7 +334,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		{
 		case START_MENU_START:
 			gameSound.mainMenu.stop();
-			StartGame(level_2);
+			StartGame(level_0);
 			break;
 		case START_MENU_OPTIONS:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -555,6 +555,7 @@ void Game::PlayerBulletsEnemyCollides()
 			{
 				enemy->health -= bullet->demage;
 				enemy->activityStatus = EnemyActivity::PURSUIT;
+				interface.CreateDemageAnnouncement(bullet->bodyShape.getPosition(), bullet->demage);
 				bullet->isLive = false;
 			}
 		}
@@ -654,6 +655,7 @@ void Game::UpdateInterface()
 	interface.UpdatePlayerHP(player.health);
 	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
 	interface.UpdatePlayerBoxes(player.boxes);
+	interface.UpdateDemageAnnouncement(elapsedTime);
 
 	for (auto enemy : enemies)
 	{

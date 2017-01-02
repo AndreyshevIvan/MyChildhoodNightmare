@@ -161,7 +161,7 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 
 bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedTime)
 {
-	if (previewPartColdown >= PART_COLDOWN)
+	if (previewPartColdown >= PART_DURATION)
 	{
 		if (currentPart == PreviewStatus::MONSTERS)
 		{
@@ -170,12 +170,25 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 
 		previewPartColdown = 0;
 		currentPart = PreviewStatus(static_cast<int>(currentPart) + 1);
+		previewText.setFillColor(sf::Color(255, 255, 255, 255));
+		previewImage.setFillColor(sf::Color(255, 255, 255, 255));
 	}
 
 	previewPartColdown += elapsedTime;
 	previewImage.setPosition({ position.x, position.y });
 	previewText.setOrigin(previewText.getGlobalBounds().width / 2.0f, previewText.getGlobalBounds().height / 2.0f);
 	previewText.setPosition(position + PREVIEW_TEXT_MARGIN );
+
+	if (previewPartColdown >= PART_TRANSPARENCY_DURATION)
+	{
+		sf::Uint8 imageTransparency = previewImage.getFillColor().a;
+		sf::Uint8 imageTransStep = static_cast<sf::Uint8>(255 * elapsedTime / (PART_DURATION - PART_TRANSPARENCY_DURATION));
+		previewImage.setFillColor(sf::Color(255, 255, 255, imageTransparency - imageTransStep));
+
+		sf::Uint8 textTransparency = previewText.getFillColor().a;
+		sf::Uint8 textTransStep = static_cast<sf::Uint8>(255 * elapsedTime / (PART_DURATION - PART_TRANSPARENCY_DURATION));
+		previewText.setFillColor(sf::Color(255, 255, 255, textTransparency - textTransStep));
+	}
 
 	switch (currentPart)
 	{
@@ -246,6 +259,47 @@ void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
 	UpdateHelpButton("Press \"ENTER\" to go main menu", windowCenter);
 }
 
+void PlayerInterface::CreateDemageAnnouncement(sf::Vector2f const& position, int demage)
+{
+	auto marginX = static_cast<float>(rand() % MAX_DEMAGE_ANNOUNCEMENT_MARGIN + 1);
+	auto marginY = static_cast<float>(rand() % MAX_DEMAGE_ANNOUNCEMENT_MARGIN + 1);
+
+	sf::Vector2f margin(marginX, marginY / 2.0f);
+
+	sf::Text announcement = Text("-" + to_string(demage), font, DEMAGE_ANNOUNCEMENT_FONT_SIZE);
+	announcement.setOrigin(announcement.getGlobalBounds().width / 2.0f , announcement.getGlobalBounds().height / 2.0f);
+	announcement.setPosition(position + margin);
+
+	demageAnnouncementText.push_back(announcement);
+	demageAnnouncementDuration.push_back(0);
+}
+
+void PlayerInterface::UpdateDemageAnnouncement(float elapsedTime)
+{
+	for (size_t elementNumber = 0; elementNumber < demageAnnouncementDuration.size();)
+	{
+		demageAnnouncementDuration[elementNumber] += elapsedTime;
+
+		if (demageAnnouncementDuration[elementNumber] >= DEMAGE_ANNOUNCEMENT_DURATION)
+		{
+			demageAnnouncementDuration.erase(demageAnnouncementDuration.begin() + elementNumber);
+			demageAnnouncementText.erase(demageAnnouncementText.begin() + elementNumber);
+		}
+		else
+		{
+			demageAnnouncementText[elementNumber].move(0, -DEMAGE_ANNOUNCEMENT_SPEED * elapsedTime);
+			if (demageAnnouncementDuration[elementNumber] >= DEMAGE_ANNOUNCEMENT_TRANSPARENCY_DURATION)
+			{
+				sf::Uint8 transparency = demageAnnouncementText[elementNumber].getFillColor().a;
+				sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / DEMAGE_ANNOUNCEMENT_TRANSPARENCY_DURATION);
+				demageAnnouncementText[elementNumber].setFillColor(sf::Color(255, 255, 255, transparency - step));
+			}
+
+			++elementNumber;
+		}
+	}
+}
+
 void PlayerInterface::Draw(RenderWindow& window)
 {
 	window.draw(blackFilter);
@@ -253,6 +307,7 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);
 	window.draw(playerAmmo);
+	DrawDemageAnnouncement(window);
 
 	for (auto it = boxes.begin(); it != boxes.end(); it++)
 	{
@@ -281,6 +336,14 @@ void PlayerInterface::DrawWin(sf::RenderWindow& window)
 	window.draw(win);
 	window.draw(winText);
 	window.draw(helpText);
+}
+
+void PlayerInterface::DrawDemageAnnouncement(sf::RenderWindow& window)
+{
+	for (auto announcement : demageAnnouncementText)
+	{
+		window.draw(announcement);
+	}
 }
 
 string IntToStr(int number)
