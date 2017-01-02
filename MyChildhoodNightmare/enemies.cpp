@@ -60,9 +60,10 @@ void Enemy::CreateShadow()
 	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
 	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
 		(void)player;
+		(void)blocks;
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
@@ -83,7 +84,8 @@ void Enemy::CreateClown()
 	demage = CLOWN_TOUCH_DEMAGE;
 	shootRange = CLOWN_SHOOT_RANGE;
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+		(void)blocks;
 		ClownShoot(player, bullets);
 	};
 
@@ -102,9 +104,11 @@ void Enemy::CreateGhost()
 
 	health = GHOST_START_HEALTH;
 	demage = GHOST_DEMAGE;
+	moveSpeed = GHOST_MOVE_SPEED;
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
+		(void)blocks;
 		GhostPursuite(player);
 	};
 
@@ -123,10 +127,12 @@ void Enemy::CreateSpider()
 
 	health = SPIDER_START_HEALTH;
 	demage = SPIDER_DEMAGE;
+	moveSpeed = SPIDER_MOVE_SPEED;
+	jumpSpeed = SIDER_JUMP_SPEED;
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
-		SpiderPursuite(player);
+		SpiderPursuite(player, blocks);
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
@@ -150,9 +156,10 @@ void Enemy::CreateBoss()
 	health = BOSS_START_HEALTH;
 	demage = BOSS_DEMAGE;
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
 		(void)player;
+		(void)blocks;
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
@@ -172,7 +179,7 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Obj
 	}
 	else
 	{
-		Pursuit(player, bullets);
+		Pursuit(player, bullets, blocks);
 	}
 
 	UpdateOrientation();
@@ -278,13 +285,41 @@ void Enemy::UpdateSpiderActivityStatus(Character const& player)
 	auto rangeY = abs(player.GetCharacterPos().y - GetCharacterPos().y);
 	auto range = sqrt(rangeX * rangeX + rangeY * rangeY);
 
-	cout << "playerRangeX : " << rangeX << "\n";
-	cout << "playerRangeY : " << rangeY << "\n";
-	cout << "range : " << range << "\n";
-
 	if (range <= SPIDER_TARGET_RANGE)
 	{
 		activityStatus = EnemyActivity::PURSUIT;
+	}
+}
+
+void Enemy::UpdateSpiderPos(float elapsedTime)
+{
+	(void)elapsedTime;
+	bodyShape.setPosition(GetCharacterPos());
+}
+
+void Enemy::SpiderPursuite(Character const& player, std::vector<Object> const& blocks)
+{
+	auto targetPosX = player.GetCharacterPos().x;
+
+	if (targetPosX < GetCharacterPos().x)
+	{
+		runStatus = MovementStatus::RUN_LEFT;
+
+		if (!IsCollidesWithLevel(handLeftBottom, blocks) ||
+			IsCollidesWithLevel(handLeftMiddle, blocks))
+		{
+			Jump();
+		}
+	}
+	else if (targetPosX > GetCharacterPos().x)
+	{
+		runStatus = MovementStatus::RUN_RIGHT;
+
+		if (!IsCollidesWithLevel(handRightBottom, blocks) ||
+			IsCollidesWithLevel(handRightMiddle, blocks))
+		{
+			Jump();
+		}
 	}
 }
 
@@ -325,17 +360,6 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 	}
 }
 
-void Enemy::UpdateSpiderPos(float elapsedTime)
-{
-	(void)elapsedTime;
-	bodyShape.setPosition(GetCharacterPos());
-}
-
-void Enemy::SpiderPursuite(Character const& player)
-{
-	(void)player;
-}
-
 void Enemy::ClownShoot(Character const& player, std::vector<Bullet*>& bullets)
 {
 	(void)player;
@@ -359,8 +383,8 @@ void Enemy::UpdateGhostPos(float elapsedTime)
 		runStatus = MovementStatus::RUN_RIGHT;
 	}
 
-	collisionRect.left += elapsedTime * GHOST_MOVE_SPEED * ghostMove.x;;
-	collisionRect.top += elapsedTime * GHOST_MOVE_SPEED * ghostMove.y;
+	collisionRect.left += elapsedTime * moveSpeed * ghostMove.x;
+	collisionRect.top += elapsedTime * moveSpeed * ghostMove.y;
 
 	ghostMove = { 0, 0 };
 	bodyShape.setPosition(GetCharacterPos());

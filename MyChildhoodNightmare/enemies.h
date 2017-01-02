@@ -31,7 +31,8 @@ const int GHOST_DEMAGE = 6;
 const sf::Vector2f SPIDER_SIZE = { 50, 50 };
 const int SPIDER_START_HEALTH = 70;
 const float SPIDER_TARGET_RANGE = 200;
-const float SPIDER_MOVE_SPEED = 130;
+const float SPIDER_MOVE_SPEED = 100;
+const float SIDER_JUMP_SPEED = 200;
 const int SPIDER_DEMAGE = 6;
 
 const sf::Vector2f BOSS_SIZE = { 160, 250 };
@@ -85,7 +86,7 @@ struct Enemy : Character
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
 
 	std::function<void(float elapsedTime, std::vector<Object> const& blocks)> Idle;
-	std::function<void(Character const& player, std::vector<Bullet*>& bullets)> Pursuit;
+	std::function<void(Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks)> Pursuit;
 
 	void UpdateAI(float elapsedTime, Character const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets);
 	void UpdateHands();
@@ -103,7 +104,7 @@ struct Enemy : Character
 	bool IsClownOnGround = false;
 
 	void UpdateSpiderPos(float elapsedTime);
-	void SpiderPursuite(Character const& player);
+	void SpiderPursuite(Character const& player, std::vector<Object> const& blocks);
 
 	void UpdateGhostPos(float elapsedTime);
 	void GhostIdle(float elapsedTime);
