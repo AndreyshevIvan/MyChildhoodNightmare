@@ -31,12 +31,14 @@ void erase_if(TContainer &container, TPredicate && predicate)
 
 bool Game::InitGame()
 {
+	cout << "test";
 	if (!level_1.LoadFromFile("resources/firstTileset.tmx") ||
 		!level_2.LoadFromFile("resources/secondTileset.tmx") ||
 		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png"))
 	{
 		return false;
 	}
+
 
 	if (!player.InitPlayer() || !menu.InitMenuItems() || !interface.Init())
 	{
