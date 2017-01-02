@@ -21,7 +21,7 @@ const int CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
 
 const int BIRD_START_HEALTH = 100;
-const float BIRD_TARGET_RANGE = 1000;
+const float BIRD_TARGET_RANGE = 700;
 const float BIRD_MOVE_SPEED = 110;
 const int BIRD_DEMAGE = 6;
 

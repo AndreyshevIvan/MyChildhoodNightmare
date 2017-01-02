@@ -206,30 +206,30 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 
 void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
 {
-	(void)helpStr;
 	helpText.setString(helpStr);
 	helpText.setPosition(cameraPos + HELP_TEXT_MARGIN);
 }
 
 void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
 {
-	(void)currentBoxes;
-
-	float firstPosX = boxes[0]->getPosition().x;
-	int boxNumber = 0;
-
-	for (auto box : boxes)
+	if (!boxes.empty())
 	{
-		if (boxNumber < currentBoxes)
+		float firstPosX = boxes[0]->getPosition().x;
+		int boxNumber = 0;
+
+		for (auto box : boxes)
 		{
-			box->setFillColor(Color(255, 255, 255, 255));
+			if (boxNumber < currentBoxes)
+			{
+				box->setFillColor(Color(255, 255, 255, 255));
+			}
+			else
+			{
+				box->setFillColor(Color(255, 255, 255, 40));
+			}
+			box->setPosition({ firstPosX + boxNumber * BOXES_MIDLE_MARGIN, box->getPosition().y });
+			boxNumber += 1;
 		}
-		else
-		{
-			box->setFillColor(Color(255, 255, 255, 40));
-		}
-		box->setPosition({ firstPosX + boxNumber * BOXES_MIDLE_MARGIN, box->getPosition().y });
-		boxNumber += 1;
 	}
 }
 

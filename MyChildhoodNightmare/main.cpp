@@ -84,7 +84,7 @@ void Update(Game& game)
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(BACKGROUND_COLOR);
-	window.draw(game.background_level_1);
+	window.draw(game.currentBackground);
 	game.currentScene->onDraw(window);
 	window.display();
 }

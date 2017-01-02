@@ -272,7 +272,7 @@ void Enemy::ClownShoot(Player const& player, std::vector<Bullet*>& bullets)
 
 	if (shootColdown >= CLOWN_SHOOT_COLDOWN)
 	{
-		bullets.push_back(new Bullet(GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId, shootRange));
+		bullets.push_back(new Bullet(GetCharacterPos(), CLOWN_BULLET_DEMAGE, orientationId, shootRange, BulletType::CLOWN_BULLET));
 		shootColdown = 0;
 	}
 }

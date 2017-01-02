@@ -36,13 +36,19 @@ struct Game
 
 	sf::Vector2f mapSize;
 	Level* currentLevel;
+	Level level_0;
 	Level level_1;
 	Level level_2;
 	Level level_3;
+
+	sf::RectangleShape currentBackground;
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
+	sf::RectangleShape background_level_preview;
+	sf::Texture backgroundTexture_level_preview;
 
 	std::map<Level*, int> boxesCoundMap = {
+			{ &level_0, 0 },
 			{ &level_1, 3 },
 			{ &level_2, 1 }
 	};

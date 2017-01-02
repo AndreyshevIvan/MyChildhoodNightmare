@@ -31,10 +31,11 @@ void erase_if(TContainer &container, TPredicate && predicate)
 
 bool Game::InitGame()
 {
-	cout << "test";
-	if (!level_1.LoadFromFile("resources/firstTileset.tmx") ||
+	if (!level_0.LoadFromFile("resources/previewTileset.tmx") ||
+		!level_1.LoadFromFile("resources/firstTileset.tmx") ||
 		!level_2.LoadFromFile("resources/secondTileset.tmx") ||
-		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png"))
+		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png") ||
+		!backgroundTexture_level_preview.loadFromFile("resources/background_level_preview.png"))
 	{
 		return false;
 	}
@@ -51,16 +52,16 @@ bool Game::InitGame()
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
 	menu.SetMenu(CurrentMenu::START, camera.getCenter());
 
+	const sf::Vector2f BG_LVL_0_SISE = GetTextureSize(backgroundTexture_level_preview);
+	const sf::Vector2f BG_LVL_1_SISE = GetTextureSize(backgroundTexture_level_1);
+
 	background_level_1.setTexture(&backgroundTexture_level_1);
-	const sf::Vector2f BACKGROUND_LVL_1_SIZE = {
-		static_cast<float>(backgroundTexture_level_1.getSize().x),
-		static_cast<float>(backgroundTexture_level_1.getSize().y)
-	};
-	background_level_1.setSize(BACKGROUND_LVL_1_SIZE);
-	background_level_1.setOrigin(
-		background_level_1.getGlobalBounds().width / 2.0f,
-		background_level_1.getGlobalBounds().height / 2.0f
-	);
+	background_level_1.setSize(BG_LVL_1_SISE);
+	background_level_1.setOrigin(BG_LVL_1_SISE.x / 2.0f, BG_LVL_1_SISE.y / 2.0f);
+
+	background_level_preview.setTexture(&backgroundTexture_level_preview);
+	background_level_preview.setSize(BG_LVL_0_SISE);
+	background_level_preview.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
 
 	buttonColdown = 0;
 
@@ -96,7 +97,7 @@ void Game::StartGame(Level& level)
 	default:
 		break;
 	}
-
+	
 	SpawnEntities();
 
 	currentScene = &gameplayScene;
@@ -104,6 +105,7 @@ void Game::StartGame(Level& level)
 
 void Game::CheckCompletedLevel()
 {
+	auto door_level_1 = currentLevel->GetObject("level1").rect;
 	auto door_level_2 = currentLevel->GetObject("level2").rect;
 	auto playerRect = player.collisionRect;
 	auto winBlock = currentLevel->GetObject("win").rect;
@@ -111,7 +113,11 @@ void Game::CheckCompletedLevel()
 	int currBoxes = player.boxes;
 	int neededBoxes = boxesCoundMap.find(currentLevel)->second;
 
-	if (playerRect.intersects(door_level_2) && currBoxes == neededBoxes)
+	if (playerRect.intersects(door_level_1) && currBoxes == neededBoxes)
+	{
+		StartGame(level_1);
+	}
+	else if (playerRect.intersects(door_level_2) && currBoxes == neededBoxes)
 	{
 		StartGame(level_2);
 	}
@@ -312,7 +318,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case START_MENU_START:
-			StartGame(level_1);
+			StartGame(level_0);
 			break;
 		case START_MENU_OPTIONS:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -633,16 +639,30 @@ void Game::UpdateInterface()
 
 void Game::UpdateBackground()
 {
-	float bgPosX_Percent = (camera.getCenter().x - RESOLUTION.x / 2.0f) / (currentLevel->GetTilemapWidth() - RESOLUTION.x);
-	float bgPosY_Percent = (camera.getCenter().y - RESOLUTION.y / 2.0f) / (currentLevel->GetTilemapHeight() - RESOLUTION.y);
+	auto mapWidth = currentLevel->GetTilemapWidth();
+	auto mapHeight = currentLevel->GetTilemapHeight();
+	auto backgroundWidth = currentBackground.getSize().x;
+	auto backgroundHeight = currentBackground.getSize().y;
 
-	float bgAllowedWidthX = currentLevel->GetTilemapWidth() - background_level_1.getSize().x;
-	float bgAllowedWidthY = currentLevel->GetTilemapHeight() - background_level_1.getSize().y;
+	if (currentLevel == &level_0)
+	{
+		currentBackground = background_level_preview;
+	}
+	else
+	{
+		currentBackground = background_level_1;
+	}
 
-	float bgPosX_Pixel = background_level_1.getSize().x / 2.0f + bgPosX_Percent * bgAllowedWidthX;
-	float bgPosY_Pixel = background_level_1.getSize().y / 2.0f + bgPosY_Percent * bgAllowedWidthY;
+	float bgPosX_Percent = (camera.getCenter().x - RESOLUTION.x / 2.0f) / (mapWidth - RESOLUTION.x);
+	float bgPosY_Percent = (camera.getCenter().y - RESOLUTION.y / 2.0f) / (mapHeight - RESOLUTION.y);
 
-	background_level_1.setPosition(bgPosX_Pixel, bgPosY_Pixel);
+	float bgAllowedWidthX = mapWidth - backgroundWidth;
+	float bgAllowedWidthY = mapHeight - backgroundHeight;
+
+	float bgPosX_Pixel = backgroundWidth / 2.0f + bgPosX_Percent * bgAllowedWidthX;
+	float bgPosY_Pixel = backgroundHeight / 2.0f + bgPosY_Percent * bgAllowedWidthY;
+
+	currentBackground.setPosition(bgPosX_Pixel, bgPosY_Pixel);
 }
 
 void Game::DrawLevel(sf::RenderWindow& window)
