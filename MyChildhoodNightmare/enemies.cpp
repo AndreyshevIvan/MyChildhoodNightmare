@@ -14,8 +14,11 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 	case EnemyType::CLOWN:
 		this->CreateClown();
 		break;
-	case EnemyType::BIRD:
-		this->CreateBird();
+	case EnemyType::GHOST:
+		this->CreateGhost();
+		break;
+	case EnemyType::SPIDER:
+		this->CreateSpider();
 		break;
 	case EnemyType::BOSS:
 		this->CreateBoss();
@@ -27,17 +30,19 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 	currentRunStatus = MovementStatus(rand() % 2);
 
 	bodyShape.setTexture(&bodyTexture);
-	const sf::Vector2f BODY_SIZE = {
-		static_cast<float>(bodyTexture.getSize().x/ 2.0f),
-		static_cast<float>(bodyTexture.getSize().y)
-	};
 
-	bodyShape.setTextureRect(sf::IntRect(0, 0 , static_cast<int>(BODY_SIZE.x), static_cast<int>(BODY_SIZE.y)));
+	sf::Vector2f BODY_SIZE = bodyShape.getSize();
+
+	if (enemyType != EnemyType::SPIDER)
+	{
+		bodyShape.setTextureRect(sf::IntRect(0, 0, static_cast<int>(BODY_SIZE.x), static_cast<int>(BODY_SIZE.y)));
+	}
+
 	bodyShape.setSize(BODY_SIZE);
 	bodyShape.setOrigin(BODY_SIZE.x / 2.0f, BODY_SIZE.y);
 
-	collisionRect.width = bodyShape.getSize().x / 2.0f;
-	collisionRect.height = bodyShape.getSize().y - 10;
+	collisionRect.width = BODY_SIZE.x / 2.0f;
+	collisionRect.height = BODY_SIZE.y - 10;
 	collisionRect.top = position.y;
 	collisionRect.left = position.x;
 }
@@ -47,6 +52,7 @@ void Enemy::CreateShadow()
 	enemyType = EnemyType::SHADOW;
 
 	bodyTexture.loadFromFile("resources/enemyShadow.png");
+	bodyShape.setSize(SHADOW_SIZE);
 
 	health = SHADOW_START_HEALTH;
 	demage = SHADOW_DEMAGE;
@@ -54,7 +60,7 @@ void Enemy::CreateShadow()
 	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
 	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
 
-	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
 		(void)bullets;
 		(void)player;
 	};
@@ -71,12 +77,13 @@ void Enemy::CreateClown()
 	enemyType = EnemyType::CLOWN;
 
 	bodyTexture.loadFromFile("resources/enemyClown.png");
+	bodyShape.setSize(CLOWN_SIZE);
 
 	health = CLOWN_START_HEALTH;
 	demage = CLOWN_TOUCH_DEMAGE;
 	shootRange = CLOWN_SHOOT_RANGE;
 
-	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
 		ClownShoot(player, bullets);
 	};
 
@@ -86,24 +93,52 @@ void Enemy::CreateClown()
 	};
 }
 
-void Enemy::CreateBird()
+void Enemy::CreateGhost()
 {
-	enemyType = EnemyType::BIRD;
+	enemyType = EnemyType::GHOST;
 
-	bodyTexture.loadFromFile("resources/enemyBird.png");
+	bodyTexture.loadFromFile("resources/enemyGhost.png");
+	bodyShape.setSize(GHOST_SIZE);
 
-	health = BIRD_START_HEALTH;
-	demage = BIRD_DEMAGE;
+	health = GHOST_START_HEALTH;
+	demage = GHOST_DEMAGE;
 
-	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
 		(void)bullets;
-		BirdPursuite(player);
+		GhostPursuite(player);
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
 		(void)blocks;
-		BirdIdle(elapsedTime);
+		GhostIdle(elapsedTime);
 	};
+}
+
+void Enemy::CreateSpider()
+{
+	enemyType = EnemyType::SPIDER;
+
+	bodyTexture.loadFromFile("resources/enemySpider.png");
+	bodyShape.setSize(SPIDER_SIZE);
+
+	health = SPIDER_START_HEALTH;
+	demage = SPIDER_DEMAGE;
+
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
+		(void)bullets;
+		SpiderPursuite(player);
+	};
+
+	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+		(void)blocks;
+		(void)elapsedTime;
+	};
+
+	const sf::Vector2i BODY_SIZE = {
+		static_cast<int>(bodyShape.getSize().x),
+		static_cast<int>(bodyShape.getSize().y)
+	};
+	bodyShape.setTextureRect(sf::IntRect(0, BODY_SIZE.y, BODY_SIZE.x, BODY_SIZE.y));
 }
 
 void Enemy::CreateBoss()
@@ -115,7 +150,7 @@ void Enemy::CreateBoss()
 	health = BOSS_START_HEALTH;
 	demage = BOSS_DEMAGE;
 
-	Pursuit = [&](Player const& player, std::vector<Bullet*>& bullets) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets) {
 		(void)bullets;
 		(void)player;
 	};
@@ -126,7 +161,7 @@ void Enemy::CreateBoss()
 	};
 }
 
-void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets)
+void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets)
 {
 	UpdateHealthStatus();
 	UpdateActivityStatus(player);
@@ -142,21 +177,27 @@ void Enemy::UpdateAI(float elapsedTime, Player const& player, std::vector<Object
 
 	UpdateOrientation();
 
-	if (enemyType == EnemyType::BIRD)
+	if (enemyType == EnemyType::GHOST)
 	{
-		UpdateBirdPos(elapsedTime, blocks);
+		UpdateGhostPos(elapsedTime);
+	}
+	else if (enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE)
+	{
+		UpdateSpiderPos(elapsedTime);
 	}
 	else
 	{
 		UpdatePos(elapsedTime, blocks);
 	}
 
-
-
 	UpdateHands();
+	if (!(enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE))
+	{
+		UpdateTexture();
+	}
 }
 
-void Enemy::UpdateActivityStatus(Player const& player)
+void Enemy::UpdateActivityStatus(Character const& player)
 {
 	switch (this->enemyType)
 	{
@@ -166,8 +207,11 @@ void Enemy::UpdateActivityStatus(Player const& player)
 	case EnemyType::CLOWN:
 		UpdateClownActivityStatus(player);
 		break;
-	case EnemyType::BIRD:
-		UpdateBirdActivityStatus(player);
+	case EnemyType::GHOST:
+		UpdateGhostActivityStatus(player);
+		break;
+	case EnemyType::SPIDER:
+		UpdateSpiderActivityStatus(player);
 		break;
 	case EnemyType::BOSS:
 		UpdateBossActivityStatus(player);
@@ -177,13 +221,13 @@ void Enemy::UpdateActivityStatus(Player const& player)
 	}
 }
 
-void Enemy::UpdateShadowActivityStatus(Player const& player)
+void Enemy::UpdateShadowActivityStatus(Character const& player)
 {
 	this->activityStatus = EnemyActivity::IDLE;
 	(void)player;
 }
 
-void Enemy::UpdateClownActivityStatus(Player const& player)
+void Enemy::UpdateClownActivityStatus(Character const& player)
 {
 	activityStatus = EnemyActivity::IDLE;
 	float halfBody = bodyShape.getSize().y / 2.0f;
@@ -206,7 +250,7 @@ void Enemy::UpdateClownActivityStatus(Player const& player)
 	}
 }
 
-void Enemy::UpdateBirdActivityStatus(Player const& player)
+void Enemy::UpdateGhostActivityStatus(Character const& player)
 {
 	activityStatus = EnemyActivity::IDLE;
 
@@ -217,15 +261,31 @@ void Enemy::UpdateBirdActivityStatus(Player const& player)
 
 	float targetRadius = sqrt(rangeX * rangeX + rangeY * rangeY);
 
-	if (targetRadius <= BIRD_TARGET_RANGE)
+	if (targetRadius <= GHOST_TARGET_RANGE)
 	{
 		activityStatus = EnemyActivity::PURSUIT;
 	}
 }
 
-void Enemy::UpdateBossActivityStatus(Player const& player)
+void Enemy::UpdateBossActivityStatus(Character const& player)
 {
 	(void)player;
+}
+
+void Enemy::UpdateSpiderActivityStatus(Character const& player)
+{
+	auto rangeX = abs(player.GetCharacterPos().x - GetCharacterPos().x);
+	auto rangeY = abs(player.GetCharacterPos().y - GetCharacterPos().y);
+	auto range = sqrt(rangeX * rangeX + rangeY * rangeY);
+
+	cout << "playerRangeX : " << rangeX << "\n";
+	cout << "playerRangeY : " << rangeY << "\n";
+	cout << "range : " << range << "\n";
+
+	if (range <= SPIDER_TARGET_RANGE)
+	{
+		activityStatus = EnemyActivity::PURSUIT;
+	}
 }
 
 void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
@@ -265,7 +325,18 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 	}
 }
 
-void Enemy::ClownShoot(Player const& player, std::vector<Bullet*>& bullets)
+void Enemy::UpdateSpiderPos(float elapsedTime)
+{
+	(void)elapsedTime;
+	bodyShape.setPosition(GetCharacterPos());
+}
+
+void Enemy::SpiderPursuite(Character const& player)
+{
+	(void)player;
+}
+
+void Enemy::ClownShoot(Character const& player, std::vector<Bullet*>& bullets)
 {
 	(void)player;
 	int orientationId = static_cast<int>(orientationStatus);
@@ -277,41 +348,30 @@ void Enemy::ClownShoot(Player const& player, std::vector<Bullet*>& bullets)
 	}
 }
 
-void Enemy::UpdateBirdPos(float elapsedTime, std::vector<Object> const& blocks)
+void Enemy::UpdateGhostPos(float elapsedTime)
 {
-	sf::FloatRect collisionRect_copy = collisionRect;
-
-	if (birdMove.x < 0)
+	if (ghostMove.x < 0)
 	{
 		runStatus = MovementStatus::RUN_LEFT;
 	}
-	else if (birdMove.x > 0)
+	else if (ghostMove.x > 0)
 	{
 		runStatus = MovementStatus::RUN_RIGHT;
 	}
 
-	collisionRect_copy.left += elapsedTime * BIRD_MOVE_SPEED * birdMove.x;
-	if (!IsCollidesWithLevel(collisionRect_copy, blocks))
-	{
-		collisionRect.left = collisionRect_copy.left;
-	}
+	collisionRect.left += elapsedTime * GHOST_MOVE_SPEED * ghostMove.x;;
+	collisionRect.top += elapsedTime * GHOST_MOVE_SPEED * ghostMove.y;
 
-	collisionRect_copy.top += elapsedTime * BIRD_MOVE_SPEED * birdMove.y;
-	if (!IsCollidesWithLevel(collisionRect_copy, blocks))
-	{
-		collisionRect.top = collisionRect_copy.top;
-	}
-
-	birdMove = { 0, 0 };
+	ghostMove = { 0, 0 };
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Enemy::BirdIdle(float elapsedTime)
+void Enemy::GhostIdle(float elapsedTime)
 {
 	(void)elapsedTime;
 }
 
-void Enemy::BirdPursuite(Player const& player)
+void Enemy::GhostPursuite(Character const& player)
 {
 	sf::Vector2f playerPos = player.GetCharacterPos();
 
@@ -328,7 +388,7 @@ void Enemy::BirdPursuite(Player const& player)
 		moveY = -moveY;
 	}
 
-	birdMove = { moveX , moveY };
+	ghostMove = { moveX , moveY };
 }
 
 void Enemy::UpdateHands()

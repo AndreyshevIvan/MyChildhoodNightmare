@@ -150,14 +150,21 @@ void Game::SpawnEntities()
 
 	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
-	std::vector<Object> birdsSpawns = currentLevel->GetObjects("enemy_bird_spawn");
-	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
+	std::vector<Object> ghostSpawns = currentLevel->GetObjects("enemy_bird_spawn");
+	std::vector<Object> spidersSpawns = currentLevel->GetObjects("enemy_spider_spawn");
 	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
+	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
 
 	for (auto const& bossSpawn : bosesSpawns)
 	{
 		sf::Vector2f pos = { bossSpawn.rect.left, bossSpawn.rect.top };
 		enemies.push_back(new Enemy(pos, EnemyType::BOSS));
+	}
+
+	for (auto const& spiderSpawn : spidersSpawns)
+	{
+		sf::Vector2f pos = { spiderSpawn.rect.left, spiderSpawn.rect.top };
+		enemies.push_back(new Enemy(pos, EnemyType::SPIDER));
 	}
 
 	for (auto const& shadowSpawn : shadowsSpawns)
@@ -172,10 +179,10 @@ void Game::SpawnEntities()
 		enemies.push_back(new Enemy(pos, EnemyType::CLOWN));
 	}
 
-	for (auto const& birdSpawn : birdsSpawns)
+	for (auto const& birdSpawn : ghostSpawns)
 	{
 		sf::Vector2f pos = { birdSpawn.rect.left, birdSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::BIRD));
+		enemies.push_back(new Enemy(pos, EnemyType::GHOST));
 	}
 
 	for (auto const& itemsSpawn : itemsBoxSpawns)
@@ -438,7 +445,6 @@ void Game::UpdateEnemies()
 	{
 		Enemy* enemy = *it;
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
-		enemy->UpdateTexture();
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
 			if (enemy->enemyType != EnemyType::BOSS)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="65" height="42" tilewidth="32" tileheight="32" nextobjectid="45">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="65" height="42" tilewidth="32" tileheight="32" nextobjectid="46">
  <tileset firstgid="1" name="Основной набор тайлов" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="tileset.png" width="640" height="640"/>
  </tileset>
@@ -6366,7 +6366,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="169"/>
    <tile gid="169"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6431,6 +6431,8 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="169"/>
+   <tile gid="169"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6463,14 +6465,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="208"/>
    <tile gid="209"/>
    <tile gid="210"/>
    <tile gid="211"/>
    <tile gid="212"/>
    <tile gid="213"/>
+   <tile gid="214"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6530,12 +6530,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="228"/>
    <tile gid="229"/>
    <tile gid="230"/>
    <tile gid="231"/>
    <tile gid="232"/>
    <tile gid="233"/>
+   <tile gid="234"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -6595,12 +6595,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="248"/>
    <tile gid="249"/>
    <tile gid="250"/>
    <tile gid="251"/>
    <tile gid="252"/>
    <tile gid="253"/>
+   <tile gid="254"/>
    <tile gid="0"/>
    <tile gid="27"/>
    <tile gid="167"/>
@@ -6660,12 +6660,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="268"/>
    <tile gid="269"/>
    <tile gid="270"/>
    <tile gid="271"/>
    <tile gid="272"/>
    <tile gid="273"/>
+   <tile gid="274"/>
    <tile gid="62"/>
    <tile gid="10"/>
    <tile gid="11"/>
@@ -6725,12 +6725,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="288"/>
    <tile gid="289"/>
    <tile gid="290"/>
    <tile gid="291"/>
    <tile gid="292"/>
    <tile gid="293"/>
+   <tile gid="294"/>
    <tile gid="62"/>
    <tile gid="30"/>
    <tile gid="31"/>
@@ -6790,12 +6790,12 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="308"/>
    <tile gid="309"/>
    <tile gid="310"/>
    <tile gid="311"/>
    <tile gid="312"/>
    <tile gid="313"/>
+   <tile gid="314"/>
    <tile gid="0"/>
    <tile gid="50"/>
    <tile gid="51"/>
@@ -7803,6 +7803,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="107"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8132,8 +8133,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="107"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8233,22 +8233,12 @@
   <object id="30" name="solid" x="1699.67" y="931" width="69.9997" height="60.6667"/>
   <object id="31" name="solid" x="1729" y="961" width="69.9997" height="60.6667"/>
   <object id="32" name="solid" x="1761" y="993.667" width="69.9997" height="60.6667"/>
-  <object id="33" name="solid" x="1793.67" y="1026.33" width="69.9997" height="60.6667"/>
-  <object id="34" name="solid" x="1827.67" y="1057" width="69.9997" height="60.6667"/>
-  <object id="35" name="solid" x="1860.33" y="1090.33" width="69.9997" height="60.6667"/>
  </objectgroup>
  <objectgroup name="spawns">
   <object id="6" name="player_spawn" x="474.667" y="591" width="28" height="28"/>
  </objectgroup>
  <objectgroup name="level">
-  <object id="36" name="level1" x="1886" y="1205.33" width="86.6667" height="170.5"/>
-  <object id="37" name="solid" x="1890" y="1120.67" width="69.9997" height="60.6667"/>
-  <object id="38" name="solid" x="1922" y="1153.17" width="69.9997" height="60.6667"/>
+  <object id="36" name="level1" x="1714.67" y="1011.33" width="86.6667" height="170.5"/>
   <object id="39" name="solid" x="1655" y="1153.17" width="69.9997" height="60.6667"/>
-  <object id="40" name="solid" x="1688" y="1186.17" width="69.9997" height="60.6667"/>
-  <object id="41" name="solid" x="1720" y="1217.17" width="69.9997" height="60.6667"/>
-  <object id="42" name="solid" x="1752" y="1251.17" width="69.9997" height="60.6667"/>
-  <object id="43" name="solid" x="1783.5" y="1281.67" width="69.9997" height="60.6667"/>
-  <object id="44" name="solid" x="1817.5" y="1313.67" width="69.9997" height="60.6667"/>
  </objectgroup>
 </map>
