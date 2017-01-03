@@ -18,13 +18,22 @@ struct GameScene
 	std::function<void(sf::RenderWindow& window)> onDraw;
 };
 
-struct Game
+struct Game : GameSound
 {
 	sf::View camera;
 	sf::Clock clock;
 	float elapsedTime;
 	float buttonColdown;
 	float gameOverColdown = 0;
+
+	std::map<GameScene*, sf::Music*> musicMap = {
+		{ &menuScene, &menuSound },
+		{ &gameplayScene, &gameplaySound },
+		{ &pauseScene, &menuSound },
+		{ &gameOverScene, &menuSound },
+		{ &previewScene, &menuSound },
+		{ &winScene, &finalSound }
+	};
 
 	Player player;
 
@@ -41,8 +50,6 @@ struct Game
 	Level level_1;
 	Level level_2;
 	Level level_3;
-
-	GameSound gameSound;
 
 	sf::RectangleShape currentBackground;
 	sf::RectangleShape background_level_1;
@@ -95,6 +102,7 @@ struct Game
 	void UpdateInterface();
 	void UpdateBackground();
 	void UpdateBonuses();
+	void UpdateSound();
 
 	void CheckEntitiesCollides();
 	void EnemyPlayerCollides();

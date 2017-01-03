@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "bullets.h"
 #include "bonus.h"
+#include "sound.h"
 
 const float FLYING_SLOWDOWN = 0.6f;
 const float CHARACTERS_JUMP_SPEED = 400;
@@ -33,7 +34,7 @@ enum OrientationStatus
 	RIGHT,
 };
 
-struct Character
+struct Character : CharacterSound
 {
 	sf::Texture bodyTexture;
 	sf::RectangleShape bodyShape;
@@ -55,6 +56,7 @@ struct Character
 	float shootColdown = 0;
 	float currentFrame = 0;
 	float shootRange = MIN_SHOOT_RANGE;
+	sf::Music* deathSound = nullptr;
 
 	void Spawn(sf::Vector2f const& pos);
 

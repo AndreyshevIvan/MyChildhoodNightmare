@@ -78,6 +78,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 
 void Update(Game& game)
 {
+	game.UpdateSound();
 	game.currentScene->onUpdate();
 }
 
@@ -164,8 +165,6 @@ void InitGameOverScene(Game& game)
 
 void InitPreviewScene(Game& game)
 {
-	game.gameSound.mainMenu.play();
-
 	game.previewScene.toHandle = [&](sf::RenderWindow& window) {
 		(void)window;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))

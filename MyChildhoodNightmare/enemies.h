@@ -1,20 +1,17 @@
 #pragma once
 #include "stdafx.h"
 #include "character.h"
-#include "player.h"
 
 const sf::Vector2f HAND_SIZE = { 2, 2 };
-const float HAND_MARGIN_X = 10;
-const float PI = 3.14f;
 
 const sf::Vector2f SHADOW_SIZE = { 50, 100 };
-const int SHADOW_START_HEALTH = 210;
+const int SHADOW_START_HEALTH = 140;
 const float SHADOW_MOVE_SPEED = 180;
 const float SHADOW_MOVE_SPEED_RANDOM = 80;
 const int SHADOW_TOUCH_DEMAGE = 25;
 
 const sf::Vector2f CLOWN_SIZE = { 55, 100 };
-const int CLOWN_START_HEALTH = 200;
+const int CLOWN_START_HEALTH = 100;
 const float CLOWN_MOVE_SPEED = 0;
 const int CLOWN_SHOOT_DEMAGE = 6;
 const int CLOWN_TOUCH_DEMAGE = 10;
@@ -24,7 +21,7 @@ const int CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
 
 const sf::Vector2f GHOST_SIZE = { 80, 70 };
-const int GHOST_START_HEALTH = 100;
+const int GHOST_START_HEALTH = 120;
 const float GHOST_TARGET_RANGE = 700;
 const float GHOST_MOVE_SPEED = 110;
 const int GHOST_TOUCH_DEMAGE = 6;
@@ -37,7 +34,7 @@ const float SIDER_JUMP_SPEED = 200;
 const int SPIDER_TOUCH_DEMAGE = 9;
 
 const sf::Vector2f BOSS_SIZE = { 160, 250 };
-const int BOSS_START_HEALTH = 2000;
+const int BOSS_START_HEALTH = 1000;
 const int BOSS_SHOOT_DEMAGE = 5;
 const int BOSS_TOUCH_DEMAGE = 100;
 const float BOSS_JUMP_DURATION = 2;
@@ -53,7 +50,6 @@ const int LAVA_DEMAGE = 20;
 
 enum struct EnemyType
 {
-	NONE,
 	SHADOW,
 	CLOWN,
 	GHOST,
@@ -69,7 +65,7 @@ enum struct EnemyActivity
 
 struct Enemy : Character
 {
-	Enemy(sf::Vector2f const& posRect = sf::Vector2f(0, 0), EnemyType const& type = EnemyType::NONE);
+	Enemy(sf::Vector2f const& posRect, EnemyType const& type);
 
 	void CreateShadow();
 	void CreateClown();
@@ -90,7 +86,7 @@ struct Enemy : Character
 	sf::FloatRect handRightMiddle;
 	sf::FloatRect handRightBottom;
 
-	EnemyType enemyType = EnemyType::NONE;
+	EnemyType enemyType;
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
 
 	std::function<void(float elapsedTime, std::vector<Object> const& blocks)> Idle;
@@ -121,5 +117,4 @@ struct Enemy : Character
 	void BossPursuite(Character const& player, std::vector<Bullet*>& bullets);
 	void BossIdle();
 	void BossAttack(std::vector<Bullet*>& bullets, sf::Vector2f const& targetPos);
-	float randomAttackDuration;
 };

@@ -5,7 +5,8 @@ using namespace std;
 
 bool Player::InitPlayer()
 {
-	if (!bodyTexture.loadFromFile("resources/player.png"))
+	if (!bodyTexture.loadFromFile("resources/player.png") ||
+		!InitCharacterSound())
 	{
 		return false;
 	}
@@ -28,6 +29,7 @@ bool Player::InitPlayer()
 	shootDemage = PLAYER_SHOOT_DEMAGE;
 	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 	shootRange = PLAYER_START_SHOOT_RANGE;
+	deathSound = &playerDeath;
 
 	characterBullets.clear();
 
@@ -38,7 +40,7 @@ void Player::UpdateStatuses()
 {
 	if (injuredColdown < INJURED_COLDOWN)
 	{
-		bodyShape.setFillColor(Color(255, 255, 255, 150));
+		bodyShape.setFillColor(Color(255, 255, 255, 140));
 	}
 	else
 	{
@@ -132,6 +134,8 @@ void Player::Attack()
 	case Weapon::MELEE:
 		if (shootColdown > MELEE_COLDOWN)
 		{
+			weaponPistol.play();
+
 			characterBullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::PLAYER_AK));
 			shootColdown = 0;
 		}
@@ -139,6 +143,8 @@ void Player::Attack()
 	case Weapon::SHOOTGUN:
 		if (shootColdown > SHOOTGUN_COLDOWN && rounds > 0)
 		{
+			weaponShootgun.play();
+
 			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
 			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
 
@@ -152,6 +158,8 @@ void Player::Attack()
 	case Weapon::AK:
 		if (shootColdown > AK_COLDOWN && rounds > 0)
 		{
+			weaponAK.play();
+
 			characterBullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::PLAYER_AK));
 			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
@@ -160,4 +168,10 @@ void Player::Attack()
 	default:
 		break;
 	}
+}
+
+void Player::RotateDeadBody(float elapsedTime)
+{
+	auto bodyRotation = bodyShape.getRotation();
+	bodyShape.setRotation(bodyRotation + DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
 }

@@ -86,6 +86,11 @@ void Character::UpdateHealthStatus()
 	if (health <= 0)
 	{
 		existStatus = ExistenceStatus::DEAD;
+
+		if (deathSound != nullptr && deathSound->getStatus() != sf::Music::Playing)
+		{
+			deathSound->play();
+		}
 	}
 }
 

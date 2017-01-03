@@ -3,8 +3,6 @@
 using namespace std;
 
 Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
-	:position(position)
-	,enemyType(type)
 {
 	switch (type)
 	{
@@ -451,8 +449,8 @@ void Enemy::BossAttack(std::vector<Bullet*>& bullets, sf::Vector2f const& target
 
 void Enemy::UpdateHands()
 {
-	float leftHandX = GetCharacterPos().x - bodyShape.getSize().x / 2.0f - HAND_MARGIN_X;
-	float rightHandX = GetCharacterPos().x + bodyShape.getSize().x / 2.0f + HAND_MARGIN_X;
+	float leftHandX = GetCharacterPos().x - bodyShape.getSize().x / 2.0f;
+	float rightHandX = GetCharacterPos().x + bodyShape.getSize().x / 2.0f;
 	float bottomHandY = GetCharacterPos().y + 10;
 
 	handLeftMiddle = sf::FloatRect({ leftHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);

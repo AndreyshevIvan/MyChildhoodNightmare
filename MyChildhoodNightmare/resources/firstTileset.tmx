@@ -84321,7 +84321,7 @@
   <object id="770" name="enemy_shadow_spawn" x="5192.15" y="230.909" width="46" height="44"/>
   <object id="771" name="enemy_shadow_spawn" x="5810.33" y="1985.88" width="46" height="44"/>
   <object id="772" name="enemy_shadow_spawn" x="6304.27" y="1984.06" width="46" height="44"/>
-  <object id="773" name="enemy_bird_spawn" x="1095.18" y="368.909" width="46" height="44"/>
+  <object id="773" name="enemy_bird_spawn" x="5325.85" y="656.909" width="46" height="44"/>
   <object id="774" name="enemy_bird_spawn" x="5905.24" y="1617.09" width="46" height="44"/>
   <object id="775" name="enemy_bird_spawn" x="4328.52" y="699.212" width="46" height="44"/>
   <object id="776" name="enemy_bird_spawn" x="8667.91" y="1568.91" width="46" height="44"/>

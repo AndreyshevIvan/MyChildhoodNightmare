@@ -44,7 +44,7 @@ bool Game::InitGame()
 	if (!player.InitPlayer() ||
 		!menu.InitMenuItems() ||
 		!interface.Init() ||
-		!gameSound.Init())
+		!InitGameSound())
 	{
 		return false;
 	}
@@ -295,11 +295,6 @@ void Game::ControlPlayer()
 
 void Game::ControlMenu(sf::RenderWindow& window)
 {
-	if (gameSound.mainMenu.getStatus() != sf::Sound::Playing)
-	{
-		gameSound.mainMenu.play();
-	}
-
 	if (Keyboard::isKeyPressed(Keyboard::Escape) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN &&
 		menu.currentMenu == CurrentMenu::PAUSE)
@@ -333,7 +328,6 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case START_MENU_START:
-			gameSound.mainMenu.stop();
 			StartGame(level_0);
 			break;
 		case START_MENU_OPTIONS:
@@ -372,15 +366,12 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case PAUSE_MENU_RESUME:
-			gameSound.mainMenu.stop();
 			currentScene = &gameplayScene;
 			break;
 		case PAUSE_MENU_RESTART:
-			gameSound.mainMenu.stop();
 			StartGame(*currentLevel);
 			break;
 		case PAUSE_MENU_EXIT:
-			gameSound.mainMenu.stop();
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
 			break;
 		default:
@@ -416,13 +407,7 @@ void Game::UpdatePlayer()
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
-		if (gameSound.playerDeath.getStatus() != sf::Music::Playing)
-		{
-			gameSound.playerDeath.play();
-		}
-
-		auto bodyRotation = player.bodyShape.getRotation();
-		player.bodyShape.setRotation(bodyRotation + DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
+		player.RotateDeadBody(elapsedTime);
 
 		if (gameOverColdown >= GAME_OVER_COLDOWN)
 		{
@@ -486,6 +471,25 @@ void Game::UpdateBonuses()
 	for (auto bonus : bonuses)
 	{
 		bonus->Update(elapsedTime, blocks);
+	}
+}
+
+void Game::UpdateSound()
+{
+	auto music = musicMap.find(currentScene)->second;
+
+	if (music != currentMusic)
+	{
+		if (currentMusic != nullptr)
+		{
+			currentMusic->stop();
+		}
+		currentMusic = music;
+	}
+
+	if (currentMusic->getStatus() != sf::Music::Playing)
+	{
+		currentMusic->play();
 	}
 }
 
@@ -570,6 +574,7 @@ void Game::EnemyPlayerCollides()
 		{
 			if (player.injuredColdown >= INJURED_COLDOWN)
 			{
+				CollideSound((int)enemy->enemyType);
 				player.health -= enemy->touchDemage;
 				player.injuredColdown = 0;
 			}

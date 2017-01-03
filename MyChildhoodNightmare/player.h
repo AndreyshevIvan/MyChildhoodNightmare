@@ -13,6 +13,7 @@ const int PLAYER_SHOOT_DEMAGE = 15;
 const float PLAYER_START_SHOOT_RANGE = 500;
 
 const float INJURED_COLDOWN = 1.5;
+const float GAME_OVER_COLDOWN = 2;
 const float DEAD_ROTATION = 90;
 
 enum struct Weapon
@@ -34,7 +35,6 @@ struct Player : Character
 	Weapon currentWeapon = Weapon::MELEE;
 	float injuredColdown;
 	std::vector<int> ammo;
-
 	int boxes = 0;
 
 	bool InitPlayer();
@@ -43,6 +43,7 @@ struct Player : Character
 	
 	void Attack();
 	bool AddBonusEffect(Bonus const& bonus);
+	void RotateDeadBody(float elapsedTime);
 
 	void UpdateStatuses();
 };
