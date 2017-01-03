@@ -1,7 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
-const float BULLET_SPEED = 700;
+const float PLAYER_BULLET_SPEED = 700;
+const float CLOWN_BULLET_SPEED = 500;
 const float BOSS_BULLET_SPEED = 300;
 const sf::Vector2f BULLET_SIZE = { 14, 11 };
 
@@ -27,8 +28,7 @@ struct Bullet
 	sf::FloatRect collisionRect;
 	float currentRange = 0;
 	float maxRange;
-	float speed = BULLET_SPEED;
-	float angle = 0;
+	float speed;
 	BulletType type;
 	int movmentOrientation;
 	int demage;

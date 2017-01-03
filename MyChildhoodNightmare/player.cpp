@@ -26,7 +26,7 @@ bool Player::InitPlayer()
 
 	boxes = 0;
 	existStatus = ExistenceStatus::LIVE;
-	shootDemage = PLAYER_SHOOT_DEMAGE;
+	shootDemage = PLAYER_PISTOL_DEMAGE;
 	ammo = { -1, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 	shootRange = PLAYER_START_SHOOT_RANGE;
 	deathSound = &playerDeath;
@@ -62,68 +62,6 @@ void Player::SwitchWeapon()
 	}
 }
 
-bool Player::AddBonusEffect(Bonus const& bonus)
-{
-	switch (bonus.bonusType)
-	{
-	case BonusType::AMMO:
-		if (bonus.ammoType == AmmoType::AK)
-		{
-			if (ammo[2] == PLAYER_MAX_AMMO)
-			{
-				return false;
-			}
-			else if (ammo[2] + BONUS_AK_AMMO_COUNT > PLAYER_MAX_AMMO)
-			{
-				ammo[2] = PLAYER_MAX_AMMO;
-			}
-			else
-			{
-				ammo[2] += BONUS_AK_AMMO_COUNT;
-			}
-		}
-		else if (bonus.ammoType == AmmoType::SHOOTGUN)
-		{
-			if (ammo[1] == PLAYER_MAX_AMMO)
-			{
-				return false;
-			}
-			else if (ammo[1] + BONUS_SHOOTGUN_AMMO_COUNT > PLAYER_MAX_AMMO)
-			{
-				ammo[1] = PLAYER_MAX_AMMO;
-			}
-			else
-			{
-				ammo[1] += BONUS_SHOOTGUN_AMMO_COUNT;
-			}
-		}
-		break;
-	case BonusType::HEALTH:
-		if (health == PLAYER_START_HEALTH)
-		{
-			return false;
-		}
-		else if (health + BONUS_HP_COUNT > PLAYER_START_HEALTH)
-		{
-			health = PLAYER_START_HEALTH;
-		}
-		else
-		{
-			health += BONUS_HP_COUNT;
-		}
-		break;
-	case BonusType::SPELL:
-		break;
-	case BonusType::ITEM_BOX:
-		boxes += 1;
-		break;
-	default:
-		break;
-	}
-
-	return true;
-}
-
 void Player::Attack()
 {
 	int orientationId = static_cast<int>(orientationStatus);
@@ -148,9 +86,9 @@ void Player::Attack()
 			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
 			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
 
-			characterBullets.push_back(new Bullet(topBullPos, shootDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
-			characterBullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
-			characterBullets.push_back(new Bullet(bottomBullPos, shootDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
+			characterBullets.push_back(new Bullet(topBullPos, shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
+			characterBullets.push_back(new Bullet(GetCharacterPos(), shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
+			characterBullets.push_back(new Bullet(bottomBullPos, shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN));
 			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}
@@ -160,7 +98,7 @@ void Player::Attack()
 		{
 			weaponAK.play();
 
-			characterBullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::PLAYER_AK));
+			characterBullets.push_back(new Bullet(GetCharacterPos(), akDemage, orientationId, shootRange, BulletType::PLAYER_AK));
 			ammo[(int)currentWeapon] = rounds - 1;
 			shootColdown = 0;
 		}

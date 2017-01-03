@@ -149,89 +149,41 @@ void Game::ClearScene()
 
 void Game::SpawnEntities()
 {
-	SpawnBonuses();
-
 	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
 	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
 	std::vector<Object> ghostSpawns = currentLevel->GetObjects("enemy_bird_spawn");
 	std::vector<Object> spidersSpawns = currentLevel->GetObjects("enemy_spider_spawn");
 	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
 	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
-
-	for (auto const& bossSpawn : bosesSpawns)
-	{
-		sf::Vector2f pos = { bossSpawn.rect.left, bossSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::BOSS));
-	}
-
-	for (auto const& spiderSpawn : spidersSpawns)
-	{
-		sf::Vector2f pos = { spiderSpawn.rect.left, spiderSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::SPIDER));
-	}
-
-	for (auto const& shadowSpawn : shadowsSpawns)
-	{
-		sf::Vector2f pos = { shadowSpawn.rect.left, shadowSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::SHADOW));
-	}
-
-	for (auto const& clownSpawn : clownsSpawns)
-	{
-		sf::Vector2f pos = { clownSpawn.rect.left, clownSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::CLOWN));
-	}
-
-	for (auto const& birdSpawn : ghostSpawns)
-	{
-		sf::Vector2f pos = { birdSpawn.rect.left, birdSpawn.rect.top };
-		enemies.push_back(new Enemy(pos, EnemyType::GHOST));
-	}
-
-	for (auto const& itemsSpawn : itemsBoxSpawns)
-	{
-		sf::Vector2f itemPos = { itemsSpawn.rect.left, itemsSpawn.rect.top };
-		bonuses.push_back(new Bonus(itemPos, Items::BOX));
-	}
-
-	sf::FloatRect posRect = currentLevel->GetObject("player_spawn").rect;
-	player.Spawn({ posRect.left, posRect.top });
-}
-
-void Game::SpawnBonuses()
-{
 	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
 
-	for (auto const& bonusSpawn : bonusesSpawns)
-	{
-		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
-		bonuses.push_back(new Bonus(bonusPos));
-	}
+	auto spawnEnemies = [&](vector<Object> const& spawns, EnemyType const& type) {
+		for (auto const& spawn : spawns)
+		{
+			sf::Vector2f pos = spawn.sprite.getPosition();
+			enemies.push_back(new Enemy(pos, type));
+		}
+	};
+	
+	auto spawnItems = [&](vector<Object> const& spawns, ItemType const& type) {
+		for (auto const& spawn : spawns)
+		{
+			sf::Vector2f pos = spawn.sprite.getPosition();
+			bonuses.push_back(new Bonus(pos, type));
+		}
+	};
 
-	std::vector<Object> bonusesSpawnsEasy;
-	std::vector<Object> bonusesSpawnsNormal;
+	spawnEnemies(shadowsSpawns, EnemyType::SHADOW);
+	spawnEnemies(bosesSpawns, EnemyType::BOSS);
+	spawnEnemies(spidersSpawns, EnemyType::SPIDER);
+	spawnEnemies(clownsSpawns, EnemyType::CLOWN);
+	spawnEnemies(ghostSpawns, EnemyType::GHOST);
 
-	if (difficult == Difficult::EASY)
-	{
-		bonusesSpawnsEasy = currentLevel->GetObjects("bonus_spawn_easy");
-		bonusesSpawnsNormal = currentLevel->GetObjects("bonus_spawn_normal");
-	}
-	else if (difficult == Difficult::NORMAL)
-	{
-		bonusesSpawnsNormal = currentLevel->GetObjects("bonus_spawn_normal");
-	}
+	spawnItems(itemsBoxSpawns, ItemType::BOX);
+	spawnItems(bonusesSpawns, ItemType::BONUS);
 
-	for (auto const& bonusSpawn : bonusesSpawnsEasy)
-	{
-		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
-		bonuses.push_back(new Bonus(bonusPos));
-	}
-
-	for (auto const& bonusSpawn : bonusesSpawnsNormal)
-	{
-		sf::Vector2f bonusPos = { bonusSpawn.rect.left, bonusSpawn.rect.top };
-		bonuses.push_back(new Bonus(bonusPos));
-	}
+	sf::Vector2f playerPos = currentLevel->GetObject("player_spawn").sprite.getPosition();
+	player.Spawn(playerPos);
 }
 
 void Game::SetElapsedTime()
@@ -421,12 +373,12 @@ void Game::UpdatePlayer()
 
 void Game::UpdateBullets()
 {
-	auto updateBullets = [&](vector<Bullet *> &bullets) {
-		for (Bullet *pBullet : bullets)
+	auto updateBullets = [&](vector<Bullet*> &bullets) {
+		for (Bullet* pBullet : bullets)
 		{
 			pBullet->Update(elapsedTime);
 		}
-		erase_if(bullets, [&](Bullet *pBullet) {
+		erase_if(bullets, [&](Bullet* pBullet) {
 			bool dead = (IsCollidesWithLevel(pBullet->collisionRect) || !pBullet->isLive);
 			if (dead)
 			{
@@ -448,13 +400,13 @@ void Game::UpdateEnemies()
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
-			if (enemy->enemyType != EnemyType::BOSS)
+			if (enemy->enemyType == EnemyType::BOSS)
 			{
-				CreateBonus(enemy->GetCharacterPos(), bonuses, bonusProbability);
+				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), ItemType::BOX));
 			}
 			else
 			{
-				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), Items::BOX));
+				DropBonusFromEnemy(enemy->GetCharacterPos(), bonuses, bonusProbability);
 			}
 			it = enemies.erase(it);
 			delete(enemy);
@@ -537,8 +489,10 @@ void Game::BonusesPlayerCollides()
 	for (auto it = bonuses.begin(); it != bonuses.end();)
 	{
 		Bonus* bonus = *it;
-		if (bonus->collisionRect.intersects(player.collisionRect) && player.AddBonusEffect(*bonus))
+		if (bonus->collisionRect.intersects(player.collisionRect) && bonus->AddBonusEffect(player))
 		{
+			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
+			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
 			it = bonuses.erase(it);
 			delete(bonus);
 		}
@@ -557,9 +511,10 @@ void Game::PlayerBulletsEnemyCollides()
 		{
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
+				const std::string dmgStr = "-" + to_string(bullet->demage);
 				enemy->health -= bullet->demage;
 				enemy->activityStatus = EnemyActivity::PURSUIT;
-				interface.CreateDemageAnnouncement(bullet->bodyShape.getPosition(), bullet->demage);
+				interface.CreateAnnouncement(bullet->bodyShape.getPosition(), dmgStr);
 				bullet->isLive = false;
 			}
 		}
@@ -660,7 +615,7 @@ void Game::UpdateInterface()
 	interface.UpdatePlayerHP(player.health);
 	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
 	interface.UpdatePlayerBoxes(player.boxes);
-	interface.UpdateDemageAnnouncement(elapsedTime);
+	interface.UpdateAnnouncement(elapsedTime);
 
 	for (auto enemy : enemies)
 	{

@@ -1,9 +1,9 @@
 #pragma once
 #include "stdafx.h"
+#include "player.h"
 
 const sf::Vector2f BONUS_BODY_SIZE = { 40, 40 };
 
-const int SPELL_COUNT = 3;
 const int BONUS_COUNT = 4;
 const int BONUS_WEAPON_COUNT = 2;
 
@@ -15,56 +15,49 @@ const float BONUS_FALL_SPEED = 200;
 
 const int BONUS_AK_AMMO_COUNT = 24;
 const int BONUS_SHOOTGUN_AMMO_COUNT = 14;
-const int BONUS_HP_COUNT = 20;
+const int BONUS_HEALTH_COUNT = 20;
 
 const sf::Vector2f ITEM_BOX_SIZE = { 50, 58 };
 
-enum struct SpellType
+enum struct ItemType
 {
-	BANG,
-	GODMODE,
 	BONUS,
+	BOX,
 };
 
 enum struct BonusType
 {
-	AMMO,
+	AK_AMMO,
+	SHOOTGUN_AMMO,
 	HEALTH,
-	SPELL,
 	RANDOM,
 	ITEM_BOX,
 };
 
-enum struct AmmoType
+enum
 {
-	AK,
-	SHOOTGUN,
-};
-
-enum struct Items
-{
-	BOX,
+	SHOOTGUN = 1,
+	AK = 2,
 };
 
 struct Bonus
 {
-	Bonus(sf::Vector2f const& position);
-	Bonus(sf::Vector2f const& position, Items item);
+	Bonus(sf::Vector2f const& position, ItemType const& type);
 
 	sf::RectangleShape bodyShape;
 	sf::Texture bonusTexture;
 	sf::FloatRect collisionRect;
 
-	SpellType spellType;
 	BonusType bonusType;
-	AmmoType ammoType;
-
 	float fallSpeed = 0;
 	bool IsBonusOnGround = false;
+	std::string announcementText = "";
 
 	void Update(float elapsedTime, std::vector<Object> const& blocks);
+	bool AddBonusEffect(Player& player);
 
 	void DrawBonus(sf::RenderWindow& window);
 };
 
-void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability);
+void DropBonusFromEnemy(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability);
+bool AddPropertyValue(int& ammo, int addedAmmo, int maxAmmo);

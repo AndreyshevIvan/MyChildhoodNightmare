@@ -96,14 +96,9 @@ void Character::UpdateHealthStatus()
 
 bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& blocks)
 {
-	for (auto const& block : blocks)
-	{
-		if (rect.intersects(block.rect) && block.name == "solid")
-		{
-			return true;
-		}
-	}
-	return false;
+	return std::any_of(blocks.begin(), blocks.end(), [&](const Object &block) {
+		return (rect.intersects(block.rect) && block.name == "solid");
+	});
 }
 
 void Character::DrawCharacter(RenderWindow& window)

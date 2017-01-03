@@ -2,62 +2,44 @@
 
 using namespace std;
 
-Bonus::Bonus(sf::Vector2f const& position)
+Bonus::Bonus(sf::Vector2f const& position, ItemType const& type)
 {
-	int spellId = 0;
-	int bonusId = rand() % BONUS_COUNT;
-
-	if ((bonusType = BonusType(bonusId)) == BonusType::SPELL)
+	if (type == ItemType::BONUS)
 	{
-		spellId = rand() % SPELL_COUNT;
+		bonusType = BonusType(rand() % BONUS_COUNT);
+
+		switch (bonusType)
+		{
+		case BonusType::AK_AMMO:
+			bonusTexture.loadFromFile("resources/bonus_ammo.png");
+			break;
+		case BonusType::SHOOTGUN_AMMO:
+			bonusTexture.loadFromFile("resources/bonus_ammo.png");
+			break;
+		case BonusType::HEALTH:
+			bonusTexture.loadFromFile("resources/bonus_hp.png");
+			break;
+		case BonusType::RANDOM:
+			bonusTexture.loadFromFile("resources/bonus_random.png");
+			break;
+		default:
+			break;
+		}
+
+		bodyShape.setSize(BONUS_BODY_SIZE);
 	}
-
-	switch (bonusType)
+	else if (type == ItemType::BOX)
 	{
-	case BonusType::AMMO:
-		bonusTexture.loadFromFile("resources/bonus_ammo.png");
-		ammoType = AmmoType(rand() % BONUS_WEAPON_COUNT);
-		break;
-	case BonusType::HEALTH:
-		bonusTexture.loadFromFile("resources/bonus_hp.png");
-		break;
-	case BonusType::SPELL:
-		bonusTexture.loadFromFile("resources/bonus_spell.png");
-		spellType = SpellType(spellId);
-		break;
-	case BonusType::RANDOM:
-		bonusTexture.loadFromFile("resources/bonus_random.png");
-		break;
-	default:
-		break;
-	}
-
-	bodyShape.setSize(BONUS_BODY_SIZE);
-	bodyShape.setTexture(&bonusTexture);
-	collisionRect.width = BONUS_BODY_SIZE.x / 2.0f;
-	collisionRect.height = BONUS_BODY_SIZE.y / 2.0f;
-
-	collisionRect.left = position.x;
-	collisionRect.top = position.y - BONUS_BODY_SIZE.y;
-}
-
-Bonus::Bonus(sf::Vector2f const& position, Items item)
-{
-	if (item == Items::BOX)
-	{
-		bonusType = BonusType::ITEM_BOX;
 		bonusTexture.loadFromFile("resources/box.png");
-		bodyShape.setTexture(&bonusTexture);
 		bodyShape.setSize(ITEM_BOX_SIZE);
 	}
 
-	collisionRect.width = ITEM_BOX_SIZE.x / 2.0f;
-	collisionRect.height = ITEM_BOX_SIZE.y / 2.0f;
+	bodyShape.setTexture(&bonusTexture);
 
-	collisionRect.left = position.x - ITEM_BOX_SIZE.x;
-	collisionRect.top = position.y - ITEM_BOX_SIZE.y;
+	const sf::Vector2f POSITION(position.x, position.y - BONUS_BODY_SIZE.y);
+	const sf::Vector2f SIZE = bodyShape.getSize() * 0.5f;
+	collisionRect = sf::FloatRect(POSITION, SIZE);
 }
-
 
 void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
 {
@@ -87,17 +69,72 @@ void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
 	}
 }
 
-void Bonus::DrawBonus(sf::RenderWindow& window)
-{
-	window.draw(bodyShape);
-}
-
-void CreateBonus(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability)
+void DropBonusFromEnemy(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability)
 {
 	int digit = rand() % 100;
 
 	if (digit < probability)
 	{
-		bonuses.push_back(new Bonus(position));
+		bonuses.push_back(new Bonus(position, ItemType::BONUS));
 	}
+}
+
+bool Bonus::AddBonusEffect(Player& player)
+{
+	switch (bonusType)
+	{
+	case BonusType::AK_AMMO:
+		if (!AddPropertyValue(player.ammo[AK], BONUS_AK_AMMO_COUNT, PLAYER_MAX_AMMO))
+		{
+			return false;
+		}
+		announcementText = "+ " + to_string(BONUS_AK_AMMO_COUNT) + " AK AMMO";
+		break;
+
+	case BonusType::SHOOTGUN_AMMO:
+		if (!AddPropertyValue(player.ammo[SHOOTGUN], BONUS_SHOOTGUN_AMMO_COUNT, PLAYER_MAX_AMMO))
+		{
+			return false;
+		}
+		announcementText = "+ " + to_string(BONUS_SHOOTGUN_AMMO_COUNT) + " SHOOTGUN AMMO";
+		break;
+
+	case BonusType::HEALTH:
+		if (!AddPropertyValue(player.health, BONUS_HEALTH_COUNT, PLAYER_START_HEALTH))
+		{
+			return false;
+		}
+		announcementText = "+ " + to_string(BONUS_HEALTH_COUNT) + "HEALTH";
+		break;
+
+	case BonusType::ITEM_BOX:
+		player.boxes++;
+		announcementText = "YOU FOUND ONE BOX!";
+		break;
+	default:
+		break;
+	}
+
+	return true;
+}
+
+void Bonus::DrawBonus(sf::RenderWindow& window)
+{
+	window.draw(bodyShape);
+}
+
+bool AddPropertyValue(int& ammo, int addedAmmo, int maxAmmo)
+{
+	if (ammo == maxAmmo)
+	{
+		return false;
+	}
+
+	while (addedAmmo > 0 && ammo < maxAmmo)
+	{
+		ammo++;
+		addedAmmo--;
+	}
+
+	return true;
 }

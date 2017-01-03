@@ -97,18 +97,10 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 	playerHealthBar.setPosition(playerHealthPos);
 	playerWeaponBar.setPosition(playerWeaponBarPos);
 
-	playerHealth.setPosition
-	(
-		playerHealthPos.x + PLAYER_HP_MARGIN.x,
-		playerHealthPos.y + PLAYER_HP_MARGIN.y
-	);
+	playerHealth.setPosition(playerHealthPos + PLAYER_HP_MARGIN);
 
 	playerAmmo.setOrigin(playerAmmo.getGlobalBounds().width / 2.0f, playerAmmo.getGlobalBounds().height / 2.0f );
-	playerAmmo.setPosition
-	(
-		playerHealthPos.x + PLAYER_AMMO_MARGIN.x,
-		playerHealthPos.y + PLAYER_AMMO_MARGIN.y
-	);
+	playerAmmo.setPosition(playerHealthPos + PLAYER_AMMO_MARGIN);
 
 	bossBar.setPosition(cameraPos + BOSS_BAR_MARGIN);
 	bossHPLine.setPosition(cameraPos + BOSS_BAR_MARGIN + BOSS_HP_LINE_MARGIN);
@@ -259,14 +251,16 @@ void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
 	UpdateHelpButton("Press \"ENTER\" to go main menu", windowCenter);
 }
 
-void PlayerInterface::CreateDemageAnnouncement(sf::Vector2f const& position, int demage)
+void PlayerInterface::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
 {
-	auto marginX = static_cast<float>(rand() % MAX_DEMAGE_ANNOUNCEMENT_MARGIN + 1);
-	auto marginY = static_cast<float>(rand() % MAX_DEMAGE_ANNOUNCEMENT_MARGIN + 1);
+	auto marginX = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
+	auto marginY = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
 
 	sf::Vector2f margin(marginX, marginY / 2.0f);
 
-	sf::Text announcement = Text("-" + to_string(demage), font, DEMAGE_ANNOUNCEMENT_FONT_SIZE);
+	sf::Text announcement = Text(str, font, ANNOUNCEMENT_FONT_SIZE);
+	announcement.setOutlineThickness(ANNOUNCEMENT_OUTLINE_THICKNESS);
+	announcement.setOutlineColor(sf::Color::Black);
 	announcement.setOrigin(announcement.getGlobalBounds().width / 2.0f , announcement.getGlobalBounds().height / 2.0f);
 	announcement.setPosition(position + margin);
 
@@ -274,13 +268,13 @@ void PlayerInterface::CreateDemageAnnouncement(sf::Vector2f const& position, int
 	demageAnnouncementDuration.push_back(0);
 }
 
-void PlayerInterface::UpdateDemageAnnouncement(float elapsedTime)
+void PlayerInterface::UpdateAnnouncement(float elapsedTime)
 {
 	for (size_t elementNumber = 0; elementNumber < demageAnnouncementDuration.size();)
 	{
 		demageAnnouncementDuration[elementNumber] += elapsedTime;
 
-		if (demageAnnouncementDuration[elementNumber] >= DEMAGE_ANNOUNCEMENT_DURATION)
+		if (demageAnnouncementDuration[elementNumber] >= ANNOUNCEMENT_DURATION)
 		{
 			demageAnnouncementDuration.erase(demageAnnouncementDuration.begin() + elementNumber);
 			demageAnnouncementText.erase(demageAnnouncementText.begin() + elementNumber);
@@ -288,10 +282,10 @@ void PlayerInterface::UpdateDemageAnnouncement(float elapsedTime)
 		else
 		{
 			demageAnnouncementText[elementNumber].move(0, -DEMAGE_ANNOUNCEMENT_SPEED * elapsedTime);
-			if (demageAnnouncementDuration[elementNumber] >= DEMAGE_ANNOUNCEMENT_TRANSPARENCY_DURATION)
+			if (demageAnnouncementDuration[elementNumber] >= ANNOUNCEMENT_TRANSPARENCY_DURATION)
 			{
 				sf::Uint8 transparency = demageAnnouncementText[elementNumber].getFillColor().a;
-				sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / DEMAGE_ANNOUNCEMENT_TRANSPARENCY_DURATION);
+				sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / ANNOUNCEMENT_TRANSPARENCY_DURATION);
 				demageAnnouncementText[elementNumber].setFillColor(sf::Color(255, 255, 255, transparency - step));
 			}
 
@@ -307,7 +301,7 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerHealth); 
 	window.draw(playerWeaponBar);
 	window.draw(playerAmmo);
-	DrawDemageAnnouncement(window);
+	DrawAnnouncement(window);
 
 	for (auto it = boxes.begin(); it != boxes.end(); it++)
 	{
@@ -338,7 +332,7 @@ void PlayerInterface::DrawWin(sf::RenderWindow& window)
 	window.draw(helpText);
 }
 
-void PlayerInterface::DrawDemageAnnouncement(sf::RenderWindow& window)
+void PlayerInterface::DrawAnnouncement(sf::RenderWindow& window)
 {
 	for (auto announcement : demageAnnouncementText)
 	{

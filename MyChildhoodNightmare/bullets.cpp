@@ -6,12 +6,15 @@ Bullet::Bullet(sf::Vector2f const& startPos, int demage, int orientation, float 
 	{
 	case BulletType::PLAYER_AK:
 		bodyTexture.loadFromFile("resources/bullets_player_ak.png");
+		speed = PLAYER_BULLET_SPEED;
 		break;
 	case BulletType::PLAYER_SHOOTGUN:
 		bodyTexture.loadFromFile("resources/bullets_player_shootgun.png");
+		speed = PLAYER_BULLET_SPEED;
 		break;
 	case BulletType::CLOWN_BULLET:
 		bodyTexture.loadFromFile("resources/bullets_clown.png");
+		speed = CLOWN_BULLET_SPEED;
 		break;
 	case BulletType::BOSS_BULLET:
 		bodyTexture.loadFromFile("resources/bullets_boss.png");

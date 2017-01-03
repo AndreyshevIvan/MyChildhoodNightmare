@@ -9,8 +9,11 @@ const int PLAYER_START_HEALTH = 100;
 const int PLAYER_START_SHOOTGUN_AMMO = 7;
 const int PLAYER_START_AK_AMMO = 30;
 const int PLAYER_MAX_AMMO = 99;
-const int PLAYER_SHOOT_DEMAGE = 15;
-const float PLAYER_START_SHOOT_RANGE = 500;
+const int PLAYER_PISTOL_DEMAGE = 10;
+const int PLAYER_AK_DEMAGE = 6;
+const int PLAYER_SHOOTGUN_DEMAGE = 9;
+const int PLAYER_MAX_DEMAGE = 70;
+const float PLAYER_START_SHOOT_RANGE = 400;
 
 const float INJURED_COLDOWN = 1.5;
 const float GAME_OVER_COLDOWN = 2;
@@ -23,18 +26,13 @@ enum struct Weapon
 	AK,
 };
 
-enum struct Spell
-{
-	BOOM,
-	FREEZE,
-	SCARE,
-};
-
 struct Player : Character
 {
 	Weapon currentWeapon = Weapon::MELEE;
-	float injuredColdown;
 	std::vector<int> ammo;
+	int akDemage = PLAYER_AK_DEMAGE;
+	int shootgunDemage = PLAYER_SHOOTGUN_DEMAGE;
+	float injuredColdown;
 	int boxes = 0;
 
 	bool InitPlayer();
@@ -42,7 +40,6 @@ struct Player : Character
 	void SwitchWeapon();
 	
 	void Attack();
-	bool AddBonusEffect(Bonus const& bonus);
 	void RotateDeadBody(float elapsedTime);
 
 	void UpdateStatuses();

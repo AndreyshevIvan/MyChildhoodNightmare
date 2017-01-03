@@ -82,7 +82,6 @@ struct Game : GameSound
 	void CheckCompletedLevel();
 
 	void SpawnEntities();
-	void SpawnBonuses();
 
 	void SetElapsedTime();
 	sf::FloatRect GetCameraArea();

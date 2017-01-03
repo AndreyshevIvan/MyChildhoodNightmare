@@ -29,20 +29,19 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 
 	bodyShape.setTexture(&bodyTexture);
 
-	sf::Vector2f BODY_SIZE = bodyShape.getSize();
+	const sf::Vector2f BODY_SIZE = bodyShape.getSize();
+	const sf::Vector2i BODY_SIZE_INT = static_cast<sf::Vector2i>(BODY_SIZE);
 
 	if (enemyType != EnemyType::SPIDER)
 	{
-		bodyShape.setTextureRect(sf::IntRect(0, 0, static_cast<int>(BODY_SIZE.x), static_cast<int>(BODY_SIZE.y)));
+		bodyShape.setTextureRect(sf::IntRect({ 0, 0 }, BODY_SIZE_INT));
 	}
 
 	bodyShape.setSize(BODY_SIZE);
 	bodyShape.setOrigin(BODY_SIZE.x / 2.0f, BODY_SIZE.y);
 
-	collisionRect.width = BODY_SIZE.x / 2.0f;
-	collisionRect.height = BODY_SIZE.y - 10;
-	collisionRect.top = position.y;
-	collisionRect.left = position.x;
+	const sf::Vector2f BONE_SIZE(BODY_SIZE.x / 2.0f, BODY_SIZE.y - 10);
+	collisionRect = sf::FloatRect(position, BONE_SIZE);
 }
 
 void Enemy::CreateShadow()
@@ -54,9 +53,13 @@ void Enemy::CreateShadow()
 
 	health = SHADOW_START_HEALTH;
 	touchDemage = SHADOW_TOUCH_DEMAGE;
-	
+
 	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
 	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
+
+	UpdateActivityStatus = [&](Character const& player) {
+		UpdateShadowActivityStatus(player);
+	};
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
@@ -83,9 +86,14 @@ void Enemy::CreateClown()
 	touchDemage = CLOWN_TOUCH_DEMAGE;
 	shootRange = CLOWN_SHOOT_RANGE;
 
+	UpdateActivityStatus = [&](Character const& player) {
+		UpdateClownActivityStatus(player);
+	};
+
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)blocks;
-		ClownShoot(player, bullets);
+		(void)player;
+		ClownShoot(bullets);
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
@@ -104,6 +112,10 @@ void Enemy::CreateGhost()
 	health = GHOST_START_HEALTH;
 	touchDemage = GHOST_TOUCH_DEMAGE;
 	moveSpeed = GHOST_MOVE_SPEED;
+
+	UpdateActivityStatus = [&](Character const& player) {
+		UpdateGhostActivityStatus(player);
+	};
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
@@ -128,6 +140,10 @@ void Enemy::CreateSpider()
 	touchDemage = SPIDER_TOUCH_DEMAGE;
 	moveSpeed = SPIDER_MOVE_SPEED;
 	jumpSpeed = SIDER_JUMP_SPEED;
+
+	UpdateActivityStatus = [&](Character const& player) {
+		UpdateSpiderActivityStatus(player);
+	};
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		(void)bullets;
@@ -157,6 +173,10 @@ void Enemy::CreateBoss()
 	shootDemage = BOSS_SHOOT_DEMAGE;
 	touchDemage = BOSS_TOUCH_DEMAGE;
 	shootRange = BOSS_TARGET_RANGE;
+
+	UpdateActivityStatus = [&](Character const& player) {
+		UpdateBossActivityStatus(player);
+	};
 
 	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
 		BossPursuite(player, bullets);
@@ -200,36 +220,12 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Obj
 		UpdatePos(elapsedTime, blocks);
 	}
 
-	bodyShape.setPosition(GetCharacterPos());
-	UpdateHands();
 	if (!(enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE))
 	{
 		UpdateTexture();
 	}
-}
 
-void Enemy::UpdateActivityStatus(Character const& player)
-{
-	switch (this->enemyType)
-	{
-	case EnemyType::SHADOW:
-		UpdateShadowActivityStatus(player);
-		break;
-	case EnemyType::CLOWN:
-		UpdateClownActivityStatus(player);
-		break;
-	case EnemyType::GHOST:
-		UpdateGhostActivityStatus(player);
-		break;
-	case EnemyType::SPIDER:
-		UpdateSpiderActivityStatus(player);
-		break;
-	case EnemyType::BOSS:
-		UpdateBossActivityStatus(player);
-		break;
-	default:
-		break;
-	}
+	UpdateHands();
 }
 
 void Enemy::UpdateShadowActivityStatus(Character const& player)
@@ -241,12 +237,14 @@ void Enemy::UpdateShadowActivityStatus(Character const& player)
 void Enemy::UpdateClownActivityStatus(Character const& player)
 {
 	activityStatus = EnemyActivity::IDLE;
-	float halfBody = bodyShape.getSize().y / 2.0f;
-	
-	targetArea.setSize({ 2.0f * CLOWN_TARGET_RANGE, halfBody });
-	targetArea.setPosition(GetCharacterPos().x - CLOWN_TARGET_RANGE, GetCharacterPos().y - halfBody - halfBody / 2.0f);
 
-	if (player.collisionRect.intersects((sf::FloatRect)targetArea.getGlobalBounds()))
+	const float TARGET_AREA_POS_X = GetCharacterPos().x - CLOWN_TARGET_RANGE;
+	const float TARGET_AREA_POS_Y = GetCharacterPos().y - 1.5f * CLOWN_TARGET_AREA_SIZE.y;
+	sf::Vector2f AREA_POSITION(TARGET_AREA_POS_X, TARGET_AREA_POS_Y);
+
+	targetArea = sf::FloatRect(AREA_POSITION, CLOWN_TARGET_AREA_SIZE);
+
+	if (player.collisionRect.intersects(targetArea))
 	{
 		activityStatus = EnemyActivity::PURSUIT;
 		if (player.GetCharacterPos().x < GetCharacterPos().x)
@@ -269,7 +267,7 @@ void Enemy::UpdateGhostActivityStatus(Character const& player)
 	float rangeX = playerPos.x - collisionRect.left;
 	float rangeY = playerPos.y - collisionRect.top;
 
-	float targetRadius = sqrt(rangeX * rangeX + rangeY * rangeY);
+	float targetRadius = sqrt(pow(rangeX, 2) + pow(rangeY, 2));
 
 	if (targetRadius <= GHOST_TARGET_RANGE)
 	{
@@ -287,7 +285,8 @@ void Enemy::UpdateSpiderActivityStatus(Character const& player)
 {
 	auto rangeX = abs(player.GetCharacterPos().x - GetCharacterPos().x);
 	auto rangeY = abs(player.GetCharacterPos().y - GetCharacterPos().y);
-	auto range = sqrt(rangeX * rangeX + rangeY * rangeY);
+
+	auto range = sqrt(pow(rangeX, 2) + pow(rangeY, 2));
 
 	if (range <= SPIDER_TARGET_RANGE)
 	{
@@ -364,9 +363,8 @@ void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
 	}
 }
 
-void Enemy::ClownShoot(Character const& player, std::vector<Bullet*>& bullets)
+void Enemy::ClownShoot(std::vector<Bullet*>& bullets)
 {
-	(void)player;
 	int orientationId = static_cast<int>(orientationStatus);
 
 	if (shootColdown >= CLOWN_SHOOT_COLDOWN)
@@ -422,11 +420,12 @@ void Enemy::GhostPursuite(Character const& player)
 void Enemy::BossPursuite(Character const& player, std::vector<Bullet*>& bullets)
 {
 	(void)player;
-	targetArea.setSize({ BOSS_TARGET_RANGE, BOSS_SIZE.y });
-	targetArea.setOrigin(targetArea.getSize().x, targetArea.getSize().y);
-	targetArea.setPosition(GetCharacterPos());
+	sf::Vector2f AREA_SIZE(BOSS_TARGET_RANGE, BOSS_SIZE.y);
+	sf::Vector2f AREA_POS(GetCharacterPos() - AREA_SIZE);
 
-	if (player.collisionRect.intersects(targetArea.getGlobalBounds()))
+	targetArea = sf::FloatRect(AREA_POS, AREA_SIZE);
+
+	if (player.collisionRect.intersects(targetArea))
 	{
 		BossAttack(bullets, player.GetCharacterPos());
 	}
@@ -449,13 +448,14 @@ void Enemy::BossAttack(std::vector<Bullet*>& bullets, sf::Vector2f const& target
 
 void Enemy::UpdateHands()
 {
-	float leftHandX = GetCharacterPos().x - bodyShape.getSize().x / 2.0f;
-	float rightHandX = GetCharacterPos().x + bodyShape.getSize().x / 2.0f;
-	float bottomHandY = GetCharacterPos().y + 10;
+	const float LEFT_HAND_POS_X = GetCharacterPos().x - bodyShape.getSize().x / 2.0f;
+	const float RIGHT_HAND_POS_X = GetCharacterPos().x + bodyShape.getSize().x / 2.0f;
+	const float BOTTOM_HAND_POS_Y = GetCharacterPos().y + BOTTOM_HAND_MARGIN;
+	const float MIDDLE_HAND_POS_Y = GetCharacterPos().y - bodyShape.getSize().y / 4.0f;
 
-	handLeftMiddle = sf::FloatRect({ leftHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
-	handLeftBottom = sf::FloatRect({ leftHandX, bottomHandY }, HAND_SIZE );
+	handLeftMiddle = sf::FloatRect({ LEFT_HAND_POS_X, MIDDLE_HAND_POS_Y }, HAND_SIZE);
+	handLeftBottom = sf::FloatRect({ LEFT_HAND_POS_X, BOTTOM_HAND_POS_Y }, HAND_SIZE );
 
-	handRightMiddle = sf::FloatRect({ rightHandX, GetCharacterPos().y - bodyShape.getSize().y / 4.0f }, HAND_SIZE);
-	handRightBottom = sf::FloatRect({ rightHandX, bottomHandY }, HAND_SIZE);
+	handRightMiddle = sf::FloatRect({ RIGHT_HAND_POS_X, MIDDLE_HAND_POS_Y }, HAND_SIZE);
+	handRightBottom = sf::FloatRect({ RIGHT_HAND_POS_X, BOTTOM_HAND_POS_Y }, HAND_SIZE);
 }

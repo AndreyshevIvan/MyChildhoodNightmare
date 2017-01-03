@@ -16,6 +16,7 @@ const float CLOWN_MOVE_SPEED = 0;
 const int CLOWN_SHOOT_DEMAGE = 6;
 const int CLOWN_TOUCH_DEMAGE = 10;
 const float CLOWN_TARGET_RANGE = 500;
+const sf::Vector2f CLOWN_TARGET_AREA_SIZE = { CLOWN_TARGET_RANGE * 2.0f , CLOWN_SIZE.y / 2.0f };
 const float CLOWN_SHOOT_RANGE = CLOWN_TARGET_RANGE;
 const int CLOWN_BULLET_DEMAGE = 3;
 const float CLOWN_SHOOT_COLDOWN = 0.2f;
@@ -47,6 +48,7 @@ const int BULLETS_IN_WALL_ATTACK_COUNT = 5;
 const int WALL_ATTACK_WINDOW_BULLETS_COUNT = 3;
 
 const int LAVA_DEMAGE = 20;
+const float BOTTOM_HAND_MARGIN = 10;
 
 enum struct EnemyType
 {
@@ -74,7 +76,7 @@ struct Enemy : Character
 	void CreateBoss();
 
 	sf::Vector2f position;
-	sf::RectangleShape targetArea;
+	sf::FloatRect targetArea;
 	
 	sf::Vector2f ghostMove;
 
@@ -89,13 +91,13 @@ struct Enemy : Character
 	EnemyType enemyType;
 	EnemyActivity activityStatus = EnemyActivity::IDLE;
 
+	std::function<void(Character const& player)> UpdateActivityStatus;
 	std::function<void(float elapsedTime, std::vector<Object> const& blocks)> Idle;
 	std::function<void(Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks)> Pursuit;
 
 	void UpdateAI(float elapsedTime, Character const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets);
 	void UpdateHands();
 
-	void UpdateActivityStatus(Character const& player);
 	void UpdateGhostActivityStatus(Character const& player);
 	void UpdateShadowActivityStatus(Character const& player);
 	void UpdateClownActivityStatus(Character const& player);
@@ -104,7 +106,7 @@ struct Enemy : Character
 
 	void ShadowIdle(float elapsedTime, std::vector<Object> const& blocks);
 
-	void ClownShoot(Character const& player, std::vector<Bullet*>& bullets);
+	void ClownShoot(std::vector<Bullet*>& bullets);
 	bool IsClownOnGround = false;
 
 	void UpdateSpiderPos(float elapsedTime);
