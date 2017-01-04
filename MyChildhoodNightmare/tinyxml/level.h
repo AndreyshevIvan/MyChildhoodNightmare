@@ -39,6 +39,7 @@ public:
     sf::Vector2i GetTileSize();
 	float Level::GetTilemapWidth();
 	float Level::GetTilemapHeight();
+	sf::Vector2f Level::GetTilemapSize();
 
 private:
     int width, height, tileWidth, tileHeight;

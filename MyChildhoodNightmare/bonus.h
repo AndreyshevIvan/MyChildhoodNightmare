@@ -17,6 +17,10 @@ const int BONUS_AK_AMMO_COUNT = 24;
 const int BONUS_SHOOTGUN_AMMO_COUNT = 14;
 const int BONUS_HEALTH_COUNT = 20;
 
+const int BONUS_HEALTH_INCREASE = 10;
+const int BONUS_AK_DEMAGE_INCREASE = 4;
+const int BONUS_SHOOTGUN_DEMAGE_INCREASE = 3;
+
 const sf::Vector2f ITEM_BOX_SIZE = { 50, 58 };
 
 enum struct BonusType

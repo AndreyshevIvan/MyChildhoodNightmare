@@ -102,7 +102,7 @@ bool Bonus::AddBonusEffect(Player& player)
 		break;
 
 	case BonusType::HEALTH:
-		if (!AddPropertyValue(player.health, BONUS_HEALTH_COUNT, PLAYER_START_HEALTH))
+		if (!AddPropertyValue(player.health, BONUS_HEALTH_COUNT, player.maxHealth))
 		{
 			return false;
 		}
@@ -126,7 +126,27 @@ bool Bonus::AddBonusEffect(Player& player)
 
 void Bonus::AddRandomBonus(Player& player)
 {
-	(void)player;
+	int randomProperty = rand() % 10 + 1;
+
+	if (randomProperty >= 1 && randomProperty <= 2)
+	{
+		AddPropertyValue(player.akDemage, BONUS_AK_DEMAGE_INCREASE, PLAYER_MAX_AK_DEMAGE);
+		announcementText = "+ MAX AK DEMAGE";
+	}
+	else if (randomProperty >= 3 && randomProperty <= 4)
+	{
+		AddPropertyValue(player.shootgunDemage, BONUS_SHOOTGUN_DEMAGE_INCREASE, PLAYER_MAX_SHOOTGUN_DEMAGE);
+		announcementText = "+ MAX SHOOTGUN DEMAGE";
+	}
+	else if (randomProperty >= 5 && randomProperty <= 6)
+	{
+		AddPropertyValue(player.maxHealth, BONUS_HEALTH_INCREASE, PLAYER_MAX_HEALTH);
+		announcementText = "+ MAX HEALTH";
+	}
+	else
+	{
+		announcementText = "HA-HA-HA, THIS GIFT ARE EMPTY!";
+	}
 }
 
 void Bonus::DrawBonus(sf::RenderWindow& window)
@@ -134,17 +154,17 @@ void Bonus::DrawBonus(sf::RenderWindow& window)
 	window.draw(bodyShape);
 }
 
-bool AddPropertyValue(int& ammo, int addedAmmo, int maxAmmo)
+bool AddPropertyValue(int& property, int addedValue, int maxValue)
 {
-	if (ammo == maxAmmo)
+	if (property == maxValue)
 	{
 		return false;
 	}
 
-	while (addedAmmo > 0 && ammo < maxAmmo)
+	while (addedValue > 0 && property < maxValue)
 	{
-		ammo++;
-		addedAmmo--;
+		property++;
+		addedValue--;
 	}
 
 	return true;

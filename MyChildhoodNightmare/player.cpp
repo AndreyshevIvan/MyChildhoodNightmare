@@ -17,9 +17,11 @@ bool Player::InitPlayer()
 	bodyShape.setTexture(&bodyTexture);
 	bodyShape.setSize(PLAYER_SIZE);
 	bodyShape.setOrigin(PLAYER_SIZE.x / 2.0f, PLAYER_SIZE.y);
+	bodyShape.setRotation(0);
 
 	moveSpeed = PLAYER_MOVE_SPEED;
 	jumpSpeed = 0;
+	maxHealth = PLAYER_START_HEALTH;
 	health = PLAYER_START_HEALTH;
 
 	injuredColdown = INJURED_COLDOWN;
@@ -32,6 +34,7 @@ bool Player::InitPlayer()
 	deathSound = &playerDeath;
 
 	characterBullets.clear();
+	CreateCopy();
 
 	return true;
 }
@@ -113,4 +116,29 @@ void Player::RotateDeadBody(float elapsedTime)
 {
 	auto bodyRotation = bodyShape.getRotation();
 	bodyShape.setRotation(bodyRotation + DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
+}
+
+void Player::CreateCopy()
+{
+	copy_ak_demage = akDemage;
+	copy_shootgun_demage = shootDemage;
+	copy_ak_ammo = ammo[AK_AMMO];
+	copy_shootgun_ammo = ammo[SHOOTGUN_AMMO];
+	copy_maxHealth = maxHealth;
+	copy_health = health;
+}
+
+void Player::ReturnCopy()
+{
+	akDemage = copy_ak_demage;
+	shootDemage = copy_shootgun_demage;
+	ammo[AK_AMMO] = copy_ak_ammo;
+	ammo[SHOOTGUN_AMMO] = copy_shootgun_ammo;
+	maxHealth = copy_maxHealth;
+	health = copy_maxHealth; // all levels start with max health
+}
+
+void Player::Clear()
+{
+	boxes = 0;
 }

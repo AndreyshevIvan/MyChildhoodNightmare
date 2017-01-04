@@ -37,10 +37,12 @@ struct GameSound
 
 	sf::Music menuSound;
 	sf::Music gameplaySound;
+	sf::Music gameOverSound;
 	sf::Music finalSound;
 
 	sf::Music menuButtonSwitchSound;
 
+	sf::Music playerHurtGrunt;
 	sf::Music shadowCollideSound;
 	sf::Music ghostCollideSound;
 

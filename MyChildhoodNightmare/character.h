@@ -52,11 +52,11 @@ struct Character : CharacterSound
 	int touchDemage;
 	int shootDemage;
 	int health;
+	int maxHealth;
 	float shootColdown = 0;
 	float currentFrame = 0;
 	float shootRange = MIN_SHOOT_RANGE;
 	sf::Music* deathSound = nullptr;
-
 	void Spawn(sf::Vector2f const& pos);
 
 	sf::Vector2f GetCharacterPos() const;
@@ -73,6 +73,4 @@ struct Character : CharacterSound
 	void UpdateTexture();
 
 	virtual void DrawCharacter(sf::RenderWindow& window);
-
-	void Clear();
 };

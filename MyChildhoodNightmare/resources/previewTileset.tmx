@@ -8236,59 +8236,13 @@
  </objectgroup>
  <objectgroup name="spawns">
   <object id="6" name="player_spawn" x="474.667" y="591" width="28" height="28"/>
-  <object id="77" name="item_box_spawn" x="642.667" y="560.667" width="38.6667" height="46.6667"/>
  </objectgroup>
  <objectgroup name="level">
   <object id="36" name="level1" x="1714.67" y="1011.33" width="86.6667" height="170.5"/>
   <object id="39" name="solid" x="1655" y="1153.17" width="69.9997" height="60.6667"/>
  </objectgroup>
- <objectgroup name="bonuses_random_spawn">
-  <object id="78" name="bonus_random" x="783" y="559" width="43" height="35"/>
-  <object id="86" name="bonus_random" x="748.5" y="536.5" width="43" height="35"/>
-  <object id="87" name="bonus_random" x="762.5" y="517.5" width="43" height="35"/>
-  <object id="88" name="bonus_random" x="803.5" y="519.5" width="43" height="35"/>
-  <object id="89" name="bonus_random" x="818.5" y="552.5" width="43" height="35"/>
-  <object id="90" name="bonus_random" x="794.5" y="572.5" width="43" height="35"/>
-  <object id="91" name="bonus_random" x="766.5" y="555.5" width="43" height="35"/>
-  <object id="92" name="bonus_random" x="753.5" y="519.5" width="43" height="35"/>
-  <object id="93" name="bonus_random" x="788.5" y="517.5" width="43" height="35"/>
-  <object id="94" name="bonus_random" x="794.5" y="561.5" width="43" height="35"/>
-  <object id="95" name="bonus_random" x="784.5" y="561.5" width="43" height="35"/>
- </objectgroup>
- <objectgroup name="bonuses_heath_spawn">
-  <object id="80" name="bonus_heath" x="924" y="558" width="39" height="31"/>
-  <object id="96" name="bonus_heath" x="920.5" y="551.5" width="39" height="31"/>
-  <object id="97" name="bonus_heath" x="930.5" y="539.5" width="39" height="31"/>
-  <object id="98" name="bonus_heath" x="941.5" y="554.5" width="39" height="31"/>
-  <object id="99" name="bonus_heath" x="934.5" y="538.5" width="39" height="31"/>
-  <object id="100" name="bonus_heath" x="927.5" y="561.5" width="39" height="31"/>
-  <object id="101" name="bonus_heath" x="927.5" y="549.5" width="39" height="31"/>
-  <object id="102" name="bonus_heath" x="928.5" y="562.5" width="39" height="31"/>
-  <object id="103" name="bonus_heath" x="932.5" y="554.5" width="39" height="31"/>
- </objectgroup>
- <objectgroup name="bonuses_ak_ammo_spawn">
-  <object id="105" name="bonus_ak_ammo" x="1044.5" y="543.5" width="43" height="31"/>
-  <object id="121" name="bonus_ak_ammo" x="1044.5" y="544.5" width="43" height="31"/>
-  <object id="122" name="bonus_ak_ammo" x="1044.5" y="562.5" width="43" height="31"/>
-  <object id="123" name="bonus_ak_ammo" x="1052.5" y="547.5" width="43" height="31"/>
-  <object id="124" name="bonus_ak_ammo" x="1044.5" y="552.5" width="43" height="31"/>
-  <object id="125" name="bonus_ak_ammo" x="1049.5" y="554.5" width="43" height="31"/>
-  <object id="126" name="bonus_ak_ammo" x="1046.5" y="562.5" width="43" height="31"/>
-  <object id="127" name="bonus_ak_ammo" x="1044.5" y="552.5" width="43" height="31"/>
-  <object id="128" name="bonus_ak_ammo" x="1048.5" y="556.5" width="43" height="31"/>
-  <object id="129" name="bonus_ak_ammo" x="1037.5" y="556.5" width="43" height="31"/>
-  <object id="130" name="bonus_ak_ammo" x="1038.5" y="553.5" width="43" height="31"/>
- </objectgroup>
- <objectgroup name="bonuses_shootgun_ammo_spawn">
-  <object id="116" name="bonus_shootgun_ammo" x="1191.5" y="541" width="41" height="34"/>
-  <object id="131" name="bonus_shootgun_ammo" x="1217.5" y="529" width="41" height="34"/>
-  <object id="132" name="bonus_shootgun_ammo" x="1194.5" y="541" width="41" height="34"/>
-  <object id="133" name="bonus_shootgun_ammo" x="1195.5" y="548" width="41" height="34"/>
-  <object id="134" name="bonus_shootgun_ammo" x="1201.5" y="542" width="41" height="34"/>
-  <object id="135" name="bonus_shootgun_ammo" x="1193.5" y="545" width="41" height="34"/>
-  <object id="136" name="bonus_shootgun_ammo" x="1202.5" y="539" width="41" height="34"/>
-  <object id="137" name="bonus_shootgun_ammo" x="1206.5" y="557" width="41" height="34"/>
-  <object id="138" name="bonus_shootgun_ammo" x="1206.5" y="548" width="41" height="34"/>
-  <object id="139" name="bonus_shootgun_ammo" x="1206.5" y="548" width="41" height="34"/>
- </objectgroup>
+ <objectgroup name="bonuses_random_spawn"/>
+ <objectgroup name="bonuses_heath_spawn"/>
+ <objectgroup name="bonuses_ak_ammo_spawn"/>
+ <objectgroup name="bonuses_shootgun_ammo_spawn"/>
 </map>

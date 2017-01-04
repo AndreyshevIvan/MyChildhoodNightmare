@@ -74,8 +74,9 @@ bool PlayerInterface::Init()
 	return true;
 }
 
-void PlayerInterface::CreateBoxes(int maxBoxes)
+void PlayerInterface::CreateBoxes(std::map<Level*, int> const& boxesMap, Level* level)
 {
+	const int maxBoxes = boxesMap.find(level)->second;
 	boxes.clear();
 
 	for (int i = 0; i < maxBoxes; i++)

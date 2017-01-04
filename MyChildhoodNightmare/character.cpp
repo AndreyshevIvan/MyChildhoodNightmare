@@ -105,18 +105,6 @@ void Character::DrawCharacter(RenderWindow& window)
 	window.draw(bodyShape);
 }
 
-void Character::Clear()
-{
-	for (auto it = characterBullets.begin(); it != characterBullets.end();)
-	{
-		Bullet* bullet = *it;
-		it = characterBullets.erase(it);
-		delete(bullet);
-	}
-
-	bodyShape.setRotation(0);
-}
-
 void Character::UpdateOrientation()
 {
 	if (runStatus == MovementStatus::RUN_LEFT)

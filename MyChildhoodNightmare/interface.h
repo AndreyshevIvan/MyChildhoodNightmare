@@ -99,7 +99,7 @@ struct PlayerInterface
 
 	bool Init();
 
-	void CreateBoxes(int maxBoxes);
+	void CreateBoxes(std::map<Level*, int> const& boxesMap, Level* level);
 
 	void UpdateBarsPos(sf::Vector2f const& cameraPos);
 	void UpdatePlayerHP(int health);

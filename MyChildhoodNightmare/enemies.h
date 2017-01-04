@@ -7,8 +7,11 @@ const sf::Vector2f HAND_SIZE = { 2, 2 };
 const sf::Vector2f SHADOW_SIZE = { 50, 100 };
 const int SHADOW_START_HEALTH = 140;
 const float SHADOW_MOVE_SPEED = 180;
+const float SHADOW_PURSUITE_MOVE_SPEED = 300;
 const float SHADOW_MOVE_SPEED_RANDOM = 80;
 const int SHADOW_TOUCH_DEMAGE = 25;
+const sf::Vector2f SHADOW_TARGET_AREA_SIZE = { 600.0f, 120.0f };
+const sf::Vector2f SHADOW_TARGET_AREA_MARGIN = { 0, -SHADOW_SIZE.y };
 
 const sf::Vector2f CLOWN_SIZE = { 55, 100 };
 const int CLOWN_START_HEALTH = 100;
@@ -104,7 +107,7 @@ struct Enemy : Character
 	void UpdateSpiderActivityStatus(Character const& player);
 	void UpdateBossActivityStatus(Character const& player);
 
-	void ShadowIdle(float elapsedTime, std::vector<Object> const& blocks);
+	void ShadowWalk(float elapsedTime, std::vector<Object> const& blocks);
 
 	void ClownShoot(std::vector<Bullet*>& bullets);
 	bool IsClownOnGround = false;

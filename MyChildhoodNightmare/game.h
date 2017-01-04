@@ -30,7 +30,7 @@ struct Game : GameSound
 		{ &menuScene, &menuSound },
 		{ &gameplayScene, &gameplaySound },
 		{ &pauseScene, &menuSound },
-		{ &gameOverScene, &menuSound },
+		{ &gameOverScene, &gameOverSound },
 		{ &previewScene, &menuSound },
 		{ &winScene, &finalSound }
 	};
@@ -57,7 +57,7 @@ struct Game : GameSound
 	sf::RectangleShape background_level_preview;
 	sf::Texture backgroundTexture_level_preview;
 
-	std::map<Level*, int> boxesCoundMap = {
+	std::map<Level*, int> boxesCountMap = {
 			{ &level_0, 0 },
 			{ &level_1, 3 },
 			{ &level_2, 1 }
@@ -78,7 +78,12 @@ struct Game : GameSound
 	int bonusProbability = BONUS_PROBABILITY_EASY;
 
 	bool InitGame();
-	void StartGame(Level& level);
+	void StartGame();
+	void Restart();
+	void NextLevel(Level& level);
+
+	void DifficultAdjustment();
+
 	void CheckCompletedLevel();
 
 	void SpawnEntities();

@@ -12,8 +12,11 @@ const int PLAYER_MAX_AMMO = 99;
 const int PLAYER_PISTOL_DEMAGE = 10;
 const int PLAYER_AK_DEMAGE = 6;
 const int PLAYER_SHOOTGUN_DEMAGE = 9;
-const int PLAYER_MAX_DEMAGE = 70;
 const float PLAYER_START_SHOOT_RANGE = 400;
+
+const int PLAYER_MAX_AK_DEMAGE = 40;
+const int PLAYER_MAX_SHOOTGUN_DEMAGE = 30;
+const int PLAYER_MAX_HEALTH = 250;
 
 const float INJURED_COLDOWN = 1.5;
 const float GAME_OVER_COLDOWN = 2;
@@ -35,12 +38,23 @@ struct Player : Character
 	float injuredColdown;
 	int boxes = 0;
 
+	int copy_ak_demage;
+	int copy_shootgun_demage;
+	int copy_ak_ammo;
+	int copy_shootgun_ammo;
+	int copy_maxHealth;
+	int copy_health;
+
 	bool InitPlayer();
 
 	void SwitchWeapon();
 	
 	void Attack();
 	void RotateDeadBody(float elapsedTime);
+	void CreateCopy();
+	void ReturnCopy();
 
 	void UpdateStatuses();
+
+	void Clear();
 };

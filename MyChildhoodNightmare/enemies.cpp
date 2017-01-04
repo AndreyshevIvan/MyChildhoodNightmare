@@ -68,9 +68,7 @@ void Enemy::CreateShadow()
 	};
 
 	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
-		moveSpeed = SHADOW_MOVE_SPEED;
-		runStatus = currentRunStatus;
-		ShadowIdle(elapsedTime, blocks);
+		ShadowWalk(elapsedTime, blocks);
 	};
 }
 
@@ -230,8 +228,30 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Obj
 
 void Enemy::UpdateShadowActivityStatus(Character const& player)
 {
+	moveSpeed = SHADOW_MOVE_SPEED;
+	runStatus = currentRunStatus;
+	bodyShape.setFillColor(sf::Color(255, 255, 255, 255));
+
 	this->activityStatus = EnemyActivity::IDLE;
-	(void)player;
+
+	const sf::Vector2f RIGHT_AREA_POS = GetCharacterPos() + SHADOW_TARGET_AREA_MARGIN;
+	const sf::Vector2f LEFT_MARGIN = sf::Vector2f(-SHADOW_TARGET_AREA_SIZE.x, 0);
+	const sf::Vector2f LEFT_AREA_POS = GetCharacterPos() + SHADOW_TARGET_AREA_MARGIN + LEFT_MARGIN;
+
+	if (orientationStatus == OrientationStatus::RIGHT)
+	{
+		targetArea = sf::FloatRect(RIGHT_AREA_POS, SHADOW_TARGET_AREA_SIZE);
+	}
+	else
+	{
+		targetArea = sf::FloatRect(LEFT_AREA_POS, SHADOW_TARGET_AREA_SIZE);
+	}
+
+	if (targetArea.intersects(player.collisionRect))
+	{
+		moveSpeed = SHADOW_PURSUITE_MOVE_SPEED;
+		bodyShape.setFillColor(sf::Color::Red);
+	}
 }
 
 void Enemy::UpdateClownActivityStatus(Character const& player)
@@ -326,7 +346,7 @@ void Enemy::SpiderPursuite(Character const& player, std::vector<Object> const& b
 	}
 }
 
-void Enemy::ShadowIdle(float elapsedTime, std::vector<Object> const& blocks)
+void Enemy::ShadowWalk(float elapsedTime, std::vector<Object> const& blocks)
 {
 	if (jumpStatus != JumpingStatus::FLY)
 	{

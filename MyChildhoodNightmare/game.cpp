@@ -71,21 +71,55 @@ bool Game::InitGame()
 	return true;
 }
 
-void Game::StartGame(Level& level)
+void Game::StartGame()
 {
 	ClearScene();
 
-	currentLevel = &level;
-	mapSize = { currentLevel->GetTilemapWidth(), currentLevel->GetTilemapHeight() };
-
-	interface.CreateBoxes(boxesCoundMap.find(currentLevel)->second);
+	currentLevel = &level_0;
+	mapSize = currentLevel->GetTilemapSize();
+	interface.CreateBoxes(boxesCountMap, currentLevel);
 
 	blocks = currentLevel->GetObjects("solid");
 	lava = currentLevel->GetObjects("lava");
 
-	player.Clear();
 	player.InitPlayer();
+	DifficultAdjustment();
+	SpawnEntities();
 
+	currentScene = &gameplayScene;
+}
+
+void Game::Restart()
+{
+	ClearScene();
+	interface.CreateBoxes(boxesCountMap, currentLevel);
+
+	blocks = currentLevel->GetObjects("solid");
+	lava = currentLevel->GetObjects("lava");
+
+	player.ReturnCopy();
+	SpawnEntities();
+
+	currentScene = &gameplayScene;
+}
+
+void Game::NextLevel(Level& level)
+{
+	ClearScene();
+
+	player.Clear();
+
+	currentLevel = &level;
+	mapSize = currentLevel->GetTilemapSize();
+	interface.CreateBoxes(boxesCountMap, currentLevel);
+
+	blocks = currentLevel->GetObjects("solid");
+	lava = currentLevel->GetObjects("lava");
+	SpawnEntities();
+}
+
+void Game::DifficultAdjustment()
+{
 	switch (difficult)
 	{
 	case Difficult::EASY:
@@ -100,10 +134,6 @@ void Game::StartGame(Level& level)
 	default:
 		break;
 	}
-	
-	SpawnEntities();
-
-	currentScene = &gameplayScene;
 }
 
 void Game::CheckCompletedLevel()
@@ -114,15 +144,15 @@ void Game::CheckCompletedLevel()
 	auto winBlock = currentLevel->GetObject("win").rect;
 
 	int currBoxes = player.boxes;
-	int neededBoxes = boxesCoundMap.find(currentLevel)->second;
+	int neededBoxes = boxesCountMap.find(currentLevel)->second;
 
 	if (playerRect.intersects(door_level_1) && currBoxes >= neededBoxes)
 	{
-		StartGame(level_1);
+		NextLevel(level_1);
 	}
 	else if (playerRect.intersects(door_level_2) && currBoxes >= neededBoxes)
 	{
-		StartGame(level_2);
+		NextLevel(level_2);
 	}
 	else if (playerRect.intersects(winBlock) && currBoxes >= neededBoxes)
 	{
@@ -291,7 +321,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		switch (menu.currentButton)
 		{
 		case START_MENU_START:
-			StartGame(level_0);
+			StartGame();
 			break;
 		case START_MENU_OPTIONS:
 			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
@@ -332,7 +362,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 			currentScene = &gameplayScene;
 			break;
 		case PAUSE_MENU_RESTART:
-			StartGame(*currentLevel);
+			Restart();
 			break;
 		case PAUSE_MENU_EXIT:
 			menu.SetMenu(CurrentMenu::START, camera.getCenter());
@@ -351,7 +381,7 @@ void Game::ControlGameOver(sf::RenderWindow& window)
 	(void)window;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
-		StartGame(*currentLevel);
+		StartGame();
 	}
 	if (sf::Keyboard::isKeyPressed(Keyboard::Escape))
 	{

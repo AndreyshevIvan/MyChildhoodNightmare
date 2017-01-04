@@ -310,3 +310,9 @@ float Level::GetTilemapHeight()
 	// return height of tilemap in pixels
 	return static_cast<float>(height * tileHeight);
 }
+
+sf::Vector2f Level::GetTilemapSize()
+{
+	sf::Vector2f size(GetTilemapWidth(), GetTilemapHeight());
+	return size;
+}
