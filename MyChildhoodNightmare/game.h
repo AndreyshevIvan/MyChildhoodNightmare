@@ -82,6 +82,8 @@ struct Game : GameSound
 	void CheckCompletedLevel();
 
 	void SpawnEntities();
+	void SpawnItems(std::vector<Object> const& spawns, BonusType const& type);
+	void SpawnEnemies(std::vector<Object> const& spawns, EnemyType const& type);
 
 	void SetElapsedTime();
 	sf::FloatRect GetCameraArea();

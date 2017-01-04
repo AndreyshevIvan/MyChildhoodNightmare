@@ -2,36 +2,35 @@
 
 using namespace std;
 
-Bonus::Bonus(sf::Vector2f const& position, ItemType const& type)
+Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
+	:bonusType(type)
 {
-	if (type == ItemType::BONUS)
+	if (bonusType == BonusType::RANDOMIZE)
 	{
 		bonusType = BonusType(rand() % BONUS_COUNT);
-
-		switch (bonusType)
-		{
-		case BonusType::AK_AMMO:
-			bonusTexture.loadFromFile("resources/bonus_ammo.png");
-			break;
-		case BonusType::SHOOTGUN_AMMO:
-			bonusTexture.loadFromFile("resources/bonus_ammo.png");
-			break;
-		case BonusType::HEALTH:
-			bonusTexture.loadFromFile("resources/bonus_hp.png");
-			break;
-		case BonusType::RANDOM:
-			bonusTexture.loadFromFile("resources/bonus_random.png");
-			break;
-		default:
-			break;
-		}
-
 		bodyShape.setSize(BONUS_BODY_SIZE);
 	}
-	else if (type == ItemType::BOX)
+
+	switch (bonusType)
 	{
+	case BonusType::AK_AMMO:
+		bonusTexture.loadFromFile("resources/bonus_ammo.png");
+		break;
+	case BonusType::SHOOTGUN_AMMO:
+		bonusTexture.loadFromFile("resources/bonus_ammo.png");
+		break;
+	case BonusType::HEALTH:
+		bonusTexture.loadFromFile("resources/bonus_hp.png");
+		break;
+	case BonusType::RANDOM_BONUS:
+		bonusTexture.loadFromFile("resources/bonus_random.png");
+		break;
+	case BonusType::ITEM_BOX:
 		bonusTexture.loadFromFile("resources/box.png");
 		bodyShape.setSize(ITEM_BOX_SIZE);
+		break;
+	default:
+		break;
 	}
 
 	bodyShape.setTexture(&bonusTexture);
@@ -39,6 +38,8 @@ Bonus::Bonus(sf::Vector2f const& position, ItemType const& type)
 	const sf::Vector2f POSITION(position.x, position.y - BONUS_BODY_SIZE.y);
 	const sf::Vector2f SIZE = bodyShape.getSize() * 0.5f;
 	collisionRect = sf::FloatRect(POSITION, SIZE);
+
+	InitBonusesSound();
 }
 
 void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
@@ -75,7 +76,7 @@ void DropBonusFromEnemy(sf::Vector2f const& position, std::vector<Bonus*>& bonus
 
 	if (digit < probability)
 	{
-		bonuses.push_back(new Bonus(position, ItemType::BONUS));
+		bonuses.push_back(new Bonus(position));
 	}
 }
 
@@ -111,11 +112,20 @@ bool Bonus::AddBonusEffect(Player& player)
 		player.boxes++;
 		announcementText = "YOU FOUND ONE BOX!";
 		break;
+
+	case BonusType::RANDOM_BONUS:
+		AddRandomBonus(player);
+		break;
 	default:
 		break;
 	}
 
 	return true;
+}
+
+void Bonus::AddRandomBonus(Player& player)
+{
+	(void)player;
 }
 
 void Bonus::DrawBonus(sf::RenderWindow& window)

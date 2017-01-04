@@ -154,36 +154,39 @@ void Game::SpawnEntities()
 	std::vector<Object> ghostSpawns = currentLevel->GetObjects("enemy_bird_spawn");
 	std::vector<Object> spidersSpawns = currentLevel->GetObjects("enemy_spider_spawn");
 	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
+
 	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
 	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
 
-	auto spawnEnemies = [&](vector<Object> const& spawns, EnemyType const& type) {
-		for (auto const& spawn : spawns)
-		{
-			sf::Vector2f pos = spawn.sprite.getPosition();
-			enemies.push_back(new Enemy(pos, type));
-		}
-	};
-	
-	auto spawnItems = [&](vector<Object> const& spawns, ItemType const& type) {
-		for (auto const& spawn : spawns)
-		{
-			sf::Vector2f pos = spawn.sprite.getPosition();
-			bonuses.push_back(new Bonus(pos, type));
-		}
-	};
+	SpawnEnemies(shadowsSpawns, EnemyType::SHADOW);
+	SpawnEnemies(bosesSpawns, EnemyType::BOSS);
+	SpawnEnemies(spidersSpawns, EnemyType::SPIDER);
+	SpawnEnemies(clownsSpawns, EnemyType::CLOWN);
+	SpawnEnemies(ghostSpawns, EnemyType::GHOST);
 
-	spawnEnemies(shadowsSpawns, EnemyType::SHADOW);
-	spawnEnemies(bosesSpawns, EnemyType::BOSS);
-	spawnEnemies(spidersSpawns, EnemyType::SPIDER);
-	spawnEnemies(clownsSpawns, EnemyType::CLOWN);
-	spawnEnemies(ghostSpawns, EnemyType::GHOST);
-
-	spawnItems(itemsBoxSpawns, ItemType::BOX);
-	spawnItems(bonusesSpawns, ItemType::BONUS);
+	SpawnItems(itemsBoxSpawns, BonusType::ITEM_BOX);
+	SpawnItems(bonusesSpawns, BonusType::RANDOMIZE);
 
 	sf::Vector2f playerPos = currentLevel->GetObject("player_spawn").sprite.getPosition();
 	player.Spawn(playerPos);
+}
+
+void Game::SpawnItems(std::vector<Object> const& spawns, BonusType const& type)
+{
+	for (auto const& spawn : spawns)
+	{
+		sf::Vector2f pos = spawn.sprite.getPosition();
+		bonuses.push_back(new Bonus(pos, type));
+	}
+}
+
+void Game::SpawnEnemies(std::vector<Object> const& spawns, EnemyType const& type)
+{
+	for (auto const& spawn : spawns)
+	{
+		sf::Vector2f pos = spawn.sprite.getPosition();
+		enemies.push_back(new Enemy(pos, type));
+	}
 }
 
 void Game::SetElapsedTime()
@@ -264,11 +267,13 @@ void Game::ControlMenu(sf::RenderWindow& window)
 			menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.SwitchButtonUp();
+		menuButtonSwitchSound.play();
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Down) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.SwitchButtonDown();
+		menuButtonSwitchSound.play();
 	}
 }
 
@@ -402,7 +407,7 @@ void Game::UpdateEnemies()
 		{
 			if (enemy->enemyType == EnemyType::BOSS)
 			{
-				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), ItemType::BOX));
+				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), BonusType::ITEM_BOX));
 			}
 			else
 			{
@@ -493,6 +498,7 @@ void Game::BonusesPlayerCollides()
 		{
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
 			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
+
 			it = bonuses.erase(it);
 			delete(bonus);
 		}

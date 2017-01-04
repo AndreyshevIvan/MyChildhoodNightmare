@@ -19,19 +19,14 @@ const int BONUS_HEALTH_COUNT = 20;
 
 const sf::Vector2f ITEM_BOX_SIZE = { 50, 58 };
 
-enum struct ItemType
-{
-	BONUS,
-	BOX,
-};
-
 enum struct BonusType
 {
 	AK_AMMO,
 	SHOOTGUN_AMMO,
 	HEALTH,
-	RANDOM,
+	RANDOM_BONUS,
 	ITEM_BOX,
+	RANDOMIZE,
 };
 
 enum
@@ -40,9 +35,9 @@ enum
 	AK = 2,
 };
 
-struct Bonus
+struct Bonus : BonusesSound
 {
-	Bonus(sf::Vector2f const& position, ItemType const& type);
+	Bonus(sf::Vector2f const& position, BonusType const& type = BonusType::RANDOMIZE);
 
 	sf::RectangleShape bodyShape;
 	sf::Texture bonusTexture;
@@ -55,6 +50,7 @@ struct Bonus
 
 	void Update(float elapsedTime, std::vector<Object> const& blocks);
 	bool AddBonusEffect(Player& player);
+	void AddRandomBonus(Player& player);
 
 	void DrawBonus(sf::RenderWindow& window);
 };

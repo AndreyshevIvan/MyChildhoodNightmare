@@ -50,11 +50,12 @@ void Player::UpdateStatuses()
 
 void Player::SwitchWeapon()
 {
+	switchWeapon.play();
 	int currWeapon = static_cast<int>(currentWeapon);
 
-	if (currentWeapon == Weapon(2))
+	if (currentWeapon == Weapon::AK)
 	{
-		currentWeapon = Weapon(0);
+		currentWeapon = Weapon::MELEE;
 	}
 	else
 	{
