@@ -8,8 +8,9 @@ Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
 	if (bonusType == BonusType::RANDOMIZE)
 	{
 		bonusType = BonusType(rand() % BONUS_COUNT);
-		bodyShape.setSize(BONUS_BODY_SIZE);
 	}
+
+	bodyShape.setSize(BONUS_BODY_SIZE);
 
 	switch (bonusType)
 	{

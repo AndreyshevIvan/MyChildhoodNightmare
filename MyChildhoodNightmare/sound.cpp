@@ -5,9 +5,13 @@ bool GameSound::InitGameSound()
 	if (!menuSound.openFromFile("resources/sound/main_menu_sound.ogg") ||
 		!gameplaySound.openFromFile("resources/sound/gameplay_1_sound.ogg") ||
 		!shadowCollideSound.openFromFile("resources/sound/shadow_collide_sound.ogg") ||
-		!ghostCollideSound.openFromFile("resources/sound/ghost_collide_sound.WAV") ||
+		!ghostCollideSound.openFromFile("resources/sound/ghost_collide_sound.wav") ||
 		!finalSound.openFromFile("resources/sound/final_sound.ogg") ||
-		!menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch_sound.ogg"))
+		!menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch_sound.ogg") ||
+		!ammoBonusSound.openFromFile("resources/sound/bonus_weapon_sound.ogg") ||
+		!healthBonusSound.openFromFile("resources/sound/bonus_health_sound.ogg") ||
+		!boxBonusSound.openFromFile("resources/sound/bonus_box_sound.wav") ||
+		!randomBonusSound.openFromFile("resources/sound/bonus_random_sound.ogg"))
 	{
 		return false;
 	}
@@ -20,10 +24,15 @@ bool GameSound::InitGameSound()
 	shadowCollideSound.setVolume(COLLIDES_VOLIME);
 	ghostCollideSound.setVolume(COLLIDES_VOLIME);
 
+	ammoBonusSound.setVolume(ADD_AMMO_BONUS_VOLUME);
+	healthBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
+	boxBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
+	randomBonusSound.setVolume(ADD_AMMO_BONUS_VOLUME);
+
 	return true;
 }
 
-void GameSound::CollideSound(int type)
+void GameSound::CollideWithEnemySound(int type)
 {
 	switch (type)
 	{
@@ -38,6 +47,30 @@ void GameSound::CollideSound(int type)
 	case SPIDER:
 		break;
 	case BOSS:
+		break;
+	default:
+		break;
+	}
+}
+
+void GameSound::CollideWithBonusSound(int type)
+{
+	switch (type)
+	{
+	case AK_AMMO:
+		ammoBonusSound.play();
+		break;
+	case SHOOTGUN_AMMO:
+		ammoBonusSound.play();
+		break;
+	case HEALTH:
+		healthBonusSound.play();
+		break;
+	case RANDOM:
+		randomBonusSound.play();
+		break;
+	case BOX:
+		boxBonusSound.play();
 		break;
 	default:
 		break;
@@ -67,12 +100,5 @@ bool CharacterSound::InitCharacterSound()
 
 bool BonusesSound::InitBonusesSound()
 {
-	if (!ammoSound.openFromFile("resources/sound/bonus_weapon_sound.ogg"))
-	{
-		return false;
-	}
-
-	ammoSound.setVolume(ADD_BONUS_VOLUME);
-
 	return true;
 }

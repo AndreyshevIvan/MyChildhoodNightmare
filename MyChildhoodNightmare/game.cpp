@@ -116,15 +116,15 @@ void Game::CheckCompletedLevel()
 	int currBoxes = player.boxes;
 	int neededBoxes = boxesCoundMap.find(currentLevel)->second;
 
-	if (playerRect.intersects(door_level_1) && currBoxes == neededBoxes)
+	if (playerRect.intersects(door_level_1) && currBoxes >= neededBoxes)
 	{
 		StartGame(level_1);
 	}
-	else if (playerRect.intersects(door_level_2) && currBoxes == neededBoxes)
+	else if (playerRect.intersects(door_level_2) && currBoxes >= neededBoxes)
 	{
 		StartGame(level_2);
 	}
-	else if (playerRect.intersects(winBlock) && currBoxes == neededBoxes)
+	else if (playerRect.intersects(winBlock) && currBoxes >= neededBoxes)
 	{
 		currentScene = &winScene;
 	}
@@ -156,7 +156,10 @@ void Game::SpawnEntities()
 	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
 
 	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
-	std::vector<Object> bonusesSpawns = currentLevel->GetObjects("bonus_spawn");
+	std::vector<Object> bonusesHeathSpawns = currentLevel->GetObjects("bonus_heath");
+	std::vector<Object> bonusesAkAmmoSpawns = currentLevel->GetObjects("bonus_ak_ammo");
+	std::vector<Object> bonusesRandomSpawns = currentLevel->GetObjects("bonus_random");
+	std::vector<Object> bonusesShootgunAmmoSpawns = currentLevel->GetObjects("bonus_shootgun_ammo");
 
 	SpawnEnemies(shadowsSpawns, EnemyType::SHADOW);
 	SpawnEnemies(bosesSpawns, EnemyType::BOSS);
@@ -165,7 +168,10 @@ void Game::SpawnEntities()
 	SpawnEnemies(ghostSpawns, EnemyType::GHOST);
 
 	SpawnItems(itemsBoxSpawns, BonusType::ITEM_BOX);
-	SpawnItems(bonusesSpawns, BonusType::RANDOMIZE);
+	SpawnItems(bonusesHeathSpawns, BonusType::HEALTH);
+	SpawnItems(bonusesAkAmmoSpawns, BonusType::AK_AMMO);
+	SpawnItems(bonusesRandomSpawns, BonusType::RANDOM_BONUS);
+	SpawnItems(bonusesShootgunAmmoSpawns, BonusType::SHOOTGUN_AMMO);
 
 	sf::Vector2f playerPos = currentLevel->GetObject("player_spawn").sprite.getPosition();
 	player.Spawn(playerPos);
@@ -498,6 +504,7 @@ void Game::BonusesPlayerCollides()
 		{
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
 			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
+			CollideWithBonusSound(static_cast<int>(bonus->bonusType));
 
 			it = bonuses.erase(it);
 			delete(bonus);
@@ -535,7 +542,7 @@ void Game::EnemyPlayerCollides()
 		{
 			if (player.injuredColdown >= INJURED_COLDOWN)
 			{
-				CollideSound((int)enemy->enemyType);
+				CollideWithEnemySound((int)enemy->enemyType);
 				player.health -= enemy->touchDemage;
 				player.injuredColdown = 0;
 			}

@@ -10,17 +10,25 @@ const float PLAYER_DEATH_VOLUME = 20.0f;
 const float WEAPON_VOLUME = 12.0f;
 const float SWITCH_WEAPON_VOLUME = 10.0f;
 
-const float ADD_BONUS_VOLUME = 15.0f;
+const float ADD_AMMO_BONUS_VOLUME = 15.0f;
+const float ADD_HEALTH_BONUS_VOLUME = 30.0f;
 
 const float COLLIDES_VOLIME = 16.0f;
 
 enum
 {
-	SHADOW,
+	// Enemy types
+	SHADOW = 0,
 	CLOWN,
 	GHOST,
 	SPIDER,
 	BOSS,
+	// Bonus types
+	AK_AMMO = 0,
+	SHOOTGUN_AMMO,
+	HEALTH,
+	RANDOM,
+	BOX,
 };
 
 struct GameSound
@@ -36,8 +44,14 @@ struct GameSound
 	sf::Music shadowCollideSound;
 	sf::Music ghostCollideSound;
 
+	sf::Music ammoBonusSound;
+	sf::Music healthBonusSound;
+	sf::Music boxBonusSound;
+	sf::Music randomBonusSound;
+
 	bool InitGameSound();
-	void CollideSound(int type);
+	void CollideWithEnemySound(int type);
+	void CollideWithBonusSound(int type);
 };
 
 struct CharacterSound
@@ -54,7 +68,5 @@ struct CharacterSound
 
 struct BonusesSound
 {
-	sf::Music ammoSound;
-
 	bool InitBonusesSound();
 };
