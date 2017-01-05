@@ -6,9 +6,7 @@ using namespace std;
 enum
 {
 	// AMMO
-	INFINITY_AMMO = -1,
-	SHOOTGUN = 1,
-	AK = 2,
+	INFINITY_AMMO = INT_MAX,
 };
 
 bool Player::InitPlayer()
@@ -36,11 +34,20 @@ bool Player::InitPlayer()
 	shootDemage = PLAYER_PISTOL_DEMAGE;
 	akDemage = PLAYER_AK_DEMAGE;
 	shootgunDemage = PLAYER_SHOOTGUN_DEMAGE;
-	ammo = { INFINITY_AMMO, PLAYER_START_SHOOTGUN_AMMO, PLAYER_START_AK_AMMO };
 	shootRange = PLAYER_START_SHOOT_RANGE;
 	deathSound = &playerDeath;
+	ammoMap = { 
+		{ Weapon::PISTOL, INFINITY_AMMO },
+		{ Weapon::SHOOTGUN, PLAYER_START_SHOOTGUN_AMMO },
+		{ Weapon::AK, PLAYER_START_AK_AMMO }
+	};
 
 	injuredColdown = INJURED_COLDOWN;
+	weaponColdownsMap = {
+		{ Weapon::PISTOL, PISTOL_COLDOWN },
+		{ Weapon::SHOOTGUN, SHOOTGUN_COLDOWN },
+		{ Weapon::AK, AK_COLDOWN }
+	};
 
 	characterBullets.clear();
 	CreateCopy();
@@ -77,56 +84,79 @@ void Player::SwitchWeapon()
 
 void Player::Attack()
 {
-	int orientationId = static_cast<int>(orientationStatus);
-	int rounds = ammo[static_cast<int>(currentWeapon)];
+	const float WEAPON_COLDOWN = weaponColdownsMap.find(currentWeapon)->second;
 
-	switch (currentWeapon)
+	int rounds = ammoMap.find(currentWeapon)->second;
+
+	bool IsEnoughAmmo = rounds > 0;
+	bool IsEmptySoundPlaying = emptyWeapon.getStatus() == sf::Music::Status::Playing;
+	bool IsColdownEnded = shootColdown > WEAPON_COLDOWN;
+
+	if (IsColdownEnded)
 	{
-	case Weapon::PISTOL:
-		if (shootColdown > PISTOL_COLDOWN)
+		if (IsEnoughAmmo)
 		{
-			weaponPistol.play();
+			switch (currentWeapon)
+			{
+			case Weapon::PISTOL:
+				PistolFire(orientationStatus);
+				break;
 
-			auto bullet = new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::PLAYER_AK);
-			characterBullets.push_back(bullet);
-			
+			case Weapon::SHOOTGUN:
+				ShootgunFire(orientationStatus);
+				break;
+
+			case Weapon::AK:
+				AkFire(orientationStatus);
+				break;
+
+			default:
+				break;
+			}
+
 			shootColdown = 0;
 		}
-		break;
-	case Weapon::SHOOTGUN:
-		if (shootColdown > SHOOTGUN_COLDOWN && rounds > 0)
+		else if(!IsEmptySoundPlaying)
 		{
-			weaponShootgun.play();
-
-			Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
-			Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
-
-			auto topBullet = new Bullet(topBullPos, shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN);
-			auto midBullet = new Bullet(GetCharacterPos(), shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN);
-			auto botBullet = new Bullet(bottomBullPos, shootgunDemage, orientationId, shootRange, BulletType::PLAYER_SHOOTGUN);
-			characterBullets.push_back(topBullet);
-			characterBullets.push_back(midBullet);
-			characterBullets.push_back(botBullet);
-
-			ammo[SHOOTGUN]--;
+			emptyWeapon.play();
 			shootColdown = 0;
 		}
-		break;
-	case Weapon::AK:
-		if (shootColdown > AK_COLDOWN && rounds > 0)
-		{
-			weaponAK.play();
-
-			auto bullet = new Bullet(GetCharacterPos(), akDemage, orientationId, shootRange, BulletType::PLAYER_AK);
-			characterBullets.push_back(bullet);
-
-			ammo[AK]--;
-			shootColdown = 0;
-		}
-		break;
-	default:
-		break;
 	}
+}
+
+void Player::PistolFire(int orientation)
+{
+	weaponPistol.play();
+
+	auto bullet = new Bullet(GetCharacterPos(), shootDemage, orientation, shootRange, BulletType::PLAYER_AK);
+	characterBullets.push_back(bullet);
+}
+
+void Player::ShootgunFire(int orientation)
+{
+	weaponShootgun.play();
+
+	Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
+	Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
+
+	auto topBullet = new Bullet(topBullPos, shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
+	auto midBullet = new Bullet(GetCharacterPos(), shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
+	auto botBullet = new Bullet(bottomBullPos, shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
+
+	characterBullets.push_back(topBullet);
+	characterBullets.push_back(midBullet);
+	characterBullets.push_back(botBullet);
+
+	ammoMap.find(currentWeapon)->second--;
+}
+
+void Player::AkFire(int orientation)
+{
+	weaponAK.play();
+
+	auto bullet = new Bullet(GetCharacterPos(), akDemage, orientation, shootRange, BulletType::PLAYER_AK);
+	characterBullets.push_back(bullet);
+	ammoMap.find(currentWeapon)->second--;
 }
 
 void Player::RotateDeadBody(float elapsedTime)
@@ -138,25 +168,28 @@ void Player::CreateCopy()
 {
 	copy_ak_demage = akDemage;
 	copy_shootgun_demage = shootDemage;
-	copy_ak_ammo = ammo[AK];
-	copy_shootgun_ammo = ammo[SHOOTGUN];
+	copy_ak_ammo = ammoMap.find(Weapon::AK)->second;
+	copy_shootgun_ammo = ammoMap.find(Weapon::SHOOTGUN)->second;
 	copy_maxHealth = maxHealth;
 	copy_health = health;
+	copy_boxes = boxes;
 }
 
 void Player::ReturnCopy()
 {
 	akDemage = copy_ak_demage;
 	shootDemage = copy_shootgun_demage;
-	ammo[AK] = copy_ak_ammo;
-	ammo[SHOOTGUN] = copy_shootgun_ammo;
+	ammoMap.find(Weapon::AK)->second = copy_ak_ammo;
+	ammoMap.find(Weapon::SHOOTGUN)->second = copy_shootgun_ammo;
 	maxHealth = copy_maxHealth;
-	health = copy_maxHealth; // all levels start with max health
+	health = maxHealth; // all levels start with max health
 	bodyShape.setRotation(0);
 	existStatus = ExistenceStatus::LIVE;
+	boxes = copy_boxes;
 }
 
 void Player::Clear()
 {
 	boxes = 0;
+	health = maxHealth; // all levels start with max health
 }

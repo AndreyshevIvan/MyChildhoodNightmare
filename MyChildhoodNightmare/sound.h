@@ -7,11 +7,11 @@ const float MENU_BUTTON_SWITCH_VOLUME = 5.0f;
 const float WIN_VOLUME = 25.0f;
 
 const float PLAYER_DEATH_VOLUME = 20.0f;
-const float WEAPON_VOLUME = 12.0f;
+const float WEAPON_VOLUME = 10.0f;
 const float SWITCH_WEAPON_VOLUME = 10.0f;
 
 const float ADD_AMMO_BONUS_VOLUME = 15.0f;
-const float ADD_HEALTH_BONUS_VOLUME = 30.0f;
+const float ADD_HEALTH_BONUS_VOLUME = 36.0f;
 
 const float COLLIDES_VOLIME = 16.0f;
 
@@ -36,9 +36,11 @@ struct GameSound
 	sf::Music* currentMusic = nullptr;
 
 	sf::Music menuSound;
-	sf::Music gameplaySound;
+	sf::Music level_0_ost;
+	sf::Music level_1_ost;
+	sf::Music level_2_ost;
 	sf::Music gameOverSound;
-	sf::Music finalSound;
+	sf::Music winSound;
 
 	sf::Music menuButtonSwitchSound;
 
@@ -64,6 +66,7 @@ struct CharacterSound
 	sf::Music weaponAK;
 	sf::Music weaponShootgun;
 	sf::Music switchWeapon;
+	sf::Music emptyWeapon;
 
 	bool InitCharacterSound();
 };

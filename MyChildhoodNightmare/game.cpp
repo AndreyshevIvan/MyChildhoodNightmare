@@ -32,14 +32,13 @@ void erase_if(TContainer &container, TPredicate && predicate)
 bool Game::InitGame()
 {
 	if (!level_0.LoadFromFile("resources/previewTileset.tmx") ||
-		!level_1.LoadFromFile("resources/firstTileset.tmx") ||
-		!level_2.LoadFromFile("resources/secondTileset.tmx") ||
-		!backgroundTexture_level_1.loadFromFile("resources/background_level_1.png") ||
-		!backgroundTexture_level_preview.loadFromFile("resources/background_level_preview.png"))
+		!level_1.LoadFromFile("resources/secondTileset.tmx") ||
+		!level_2.LoadFromFile("resources/firstTileset.tmx") ||
+		!backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png") ||
+		!backgroundTexture_level_1.loadFromFile("resources/background_level_2.png"))
 	{
 		return false;
 	}
-
 
 	if (!player.InitPlayer() ||
 		!menu.InitMenuItems() ||
@@ -55,16 +54,45 @@ bool Game::InitGame()
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
 	menu.SetMenu(CurrentMenu::START, camera.getCenter());
 
-	const sf::Vector2f BG_LVL_0_SISE = GetTextureSize(backgroundTexture_level_preview);
+	const sf::Vector2f BG_LVL_0_SISE = GetTextureSize(backgroundTexture_level_0);
 	const sf::Vector2f BG_LVL_1_SISE = GetTextureSize(backgroundTexture_level_1);
 
 	background_level_1.setTexture(&backgroundTexture_level_1);
 	background_level_1.setSize(BG_LVL_1_SISE);
 	background_level_1.setOrigin(BG_LVL_1_SISE.x / 2.0f, BG_LVL_1_SISE.y / 2.0f);
 
-	background_level_preview.setTexture(&backgroundTexture_level_preview);
-	background_level_preview.setSize(BG_LVL_0_SISE);
-	background_level_preview.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
+	background_level_0.setTexture(&backgroundTexture_level_0);
+	background_level_0.setSize(BG_LVL_0_SISE);
+	background_level_0.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
+
+	currentLevel = &level_0;
+
+	changeLevelMap = {
+		{ &level_0, &level_1 },
+		{ &level_1, &level_2 },
+		{ &level_2, &level_0 }
+	};
+
+	boxesCountMap = {
+		{ &level_0, LEVEL_0_BOXES_COUNT },
+		{ &level_1, LEVEL_1_BOXES_COUNT },
+		{ &level_2, LEVEL_2_BOXES_COUNT }
+	};
+
+	sceneMusicMap = {
+		{ &menuScene, &menuSound },
+		{ &gameplayScene, nullptr },
+		{ &pauseScene, &menuSound },
+		{ &gameOverScene, &gameOverSound },
+		{ &previewScene, &menuSound },
+		{ &winScene, &winSound }
+	};
+
+	levelMusicMap = {
+		{ &level_0, &level_0_ost },
+		{ &level_1, &level_1_ost },
+		{ &level_2, &level_2_ost }
+	};
 
 	buttonColdown = 0;
 
@@ -74,13 +102,7 @@ bool Game::InitGame()
 void Game::StartGame()
 {
 	ClearScene();
-
-	currentLevel = &level_0;
-	mapSize = currentLevel->GetTilemapSize();
-	interface.CreateBoxes(boxesCountMap, currentLevel);
-
-	blocks = currentLevel->GetObjects("solid");
-	lava = currentLevel->GetObjects("lava");
+	GetMapData();
 
 	player.InitPlayer();
 	DifficultAdjustment();
@@ -92,12 +114,9 @@ void Game::StartGame()
 void Game::Restart()
 {
 	ClearScene();
-	interface.CreateBoxes(boxesCountMap, currentLevel);
 
-	blocks = currentLevel->GetObjects("solid");
-	lava = currentLevel->GetObjects("lava");
+	GetMapData();
 
-	player.Clear();
 	player.ReturnCopy();
 	SpawnEntities();
 
@@ -107,15 +126,12 @@ void Game::Restart()
 void Game::NextLevel(Level& level)
 {
 	ClearScene();
-
 	player.Clear();
+	player.CreateCopy();
 
 	currentLevel = &level;
-	mapSize = currentLevel->GetTilemapSize();
-	interface.CreateBoxes(boxesCountMap, currentLevel);
+	GetMapData();
 
-	blocks = currentLevel->GetObjects("solid");
-	lava = currentLevel->GetObjects("lava");
 	SpawnEntities();
 }
 
@@ -137,27 +153,33 @@ void Game::DifficultAdjustment()
 	}
 }
 
+void Game::GetMapData()
+{
+	mapSize = currentLevel->GetTilemapSize();
+	interface.CreateBoxes(boxesCountMap, currentLevel);
+	blocks = currentLevel->GetObjects("solid");
+	lava = currentLevel->GetObjects("lava");
+}
+
 void Game::CheckCompletedLevel()
 {
-	auto door_level_1 = currentLevel->GetObject("level1").rect;
-	auto door_level_2 = currentLevel->GetObject("level2").rect;
-	auto playerRect = player.collisionRect;
-	auto winBlock = currentLevel->GetObject("win").rect;
+	const sf::FloatRect PLAYER_BODY = player.collisionRect;
+	const sf::FloatRect LEVEL_DOOR_RECT = currentLevel->GetObject("next_level").rect;
 
-	int currBoxes = player.boxes;
-	int neededBoxes = boxesCountMap.find(currentLevel)->second;
+	const int NECESSARY_BOXES_COUNT = boxesCountMap.find(currentLevel)->second;
+	const int PLAYER_BOXES_COUNT = player.boxes;
 
-	if (playerRect.intersects(door_level_1) && currBoxes >= neededBoxes)
+	Level* NEXT_LEVEL = changeLevelMap.find(currentLevel)->second;
+	Level* START_LEVEL = &level_0;
+
+	if (PLAYER_BODY.intersects(LEVEL_DOOR_RECT) && PLAYER_BOXES_COUNT >= NECESSARY_BOXES_COUNT)
 	{
-		NextLevel(level_1);
-	}
-	else if (playerRect.intersects(door_level_2) && currBoxes >= neededBoxes)
-	{
-		NextLevel(level_2);
-	}
-	else if (playerRect.intersects(winBlock) && currBoxes >= neededBoxes)
-	{
-		currentScene = &winScene;
+		if (NEXT_LEVEL == START_LEVEL)
+		{
+			currentScene = &winScene;
+		}
+
+		NextLevel(*NEXT_LEVEL);
 	}
 }
 
@@ -180,32 +202,32 @@ void Game::ClearScene()
 
 void Game::SpawnEntities()
 {
-	std::vector<Object> shadowsSpawns = currentLevel->GetObjects("enemy_shadow_spawn");
-	std::vector<Object> clownsSpawns = currentLevel->GetObjects("enemy_clown_spawn");
-	std::vector<Object> ghostSpawns = currentLevel->GetObjects("enemy_bird_spawn");
-	std::vector<Object> spidersSpawns = currentLevel->GetObjects("enemy_spider_spawn");
-	std::vector<Object> bosesSpawns = currentLevel->GetObjects("enemy_boss_spawn");
+	const std::vector<Object> SHADOW_SPAWNS = currentLevel->GetObjects("enemy_shadow_spawn");
+	const std::vector<Object> CLOWN_SPAWNS = currentLevel->GetObjects("enemy_clown_spawn");
+	const std::vector<Object> GHOST_SPAWNS = currentLevel->GetObjects("enemy_bird_spawn");
+	const std::vector<Object> SPIDER_SPAWNS = currentLevel->GetObjects("enemy_spider_spawn");
+	const std::vector<Object> BOSS_SPAWNS = currentLevel->GetObjects("enemy_boss_spawn");
 
-	std::vector<Object> itemsBoxSpawns = currentLevel->GetObjects("item_box_spawn");
-	std::vector<Object> bonusesHeathSpawns = currentLevel->GetObjects("bonus_heath");
-	std::vector<Object> bonusesAkAmmoSpawns = currentLevel->GetObjects("bonus_ak_ammo");
-	std::vector<Object> bonusesRandomSpawns = currentLevel->GetObjects("bonus_random");
-	std::vector<Object> bonusesShootgunAmmoSpawns = currentLevel->GetObjects("bonus_shootgun_ammo");
+	const std::vector<Object> BOX_SPAWNS = currentLevel->GetObjects("item_box_spawn");
+	const std::vector<Object> HEALTH_SPAWNS = currentLevel->GetObjects("bonus_heath");
+	const std::vector<Object> AK_AMMO_SPAWNS = currentLevel->GetObjects("bonus_ak_ammo");
+	const std::vector<Object> GIFT_SPAWNS = currentLevel->GetObjects("bonus_random");
+	const std::vector<Object> SHOOTGUN_AMMO_SPAWNS = currentLevel->GetObjects("bonus_shootgun_ammo");
 
-	SpawnEnemies(shadowsSpawns, EnemyType::SHADOW);
-	SpawnEnemies(bosesSpawns, EnemyType::BOSS);
-	SpawnEnemies(spidersSpawns, EnemyType::SPIDER);
-	SpawnEnemies(clownsSpawns, EnemyType::CLOWN);
-	SpawnEnemies(ghostSpawns, EnemyType::GHOST);
+	SpawnEnemies(SHADOW_SPAWNS, EnemyType::SHADOW);
+	SpawnEnemies(CLOWN_SPAWNS, EnemyType::CLOWN);
+	SpawnEnemies(GHOST_SPAWNS, EnemyType::GHOST);
+	SpawnEnemies(SPIDER_SPAWNS, EnemyType::SPIDER);
+	SpawnEnemies(BOSS_SPAWNS, EnemyType::BOSS);
 
-	SpawnItems(itemsBoxSpawns, BonusType::ITEM_BOX);
-	SpawnItems(bonusesHeathSpawns, BonusType::HEALTH);
-	SpawnItems(bonusesAkAmmoSpawns, BonusType::AK_AMMO);
-	SpawnItems(bonusesRandomSpawns, BonusType::RANDOM_BONUS);
-	SpawnItems(bonusesShootgunAmmoSpawns, BonusType::SHOOTGUN_AMMO);
+	SpawnItems(BOX_SPAWNS, BonusType::ITEM_BOX);
+	SpawnItems(HEALTH_SPAWNS, BonusType::HEALTH);
+	SpawnItems(AK_AMMO_SPAWNS, BonusType::AK_AMMO);
+	SpawnItems(GIFT_SPAWNS, BonusType::GIFT);
+	SpawnItems(SHOOTGUN_AMMO_SPAWNS, BonusType::SHOOTGUN_AMMO);
 
-	sf::Vector2f playerPos = currentLevel->GetObject("player_spawn").sprite.getPosition();
-	player.Spawn(playerPos);
+	const sf::Vector2f PLAYER_POS = currentLevel->GetObject("player_spawn").sprite.getPosition();
+	player.Spawn(PLAYER_POS);
 }
 
 void Game::SpawnItems(std::vector<Object> const& spawns, BonusType const& type)
@@ -442,6 +464,7 @@ void Game::UpdateEnemies()
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
+			interface.CreateRemark(RemarkType::KILL);
 			if (enemy->enemyType == EnemyType::BOSS)
 			{
 				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), BonusType::ITEM_BOX));
@@ -468,17 +491,27 @@ void Game::UpdateBonuses()
 	}
 }
 
-void Game::UpdateSound()
+void Game::UpdateOST()
 {
-	auto music = musicMap.find(currentScene)->second;
+	sf::Music* OST;
 
-	if (music != currentMusic)
+	if (currentScene == &gameplayScene)
+	{
+		OST = levelMusicMap.find(currentLevel)->second;
+	}
+	else
+	{
+		OST = sceneMusicMap.find(currentScene)->second;
+	}
+
+	if (OST != currentMusic)
 	{
 		if (currentMusic != nullptr)
 		{
 			currentMusic->stop();
 		}
-		currentMusic = music;
+
+		currentMusic = OST;
 	}
 
 	if (currentMusic->getStatus() != sf::Music::Playing)
@@ -653,13 +686,14 @@ void Game::UpdateCamera(sf::RenderWindow& window)
 
 void Game::UpdateInterface()
 {
-	int weaponId = int(player.currentWeapon);
+	const int AMMO = player.ammoMap.find(player.currentWeapon)->second;
 
 	interface.UpdateBarsPos(camera.getCenter());
 	interface.UpdatePlayerHP(player.health);
-	interface.UpdatePlayerWeapon(weaponId, player.ammo[weaponId]);
+	interface.UpdatePlayerWeapon(player.currentWeapon, AMMO);
 	interface.UpdatePlayerBoxes(player.boxes);
 	interface.UpdateAnnouncement(elapsedTime);
+	interface.UpdateRemark(elapsedTime, player.GetCharacterPos());
 
 	for (auto enemy : enemies)
 	{
@@ -679,7 +713,7 @@ void Game::UpdateBackground()
 
 	if (currentLevel == &level_0)
 	{
-		currentBackground = background_level_preview;
+		currentBackground = background_level_0;
 	}
 	else
 	{

@@ -11,6 +11,10 @@ const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
 const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
+const int LEVEL_0_BOXES_COUNT = 0;
+const int LEVEL_1_BOXES_COUNT = 3;
+const int LEVEL_2_BOXES_COUNT = 3;
+
 struct GameScene
 {
 	std::function<void(sf::RenderWindow& window)> toHandle;
@@ -26,14 +30,8 @@ struct Game : GameSound
 	float buttonColdown;
 	float gameOverColdown = 0;
 
-	std::map<GameScene*, sf::Music*> musicMap = {
-		{ &menuScene, &menuSound },
-		{ &gameplayScene, &gameplaySound },
-		{ &pauseScene, &menuSound },
-		{ &gameOverScene, &gameOverSound },
-		{ &previewScene, &menuSound },
-		{ &winScene, &finalSound }
-	};
+	std::map<GameScene*, sf::Music*> sceneMusicMap;
+	std::map<Level*, sf::Music*> levelMusicMap;
 
 	Player player;
 
@@ -50,18 +48,15 @@ struct Game : GameSound
 	Level level_1;
 	Level level_2;
 	Level level_3;
+	std::map<Level*, Level*> changeLevelMap;
 
 	sf::RectangleShape currentBackground;
+	sf::RectangleShape background_level_0;
+	sf::Texture backgroundTexture_level_0;
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
-	sf::RectangleShape background_level_preview;
-	sf::Texture backgroundTexture_level_preview;
 
-	std::map<Level*, int> boxesCountMap = {
-			{ &level_0, 0 },
-			{ &level_1, 3 },
-			{ &level_2, 1 }
-	};
+	std::map<Level*, int> boxesCountMap;
 
 	Menu menu;
 	PlayerInterface interface;
@@ -81,6 +76,7 @@ struct Game : GameSound
 	void StartGame();
 	void Restart();
 	void NextLevel(Level& level);
+	void GetMapData();
 
 	void DifficultAdjustment();
 
@@ -108,7 +104,7 @@ struct Game : GameSound
 	void UpdateInterface();
 	void UpdateBackground();
 	void UpdateBonuses();
-	void UpdateSound();
+	void UpdateOST();
 
 	void CheckEntitiesCollides();
 	void EnemyPlayerCollides();

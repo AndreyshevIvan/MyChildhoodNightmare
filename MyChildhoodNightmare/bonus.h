@@ -28,15 +28,9 @@ enum struct BonusType
 	AK_AMMO,
 	SHOOTGUN_AMMO,
 	HEALTH,
-	RANDOM_BONUS,
+	GIFT,
 	ITEM_BOX,
 	RANDOMIZE,
-};
-
-enum
-{
-	SHOOTGUN = 1,
-	AK = 2,
 };
 
 struct Bonus : BonusesSound

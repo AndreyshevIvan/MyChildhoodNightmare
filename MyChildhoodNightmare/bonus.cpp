@@ -23,7 +23,7 @@ Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
 	case BonusType::HEALTH:
 		bonusTexture.loadFromFile("resources/bonus_hp.png");
 		break;
-	case BonusType::RANDOM_BONUS:
+	case BonusType::GIFT:
 		bonusTexture.loadFromFile("resources/bonus_random.png");
 		break;
 	case BonusType::ITEM_BOX:
@@ -83,10 +83,13 @@ void DropBonusFromEnemy(sf::Vector2f const& position, std::vector<Bonus*>& bonus
 
 bool Bonus::AddBonusEffect(Player& player)
 {
+	int* ammo_AK = &player.ammoMap.find(Weapon::AK)->second;
+	int* ammo_SHOOTGUN = &player.ammoMap.find(Weapon::SHOOTGUN)->second;
+
 	switch (bonusType)
 	{
 	case BonusType::AK_AMMO:
-		if (!AddPropertyValue(player.ammo[AK], BONUS_AK_AMMO_COUNT, PLAYER_MAX_AMMO))
+		if (!AddPropertyValue(*ammo_AK, BONUS_AK_AMMO_COUNT, PLAYER_MAX_AMMO))
 		{
 			return false;
 		}
@@ -94,7 +97,7 @@ bool Bonus::AddBonusEffect(Player& player)
 		break;
 
 	case BonusType::SHOOTGUN_AMMO:
-		if (!AddPropertyValue(player.ammo[SHOOTGUN], BONUS_SHOOTGUN_AMMO_COUNT, PLAYER_MAX_AMMO))
+		if (!AddPropertyValue(*ammo_SHOOTGUN, BONUS_SHOOTGUN_AMMO_COUNT, PLAYER_MAX_AMMO))
 		{
 			return false;
 		}
@@ -114,7 +117,7 @@ bool Bonus::AddBonusEffect(Player& player)
 		announcementText = "YOU FOUND ONE BOX!";
 		break;
 
-	case BonusType::RANDOM_BONUS:
+	case BonusType::GIFT:
 		AddRandomBonus(player);
 		break;
 	default:

@@ -7,9 +7,12 @@ const sf::Vector2f RESOLUTION = { 1366 , 768 };
 
 enum
 {
-	SWORD = 0,
+	// Weapon type
+	PISTOL = 0,
 	SHOOTGUN = 1,
 	AK = 2,
+	// Ammo count
+	INFINITY_AMMO = INT_MAX,
 };
 
 bool PlayerInterface::Init()
@@ -90,6 +93,30 @@ void PlayerInterface::CreateBoxes(std::map<Level*, int> const& boxesMap, Level* 
 	}
 }
 
+void PlayerInterface::CreateRemark(RemarkType const& type)
+{
+	if (remark == nullptr && rand() % 100 < 20)
+	{
+		remark = new Remark(type);
+	}
+}
+
+void PlayerInterface::UpdateRemark(float elapsedTime, sf::Vector2f const& position)
+{
+	if (remark != nullptr)
+	{
+		if (remark->duration >= REMARK_DURATION)
+		{
+			delete remark;
+			remark = nullptr;
+		}
+		else
+		{
+			remark->Update(position, elapsedTime);
+		}
+	}
+}
+
 void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 {
 	sf::Vector2f playerHealthPos = cameraPos + PLAYER_BAR_POS;
@@ -124,7 +151,7 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 {
 	switch (weapon)
 	{
-	case SWORD:
+	case PISTOL:
 		playerWeaponBar.setTexture(&playerMeleeBarTexture);
 		break;
 	case SHOOTGUN:
@@ -137,18 +164,14 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 		break;
 	}
 
-	if (ammo > 0)
+	if (ammo >= 0 && ammo != INFINITY_AMMO)
 	{
 		string ammoStr = IntToStr(ammo);
 		playerAmmo.setString(ammoStr);
 	}
-	else if (ammo < 0)
-	{
-		playerAmmo.setString("");
-	}
 	else
 	{
-		playerAmmo.setString("0");
+		playerAmmo.setString("");
 	}
 }
 
@@ -304,6 +327,11 @@ void PlayerInterface::Draw(RenderWindow& window)
 	window.draw(playerAmmo);
 	DrawAnnouncement(window);
 
+	if (remark != nullptr)
+	{
+		remark->Draw(window);
+	}
+
 	for (auto it = boxes.begin(); it != boxes.end(); it++)
 	{
 		sf::RectangleShape* box = *it;
@@ -361,4 +389,17 @@ sf::Vector2f GetTextureSize(sf::Texture const& texture)
 	};
 
 	return size;
+}
+
+void Remark::Update(sf::Vector2f const& position, float elapsedTime)
+{
+	cloud.setPosition(position + REMARK_MARGIN);
+	remarkText.setPosition(cloud.getPosition() + REMARK_TEXT_MARGIN);
+	duration += elapsedTime;
+}
+
+void Remark::Draw(sf::RenderWindow& window)
+{
+	window.draw(cloud);
+	window.draw(remarkText);
 }

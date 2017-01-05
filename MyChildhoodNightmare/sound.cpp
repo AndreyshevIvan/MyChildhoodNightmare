@@ -2,27 +2,31 @@
 
 bool GameSound::InitGameSound()
 {
-	if (!menuSound.openFromFile("resources/sound/main_menu_sound.ogg") ||
-		!gameplaySound.openFromFile("resources/sound/gameplay_1_sound.ogg") ||
-		!shadowCollideSound.openFromFile("resources/sound/shadow_collide_sound.ogg") ||
-		!ghostCollideSound.openFromFile("resources/sound/ghost_collide_sound.wav") ||
-		!finalSound.openFromFile("resources/sound/final_sound.ogg") ||
-		!menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch_sound.ogg") ||
-		!ammoBonusSound.openFromFile("resources/sound/bonus_weapon_sound.ogg") ||
-		!healthBonusSound.openFromFile("resources/sound/bonus_health_sound.ogg") ||
-		!boxBonusSound.openFromFile("resources/sound/bonus_box_sound.wav") ||
-		!randomBonusSound.openFromFile("resources/sound/bonus_random_sound.ogg") ||
+	if (!menuSound.openFromFile("resources/sound/main_menu.ogg") ||
+		!level_0_ost.openFromFile("resources/sound/level_0_ost.ogg") ||
+		!level_1_ost.openFromFile("resources/sound/level_1_ost.ogg") ||
+		!level_2_ost.openFromFile("resources/sound/level_2_ost.ogg") ||
+		!shadowCollideSound.openFromFile("resources/sound/shadow_collide.ogg") ||
+		!ghostCollideSound.openFromFile("resources/sound/ghost_collide.wav") ||
+		!winSound.openFromFile("resources/sound/win.ogg") ||
+		!menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch.ogg") ||
+		!ammoBonusSound.openFromFile("resources/sound/bonus_weapon.ogg") ||
+		!healthBonusSound.openFromFile("resources/sound/bonus_health.ogg") ||
+		!boxBonusSound.openFromFile("resources/sound/bonus_box.wav") ||
+		!randomBonusSound.openFromFile("resources/sound/bonus_random.ogg") ||
 		!playerHurtGrunt.openFromFile("resources/sound/player_hurt_grunt.ogg") ||
-		!gameOverSound.openFromFile("resources/sound/game_over_sound.ogg"))
+		!gameOverSound.openFromFile("resources/sound/game_over.ogg"))
 	{
 		return false;
 	}
 
-	menuSound.setVolume(MAIN_MENU_VOLUME); 
-	gameplaySound.setVolume(GAMEPLAY_VOLUME);
+	menuSound.setVolume(MAIN_MENU_VOLUME);
+	level_0_ost.setVolume(GAMEPLAY_VOLUME);
+	level_1_ost.setVolume(GAMEPLAY_VOLUME);
+	level_2_ost.setVolume(GAMEPLAY_VOLUME);
 	menuButtonSwitchSound.setVolume(MENU_BUTTON_SWITCH_VOLUME);
 	gameOverSound.setVolume(MAIN_MENU_VOLUME);
-	finalSound.setVolume(WIN_VOLUME);
+	winSound.setVolume(WIN_VOLUME);
 
 	playerHurtGrunt.setVolume(COLLIDES_VOLIME);
 	shadowCollideSound.setVolume(COLLIDES_VOLIME);
@@ -85,11 +89,12 @@ void GameSound::CollideWithBonusSound(int type)
 
 bool CharacterSound::InitCharacterSound()
 {
-	if (!playerDeath.openFromFile("resources/sound/player_death_sound.ogg") ||
-		!weaponPistol.openFromFile("resources/sound/weapon_pistol_sound.ogg") ||
-		!weaponAK.openFromFile("resources/sound/weapon_ak_sound.ogg") ||
-		!weaponShootgun.openFromFile("resources/sound/weapon_shootgun_sound.ogg") ||
-		!switchWeapon.openFromFile("resources/sound/switch_weapon_sound.ogg"))
+	if (!playerDeath.openFromFile("resources/sound/player_death.ogg") ||
+		!weaponPistol.openFromFile("resources/sound/weapon_pistol.ogg") ||
+		!weaponAK.openFromFile("resources/sound/weapon_ak.ogg") ||
+		!weaponShootgun.openFromFile("resources/sound/weapon_shootgun.ogg") ||
+		!switchWeapon.openFromFile("resources/sound/switch_weapon.ogg") ||
+		!emptyWeapon.openFromFile("resources/sound/empty_weapon.ogg"))
 	{
 		return false;
 	}
@@ -100,6 +105,7 @@ bool CharacterSound::InitCharacterSound()
 	weaponAK.setVolume(WEAPON_VOLUME);
 	weaponShootgun.setVolume(WEAPON_VOLUME);
 	switchWeapon.setVolume(SWITCH_WEAPON_VOLUME);
+	emptyWeapon.setVolume(SWITCH_WEAPON_VOLUME);
 
 	return true;
 }

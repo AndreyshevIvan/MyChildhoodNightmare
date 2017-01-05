@@ -33,7 +33,7 @@ const int GHOST_TOUCH_DEMAGE = 6;
 
 const sf::Vector2f SPIDER_SIZE = { 50, 50 };
 const int SPIDER_START_HEALTH = 70;
-const float SPIDER_TARGET_RANGE = 200;
+const sf::Vector2f SPIDER_TARGET_AREA_SIZE = { 60, 230 };
 const float SPIDER_MOVE_SPEED = 100;
 const float SIDER_JUMP_SPEED = 200;
 const int SPIDER_TOUCH_DEMAGE = 9;
@@ -53,6 +53,11 @@ const int WALL_ATTACK_WINDOW_BULLETS_COUNT = 3;
 
 const int LAVA_DEMAGE = 20;
 const float BOTTOM_HAND_MARGIN = 10;
+
+enum struct BossStatus
+{
+
+};
 
 enum struct EnemyType
 {

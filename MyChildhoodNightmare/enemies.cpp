@@ -303,12 +303,10 @@ void Enemy::UpdateBossActivityStatus(Character const& player)
 
 void Enemy::UpdateSpiderActivityStatus(Character const& player)
 {
-	auto rangeX = abs(player.GetCharacterPos().x - GetCharacterPos().x);
-	auto rangeY = abs(player.GetCharacterPos().y - GetCharacterPos().y);
+	const sf::Vector2f AREA_MARGIN_X(-SPIDER_TARGET_AREA_SIZE.x / 2.0f, 0);
+	targetArea = sf::FloatRect(GetCharacterPos() + AREA_MARGIN_X, SPIDER_TARGET_AREA_SIZE);
 
-	auto range = sqrt(pow(rangeX, 2) + pow(rangeY, 2));
-
-	if (range <= SPIDER_TARGET_RANGE)
+	if (targetArea.intersects(player.collisionRect))
 	{
 		activityStatus = EnemyActivity::PURSUIT;
 	}

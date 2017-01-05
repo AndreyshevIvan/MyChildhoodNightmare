@@ -25,7 +25,6 @@ int main()
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
 	srand(static_cast<unsigned>(time(NULL)));
 
-
 	Game game;
 
 	if (game.InitGame())
@@ -35,7 +34,7 @@ int main()
 	}
 	else
 	{
-		std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS.";
+		std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS!" "\n";
 		system("pause");
 		return 1;
 	}
@@ -78,7 +77,7 @@ void HandleEvents(sf::RenderWindow& window, Game& game)
 
 void Update(Game& game)
 {
-	game.UpdateSound();
+	game.UpdateOST();
 	game.currentScene->onUpdate();
 }
 
