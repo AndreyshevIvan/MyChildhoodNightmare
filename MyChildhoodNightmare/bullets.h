@@ -7,7 +7,7 @@ const float BOSS_BULLET_SPEED = 300;
 const sf::Vector2f BULLET_SIZE = { 14, 11 };
 
 const float MAX_WEAPON_COLDOWN = 1;
-const float MELEE_COLDOWN = 0.4f;
+const float PISTOL_COLDOWN = 0.4f;
 const float SHOOTGUN_COLDOWN = 0.5f;
 const float AK_COLDOWN = 0.1f;
 

@@ -97,6 +97,7 @@ void Game::Restart()
 	blocks = currentLevel->GetObjects("solid");
 	lava = currentLevel->GetObjects("lava");
 
+	player.Clear();
 	player.ReturnCopy();
 	SpawnEntities();
 
@@ -381,7 +382,7 @@ void Game::ControlGameOver(sf::RenderWindow& window)
 	(void)window;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 	{
-		StartGame();
+		Restart();
 	}
 	if (sf::Keyboard::isKeyPressed(Keyboard::Escape))
 	{

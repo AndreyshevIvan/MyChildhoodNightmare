@@ -389,7 +389,8 @@ void Enemy::ClownShoot(std::vector<Bullet*>& bullets)
 
 	if (shootColdown >= CLOWN_SHOOT_COLDOWN)
 	{
-		bullets.push_back(new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::CLOWN_BULLET));
+		auto bullet = new Bullet(GetCharacterPos(), shootDemage, orientationId, shootRange, BulletType::CLOWN_BULLET);
+		bullets.push_back(bullet);
 		shootColdown = 0;
 	}
 }
@@ -408,7 +409,6 @@ void Enemy::UpdateGhostPos(float elapsedTime)
 	collisionRect.left += elapsedTime * moveSpeed * ghostMove.x;
 	collisionRect.top += elapsedTime * moveSpeed * ghostMove.y;
 
-	ghostMove = { 0, 0 };
 	bodyShape.setPosition(GetCharacterPos());
 }
 
@@ -421,20 +421,27 @@ void Enemy::GhostPursuite(Character const& player)
 {
 	sf::Vector2f playerPos = player.GetCharacterPos();
 
-	float halfPlayerBody = player.collisionRect.height / 2.0f;
-	float moveX = 1;
-	float moveY = 1;
+	float halfPlayerBody = player.bodyShape.getSize().y / 2.0f;
+	
+	ghostMove = { 0 , 0 };
 
 	if (playerPos.x < GetCharacterPos().x)
 	{
-		moveX = -moveX;
+		ghostMove.x = -1;
 	}
-	if (playerPos.y - halfPlayerBody < GetCharacterPos().y)
+	else if (playerPos.x > GetCharacterPos().x)
 	{
-		moveY = -moveY;
+		ghostMove.x = 1;
 	}
 
-	ghostMove = { moveX , moveY };
+	if (playerPos.y - halfPlayerBody < GetCharacterPos().y)
+	{
+		ghostMove.y = -1;
+	}
+	else if (playerPos.y - halfPlayerBody > GetCharacterPos().y)
+	{
+		ghostMove.y = 1;
+	}
 }
 
 void Enemy::BossPursuite(Character const& player, std::vector<Bullet*>& bullets)
