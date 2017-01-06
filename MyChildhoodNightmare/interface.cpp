@@ -432,14 +432,12 @@ sf::Color Extinguish(
 )
 {
 	float avalableDuration = maxDuration - transExtinguishDur;
-	//std::cout << transExtinguishDur;
 	sf::Color newColor;
 	if (duration >= avalableDuration)
 	{
 		sf::Uint8 transparency = color.a;
 		sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / transExtinguishDur);
 		newColor = sf::Color(255, 255, 255, transparency - step);
-		std::cout << static_cast<int>(transparency - step) << "\n";
 
 		return newColor;
 	}

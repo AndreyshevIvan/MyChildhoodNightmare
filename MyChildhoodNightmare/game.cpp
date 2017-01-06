@@ -567,7 +567,14 @@ void Game::BonusesPlayerCollides()
 		Bonus* bonus = *it;
 		if (bonus->collisionRect.intersects(player.collisionRect) && bonus->AddBonusEffect(player))
 		{
-			interface.CreateRemark(RemarkType::BONUS);
+			if (bonus->bonusType == BonusType::GIFT)
+			{
+				interface.CreateRemark(RemarkType::GIFT);
+			}
+			else
+			{
+				interface.CreateRemark(RemarkType::BONUS);
+			}
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
 			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
 			CollideWithBonusSound(static_cast<int>(bonus->bonusType));
@@ -638,6 +645,10 @@ void Game::UpdateColdowns()
 	{
 		gameOverColdown += elapsedTime;
 	}
+	if (interface.randomRemarkColdown <= REMARK_RANDOM_COLDOWN)
+	{
+		interface.randomRemarkColdown += elapsedTime;
+	}
 
 	for (auto enemy : enemies)
 	{
@@ -696,6 +707,12 @@ void Game::UpdateInterface()
 	interface.UpdatePlayerBoxes(player.boxes);
 	interface.UpdateAnnouncement(elapsedTime);
 	interface.UpdateRemark(elapsedTime, player.GetCharacterPos());
+
+	if (interface.randomRemarkColdown >= REMARK_RANDOM_COLDOWN)
+	{
+		interface.CreateRemark(RemarkType::RANDOM);
+		interface.randomRemarkColdown = 0;
+	}
 
 	for (auto enemy : enemies)
 	{

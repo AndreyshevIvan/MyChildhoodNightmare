@@ -38,6 +38,7 @@ const float TRANS_EXTINGUISH_DURATION = 0.5f;
 const float PART_DURATION = 3.45f;
 const float ANNOUNCEMENT_DURATION = 1;
 const float REMARK_DURATION = 2.5f;
+const float REMARK_RANDOM_COLDOWN = 20.0f;
 
 const sf::Color BOSS_HP_LINE_COLOR = sf::Color(98, 10, 10, 255);
 const sf::Color BOSS_HP_BAR_COLOR = sf::Color(255, 255, 255, 240);
@@ -46,20 +47,37 @@ const sf::Color NOT_FOUND_BOX_COLOR = sf::Color(255, 255, 255, 40);
 const float DEMAGE_ANNOUNCEMENT_SPEED = 30;
 
 const int PROBABILITY_SIZE = 100; // max order
-const float REMARK_KILL_PROBABILITY = 0.25f;
+const float REMARK_KILL_PROBABILITY = 0.3f;
 const float REMARK_DEATH_PROBABILITY = 1.0f;
 const float REMARK_BONUS_PROBABILITY = 0.5f;
+const float REMARK_GIFT_PROBABILITY = 0.8f;
+const float REMARK_RANDOM_PROBABILITY = 0.2f;
 
 const std::vector<std::string> KILL_REMARKS = {
-	"EASY BREEZY",
-	"NEXT PLEASE"
+	"Easy Breezy",
+	"Next please",
+	"Die!",
+	"Death to you!",
+	"So sweet..."
 };
 const std::vector<std::string> DEATH_REMARKS = {
-	"Ohhh, noooo"
+	"Ohhh, noooo",
+	"Lucky shot..."
 };
 const std::vector<std::string> BONUS_REMARKS = {
+	"Earned through blood",
+	"The wait has ended"
+};
+const std::vector<std::string> GIFT_REMARKS = {
 	"Nice!",
 	"It`s mine"
+};
+const std::vector<std::string> RANDOM_REMARKS = {
+	"Forward!",
+	"The time has come...",
+	"Prepare for the wave of terror: boo!",
+	"Delicious...",
+	"Ah ahahahahahahahah ahahah!"
 };
 
 enum struct PreviewStatus
@@ -76,6 +94,8 @@ enum struct RemarkType
 	KILL,
 	DEATH,
 	BONUS,
+	GIFT,
+	RANDOM,
 };
 
 struct Remark
@@ -105,13 +125,18 @@ struct PlayerInterface
 	std::map<std::vector<std::string>, float> remarkPacks = {
 		{ KILL_REMARKS, REMARK_KILL_PROBABILITY },
 		{ DEATH_REMARKS, REMARK_DEATH_PROBABILITY },
-		{ BONUS_REMARKS, REMARK_BONUS_PROBABILITY }
+		{ BONUS_REMARKS, REMARK_BONUS_PROBABILITY },
+		{ GIFT_REMARKS, REMARK_GIFT_PROBABILITY },
+		{ RANDOM_REMARKS, REMARK_RANDOM_PROBABILITY }
 	};
 	std::map<RemarkType, std::map<std::vector<std::string>, float>::iterator> remarkSystem = {
 		{ RemarkType::KILL, remarkPacks.find(KILL_REMARKS) },
 		{ RemarkType::DEATH, remarkPacks.find(DEATH_REMARKS) },
-		{ RemarkType::BONUS, remarkPacks.find(BONUS_REMARKS) }
+		{ RemarkType::BONUS, remarkPacks.find(BONUS_REMARKS) },
+		{ RemarkType::GIFT, remarkPacks.find(GIFT_REMARKS) },
+		{ RemarkType::RANDOM, remarkPacks.find(RANDOM_REMARKS) }
 	};
+	float randomRemarkColdown = 0;
 
 	sf::RectangleShape playerWeaponBar;
 	sf::Texture playerMeleeBarTexture;
