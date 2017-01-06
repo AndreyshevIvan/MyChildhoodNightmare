@@ -42,7 +42,7 @@ bool GameSound::InitGameSound()
 
 void GameSound::CollideWithEnemySound(int type)
 {
-	playerHurtGrunt.play();
+	PlayWithoutDouble(playerHurtGrunt);
 
 	switch (type)
 	{
@@ -68,19 +68,19 @@ void GameSound::CollideWithBonusSound(int type)
 	switch (type)
 	{
 	case AK_AMMO:
-		ammoBonusSound.play();
+		PlayWithoutDouble(ammoBonusSound);
 		break;
 	case SHOOTGUN_AMMO:
-		ammoBonusSound.play();
+		PlayWithoutDouble(ammoBonusSound);
 		break;
 	case HEALTH:
-		healthBonusSound.play();
+		PlayWithoutDouble(healthBonusSound);
 		break;
 	case RANDOM:
-		randomBonusSound.play();
+		PlayWithoutDouble(randomBonusSound);
 		break;
 	case BOX:
-		boxBonusSound.play();
+		PlayWithoutDouble(boxBonusSound);
 		break;
 	default:
 		break;
@@ -113,4 +113,12 @@ bool CharacterSound::InitCharacterSound()
 bool BonusesSound::InitBonusesSound()
 {
 	return true;
+}
+
+void PlayWithoutDouble(sf::Music& audio)
+{
+	if (audio.getStatus() != sf::Music::Status::Playing)
+	{
+		audio.play();
+	}
 }

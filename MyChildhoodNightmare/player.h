@@ -18,9 +18,9 @@ const int PLAYER_MAX_AK_DEMAGE = 40;
 const int PLAYER_MAX_SHOOTGUN_DEMAGE = 30;
 const int PLAYER_MAX_HEALTH = 250;
 
-const float INJURED_COLDOWN = 1.0;
+const float INJURED_DURATION = 1.0;
 const sf::Color INJURED_COLOR = sf::Color(255, 255, 255, 140);
-const float GAME_OVER_COLDOWN = 2;
+const float GAME_OVER_DURATION = 2;
 const float DEAD_ROTATION = 90;
 
 enum Weapon

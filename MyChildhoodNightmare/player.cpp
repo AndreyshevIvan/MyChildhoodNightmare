@@ -42,7 +42,7 @@ bool Player::InitPlayer()
 		{ Weapon::AK, PLAYER_START_AK_AMMO }
 	};
 
-	injuredColdown = INJURED_COLDOWN;
+	injuredColdown = INJURED_DURATION;
 	weaponColdownsMap = {
 		{ Weapon::PISTOL, PISTOL_COLDOWN },
 		{ Weapon::SHOOTGUN, SHOOTGUN_COLDOWN },
@@ -57,7 +57,7 @@ bool Player::InitPlayer()
 
 void Player::UpdateStatuses()
 {
-	if (injuredColdown < INJURED_COLDOWN)
+	if (injuredColdown < INJURED_DURATION)
 	{
 		bodyShape.setFillColor(INJURED_COLOR);
 	}
@@ -161,7 +161,7 @@ void Player::AkFire(int orientation)
 
 void Player::RotateDeadBody(float elapsedTime)
 {
-	bodyShape.rotate(DEAD_ROTATION * elapsedTime / GAME_OVER_COLDOWN);
+	bodyShape.rotate(DEAD_ROTATION * elapsedTime / GAME_OVER_DURATION);
 }
 
 void Player::CreateCopy()

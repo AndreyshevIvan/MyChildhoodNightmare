@@ -198,6 +198,9 @@ void Game::ClearScene()
 		it = bonuses.erase(it);
 		delete(bonus);
 	}
+
+	delete interface.remark;
+	interface.remark = nullptr;
 }
 
 void Game::SpawnEntities()
@@ -426,7 +429,7 @@ void Game::UpdatePlayer()
 		interface.CreateRemark(RemarkType::DEATH);
 		player.RotateDeadBody(elapsedTime);
 
-		if (gameOverColdown >= GAME_OVER_COLDOWN)
+		if (gameOverColdown >= GAME_OVER_DURATION)
 		{
 			gameOverColdown = 0;
 			currentScene = &gameOverScene;
@@ -445,10 +448,9 @@ void Game::UpdateBullets()
 		}
 		erase_if(bullets, [&](Bullet* pBullet) {
 			bool dead = (IsCollidesWithLevel(pBullet->collisionRect) || !pBullet->isLive);
-			if (dead)
-			{
+			if (dead) 
 				delete(pBullet);
-			}
+
 			return dead;
 		});
 	};
@@ -536,8 +538,9 @@ void Game::EnemyBulletsPlayerCollides()
 	{
 		if (player.collisionRect.intersects(bullet->collisionRect))
 		{
-			if (player.injuredColdown >= INJURED_COLDOWN)
+			if (player.injuredColdown >= INJURED_DURATION)
 			{
+				PlayWithoutDouble(playerHurtGrunt);
 				player.health -= bullet->demage;
 				bullet->isLive = false;
 			}
@@ -551,8 +554,9 @@ void Game::PlayerLavaCollides()
 	{
 		if (lavaBlock.rect.intersects(player.collisionRect))
 		{
-			if (player.injuredColdown >= INJURED_COLDOWN)
+			if (player.injuredColdown >= INJURED_DURATION)
 			{
+				PlayWithoutDouble(playerHurtGrunt);
 				player.health -= LAVA_DEMAGE;
 				player.injuredColdown = 0;
 			}
@@ -568,13 +572,10 @@ void Game::BonusesPlayerCollides()
 		if (bonus->collisionRect.intersects(player.collisionRect) && bonus->AddBonusEffect(player))
 		{
 			if (bonus->bonusType == BonusType::GIFT)
-			{
 				interface.CreateRemark(RemarkType::GIFT);
-			}
 			else
-			{
 				interface.CreateRemark(RemarkType::BONUS);
-			}
+
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
 			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
 			CollideWithBonusSound(static_cast<int>(bonus->bonusType));
@@ -613,7 +614,7 @@ void Game::EnemyPlayerCollides()
 	{
 		if (enemy->collisionRect.intersects(player.collisionRect))
 		{
-			if (player.injuredColdown >= INJURED_COLDOWN)
+			if (player.injuredColdown >= INJURED_DURATION)
 			{
 				CollideWithEnemySound((int)enemy->enemyType);
 				player.health -= enemy->touchDemage;
@@ -625,42 +626,21 @@ void Game::EnemyPlayerCollides()
 
 void Game::UpdateColdowns()
 {
-	if (player.shootColdown <= MAX_WEAPON_COLDOWN)
-	{
-		player.shootColdown += elapsedTime;
-	}
-	if (menu.buttonsColdown <= BUTTONS_COLDOWN)
-	{
-		menu.buttonsColdown += elapsedTime;
-	}
-	if (player.injuredColdown <= INJURED_COLDOWN)
-	{
-		player.injuredColdown += elapsedTime;
-	}
-	if (buttonColdown <= BUTTONS_COLDOWN)
-	{
-		buttonColdown += elapsedTime;
-	}
-	if (player.existStatus == ExistenceStatus::DEAD)
-	{
-		gameOverColdown += elapsedTime;
-	}
-	if (interface.randomRemarkColdown <= REMARK_RANDOM_COLDOWN)
-	{
-		interface.randomRemarkColdown += elapsedTime;
-	}
+	auto AddTime = [&](float& timer, float limit, bool criterion = true) {
+		if (timer <= limit && criterion) { timer += elapsedTime; }
+	};
+
+	AddTime(player.shootColdown, MAX_WEAPON_COLDOWN);
+	AddTime(player.injuredColdown, INJURED_DURATION);
+	AddTime(menu.buttonsColdown, BUTTONS_COLDOWN);
+	AddTime(buttonColdown, BUTTONS_COLDOWN);
+	AddTime(interface.randomRemarkColdown, REMARK_RANDOM_COLDOWN);
+	AddTime(gameOverColdown, GAME_OVER_DURATION, player.existStatus == ExistenceStatus::DEAD);
 
 	for (auto enemy : enemies)
 	{
-		if (enemy->enemyType == EnemyType::CLOWN && enemy->shootColdown <= CLOWN_SHOOT_COLDOWN)
-		{
-			enemy->shootColdown += elapsedTime;
-		}
-
-		if (enemy->enemyType == EnemyType::BOSS && enemy->shootColdown <= BOSS_SHOOT_COLDOWN)
-		{
-			enemy->shootColdown += elapsedTime;
-		}
+		AddTime(enemy->shootColdown, CLOWN_SHOOT_COLDOWN, enemy->enemyType == EnemyType::CLOWN);
+		AddTime(enemy->shootColdown, BOSS_SHOOT_COLDOWN, enemy->enemyType == EnemyType::BOSS);
 	}
 }
 

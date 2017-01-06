@@ -75,3 +75,5 @@ struct BonusesSound
 {
 	bool InitBonusesSound();
 };
+
+void PlayWithoutDouble(sf::Music& audio);
