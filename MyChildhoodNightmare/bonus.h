@@ -21,7 +21,7 @@ const int BONUS_HEALTH_INCREASE = 10;
 const int BONUS_AK_DEMAGE_INCREASE = 4;
 const int BONUS_SHOOTGUN_DEMAGE_INCREASE = 3;
 
-const sf::Vector2f ITEM_BOX_SIZE = { 50, 58 };
+const sf::Vector2f ITEM_BOX_SIZE = { 58, 50 };
 
 enum struct BonusType
 {

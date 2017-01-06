@@ -23,6 +23,7 @@ int main()
 	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
 	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
+	window.setFramerateLimit(120);
 	srand(static_cast<unsigned>(time(NULL)));
 
 	Game game;
@@ -49,9 +50,9 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 	{
 		game.SetElapsedTime();
 
-		if (game.elapsedTime > 0.1)
+		if (game.elapsedTime >= 0.1)
 		{
-			game.elapsedTime = 1 / 60;
+			game.elapsedTime = 0.016f;
 		}
 
 		HandleEvents(window, game);

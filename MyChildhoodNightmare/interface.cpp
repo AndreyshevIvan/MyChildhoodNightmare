@@ -48,7 +48,7 @@ bool PlayerInterface::Init()
 
 	playerHealthBar.setSize(GetTextureSize(playerHealthBarTexture));
 	playerHealthBar.setTexture(&playerHealthBarTexture);
-	playerWeaponBar.setSize(PLAYER_WEAPON_BAR_SIZE);
+	playerWeaponBar.setSize(WEAPON_BAR_SIZE);
 
 	bossBar.setSize(BOSS_BAR_SIZE);
 	bossBar.setOrigin(BOSS_BAR_SIZE.x / 2.0f, BOSS_BAR_SIZE.y / 2.0f);
@@ -93,11 +93,36 @@ void PlayerInterface::CreateBoxes(std::map<Level*, int> const& boxesMap, Level* 
 	}
 }
 
+void PlayerInterface::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
+{
+	auto marginX = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
+	auto marginY = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
+
+	sf::Vector2f margin(marginX, marginY / 2.0f);
+
+	sf::Text announcement = Text(str, font, ANNOUNCEMENT_FONT_SIZE);
+	announcement.setOutlineThickness(ANNOUNCEMENT_OUTLINE_THICKNESS);
+	announcement.setOutlineColor(sf::Color::Black);
+	announcement.setOrigin(announcement.getGlobalBounds().width / 2.0f, announcement.getGlobalBounds().height / 2.0f);
+	announcement.setPosition(position + margin);
+
+	demageAnnouncementText.push_back(announcement);
+	demageAnnouncementDuration.push_back(0);
+}
+
 void PlayerInterface::CreateRemark(RemarkType const& type)
 {
-	if (remark == nullptr && rand() % 100 < 20)
+	if (remark == nullptr)
 	{
-		remark = new Remark(type);
+		const float probability = remarkSystem.find(type)->second->second;
+
+		if (rand() % PROBABILITY_SIZE < static_cast<int>(probability * PROBABILITY_SIZE))
+		{
+			const size_t remarksCount = remarkSystem.find(type)->second->first.size();
+			const int randomRemarkNumber = rand() % remarksCount;
+			const std::string text = remarkSystem.find(type)->second->first[randomRemarkNumber];
+			remark = new Remark(text);
+		}
 	}
 }
 
@@ -177,34 +202,27 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 
 bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedTime)
 {
-	if (previewPartColdown >= PART_DURATION)
+	if (partDuration >= PART_DURATION)
 	{
 		if (currentPart == PreviewStatus::MONSTERS)
 		{
 			return true;
 		}
 
-		previewPartColdown = 0;
+		partDuration = 0;
 		currentPart = PreviewStatus(static_cast<int>(currentPart) + 1);
-		previewText.setFillColor(sf::Color(255, 255, 255, 255));
-		previewImage.setFillColor(sf::Color(255, 255, 255, 255));
+		previewText.setFillColor(sf::Color::White);
+		previewImage.setFillColor(sf::Color::White);
 	}
 
-	previewPartColdown += elapsedTime;
+	partDuration += elapsedTime;
 	previewImage.setPosition({ position.x, position.y });
 	previewText.setOrigin(previewText.getGlobalBounds().width / 2.0f, previewText.getGlobalBounds().height / 2.0f);
 	previewText.setPosition(position + PREVIEW_TEXT_MARGIN );
 
-	if (previewPartColdown >= PART_TRANSPARENCY_DURATION)
-	{
-		sf::Uint8 imageTransparency = previewImage.getFillColor().a;
-		sf::Uint8 imageTransStep = static_cast<sf::Uint8>(255 * elapsedTime / (PART_DURATION - PART_TRANSPARENCY_DURATION));
-		previewImage.setFillColor(sf::Color(255, 255, 255, imageTransparency - imageTransStep));
-
-		sf::Uint8 textTransparency = previewText.getFillColor().a;
-		sf::Uint8 textTransStep = static_cast<sf::Uint8>(255 * elapsedTime / (PART_DURATION - PART_TRANSPARENCY_DURATION));
-		previewText.setFillColor(sf::Color(255, 255, 255, textTransparency - textTransStep));
-	}
+	const sf::Color color = previewImage.getFillColor();
+	previewImage.setFillColor(Extinguish(elapsedTime, color, partDuration, PART_DURATION));
+	previewText.setFillColor(Extinguish(elapsedTime, color, partDuration, PART_DURATION));
 
 	switch (currentPart)
 	{
@@ -243,21 +261,21 @@ void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
 {
 	if (!boxes.empty())
 	{
-		float firstPosX = boxes[0]->getPosition().x;
+		float firstPosX = boxes.front()->getPosition().x;
 		int boxNumber = 0;
 
 		for (auto box : boxes)
 		{
 			if (boxNumber < currentBoxes)
 			{
-				box->setFillColor(Color(255, 255, 255, 255));
+				box->setFillColor(sf::Color::White);
 			}
 			else
 			{
-				box->setFillColor(Color(255, 255, 255, 40));
+				box->setFillColor(NOT_FOUND_BOX_COLOR);
 			}
 			box->setPosition({ firstPosX + boxNumber * BOXES_MIDLE_MARGIN, box->getPosition().y });
-			boxNumber += 1;
+			boxNumber++;
 		}
 	}
 }
@@ -275,44 +293,28 @@ void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
 	UpdateHelpButton("Press \"ENTER\" to go main menu", windowCenter);
 }
 
-void PlayerInterface::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
-{
-	auto marginX = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
-	auto marginY = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
-
-	sf::Vector2f margin(marginX, marginY / 2.0f);
-
-	sf::Text announcement = Text(str, font, ANNOUNCEMENT_FONT_SIZE);
-	announcement.setOutlineThickness(ANNOUNCEMENT_OUTLINE_THICKNESS);
-	announcement.setOutlineColor(sf::Color::Black);
-	announcement.setOrigin(announcement.getGlobalBounds().width / 2.0f , announcement.getGlobalBounds().height / 2.0f);
-	announcement.setPosition(position + margin);
-
-	demageAnnouncementText.push_back(announcement);
-	demageAnnouncementDuration.push_back(0);
-}
-
 void PlayerInterface::UpdateAnnouncement(float elapsedTime)
 {
 	for (size_t elementNumber = 0; elementNumber < demageAnnouncementDuration.size();)
 	{
-		demageAnnouncementDuration[elementNumber] += elapsedTime;
+		float* duration = &demageAnnouncementDuration[elementNumber];
+		sf::Text* text = &demageAnnouncementText[elementNumber];
 
-		if (demageAnnouncementDuration[elementNumber] >= ANNOUNCEMENT_DURATION)
+		if (*duration >= ANNOUNCEMENT_DURATION)
 		{
 			demageAnnouncementDuration.erase(demageAnnouncementDuration.begin() + elementNumber);
 			demageAnnouncementText.erase(demageAnnouncementText.begin() + elementNumber);
 		}
 		else
 		{
-			demageAnnouncementText[elementNumber].move(0, -DEMAGE_ANNOUNCEMENT_SPEED * elapsedTime);
-			if (demageAnnouncementDuration[elementNumber] >= ANNOUNCEMENT_TRANSPARENCY_DURATION)
-			{
-				sf::Uint8 transparency = demageAnnouncementText[elementNumber].getFillColor().a;
-				sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / ANNOUNCEMENT_TRANSPARENCY_DURATION);
-				demageAnnouncementText[elementNumber].setFillColor(sf::Color(255, 255, 255, transparency - step));
-			}
+			text->move(0, -DEMAGE_ANNOUNCEMENT_SPEED * elapsedTime);
 
+			const sf::Color color = text->getFillColor();
+			sf::Color newColor(Extinguish(elapsedTime, color, *duration, ANNOUNCEMENT_DURATION));
+			text->setFillColor(newColor);
+			text->setOutlineColor(sf::Color(0, 0, 0, newColor.a));
+
+			*duration += elapsedTime;
 			++elementNumber;
 		}
 	}
@@ -369,6 +371,36 @@ void PlayerInterface::DrawAnnouncement(sf::RenderWindow& window)
 	}
 }
 
+Remark::Remark(std::string const& text)
+	:remark(text)
+{
+	cloudTexture.loadFromFile("resources/cloud.png");
+	font.loadFromFile("resources/nightmarealley.ttf");
+
+	cloud.setTexture(&cloudTexture);
+	cloud.setSize(REMARK_CLOUD_SIZE);
+
+	remarkText = sf::Text(remark, font, HELP_FONT_SIZE);
+	remarkText.setOrigin(remarkText.getGlobalBounds().width / 2.0f, remarkText.getGlobalBounds().height / 2.0f);
+	remarkText.setFillColor(sf::Color::Black);
+}
+
+void Remark::Update(sf::Vector2f const& position, float elapsedTime)
+{
+	cloud.setPosition(position + REMARK_MARGIN);
+	remarkText.setPosition(cloud.getPosition() + REMARK_TEXT_MARGIN);
+	duration += elapsedTime;
+
+	cloud.setFillColor(Extinguish(elapsedTime, cloud.getFillColor(), duration, REMARK_DURATION));
+	remarkText.setFillColor(Extinguish(elapsedTime, remarkText.getFillColor(), duration, REMARK_DURATION));
+}
+
+void Remark::Draw(sf::RenderWindow& window)
+{
+	window.draw(cloud);
+	window.draw(remarkText);
+}
+
 string IntToStr(int number)
 {
 	if (number >= 0)
@@ -391,15 +423,26 @@ sf::Vector2f GetTextureSize(sf::Texture const& texture)
 	return size;
 }
 
-void Remark::Update(sf::Vector2f const& position, float elapsedTime)
+sf::Color Extinguish(
+	float elapsedTime,
+	sf::Color const& color,
+	float duration,
+	float maxDuration,
+	float transExtinguishDur
+)
 {
-	cloud.setPosition(position + REMARK_MARGIN);
-	remarkText.setPosition(cloud.getPosition() + REMARK_TEXT_MARGIN);
-	duration += elapsedTime;
-}
+	float avalableDuration = maxDuration - transExtinguishDur;
+	//std::cout << transExtinguishDur;
+	sf::Color newColor;
+	if (duration >= avalableDuration)
+	{
+		sf::Uint8 transparency = color.a;
+		sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / transExtinguishDur);
+		newColor = sf::Color(255, 255, 255, transparency - step);
+		std::cout << static_cast<int>(transparency - step) << "\n";
 
-void Remark::Draw(sf::RenderWindow& window)
-{
-	window.draw(cloud);
-	window.draw(remarkText);
+		return newColor;
+	}
+
+	return color;
 }

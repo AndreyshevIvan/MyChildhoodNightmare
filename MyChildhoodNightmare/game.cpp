@@ -65,8 +65,6 @@ bool Game::InitGame()
 	background_level_0.setSize(BG_LVL_0_SISE);
 	background_level_0.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
 
-	currentLevel = &level_0;
-
 	changeLevelMap = {
 		{ &level_0, &level_1 },
 		{ &level_1, &level_2 },
@@ -101,6 +99,8 @@ bool Game::InitGame()
 
 void Game::StartGame()
 {
+	currentLevel = &level_0;
+
 	ClearScene();
 	GetMapData();
 
@@ -423,6 +423,7 @@ void Game::UpdatePlayer()
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
+		interface.CreateRemark(RemarkType::DEATH);
 		player.RotateDeadBody(elapsedTime);
 
 		if (gameOverColdown >= GAME_OVER_COLDOWN)
@@ -566,6 +567,7 @@ void Game::BonusesPlayerCollides()
 		Bonus* bonus = *it;
 		if (bonus->collisionRect.intersects(player.collisionRect) && bonus->AddBonusEffect(player))
 		{
+			interface.CreateRemark(RemarkType::BONUS);
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
 			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
 			CollideWithBonusSound(static_cast<int>(bonus->bonusType));
