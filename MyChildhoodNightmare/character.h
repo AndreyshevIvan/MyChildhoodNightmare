@@ -8,6 +8,9 @@ const float CHARACTERS_JUMP_SPEED = 400;
 const float CHARACTERS_JUMP_HEIGHT = 80;
 const float MIN_SHOOT_RANGE = 140;
 
+const float CRITICAL_JUMP_SPEED = 700;
+const float SPEED_PER_DEMAGE = 160;
+
 const sf::Vector2f BLOOD_SIZE = { 45, 30 };
 const int BLOOD_MAX_ROTATION = 30;
 const float BLOOD_MARGIN_X = 16;

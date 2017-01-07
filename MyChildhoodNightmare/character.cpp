@@ -68,6 +68,13 @@ void Character::UpdateGravity(float elapsedTime, std::vector<TmxObject> const& b
 	if (IsCollidesWithLevel(collisionRect, blocks))
 	{
 		collisionRect.top -= movementY;
+
+		if (jumpSpeed > CRITICAL_JUMP_SPEED)
+		{
+			health -= static_cast<int>(jumpSpeed / SPEED_PER_DEMAGE);
+			cout << "DEAMGE: " << static_cast<int>(jumpSpeed / SPEED_PER_DEMAGE) << std::endl;
+		}
+
 		if (movementY > 0)
 		{
 			jumpStatus = ON_GROUND;
