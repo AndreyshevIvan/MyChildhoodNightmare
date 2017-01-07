@@ -8,7 +8,8 @@ const sf::Color UNSELECTED_ITEM_COLOR = sf::Color(30, 30, 30);
 const sf::Color ITEM_COLOR = sf::Color::White;
 const sf::Vector2f GAMENAME_SIZE = { 328, 180 };
 const float GAMENAME_POS_Y = 240;
-const sf::Vector2f PAUSE_MENU_SIZE = { 900, 450 };
+const sf::Vector2i MAIN_MENU_WRAPPER_SIZE = { 1366, 768 };
+const sf::Vector2i PAUSE_MENU_SIZE = { 900, 450 };
 const sf::Vector2f ICON_SIZE = { 37 , 45 };
 const float BUTTONS_COLDOWN = 0.18f;
 
@@ -28,6 +29,10 @@ enum struct Difficult
 
 struct Menu
 {
+	Menu::Menu(float width, float height);
+
+	sf::Vector2f resolution;
+
 	CurrentMenu currentMenu;
 	size_t currentButton;
 	sf::Font itemsFont;
@@ -44,11 +49,9 @@ struct Menu
 	std::vector<sf::Text> difficultMenuItems;
 	std::vector<std::vector<sf::Text>> allMenues;
 	float buttonsColdown;
-	sf::Vector2f menuPos;
+	sf::Vector2f windowCenter;
 
-	bool InitMenuItems();
-
-	void SetMenu(CurrentMenu const& menu, sf::Vector2f const& point);
+	void SetMenu(CurrentMenu const& menu, sf::Vector2f const& center);
 
 	void Update();
 	void Select(CurrentMenu const& selectMenu, Difficult const& selectButton);

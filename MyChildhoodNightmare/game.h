@@ -7,7 +7,6 @@
 #include "bonus.h"
 #include "sound.h"
 
-const sf::Vector2f RESOLUTION = { 1366, 768 };
 const float CAMERA_VERTICAL_MARGIN = 80;
 const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
@@ -24,6 +23,10 @@ struct GameScene
 
 struct Game : GameSound
 {
+	Game(float width, float height);
+
+	sf::Vector2f resolution;
+
 	sf::View camera;
 	sf::Clock clock;
 	float elapsedTime;
@@ -73,7 +76,6 @@ struct Game : GameSound
 	int bonusProbability;
 	int demageIncrease;
 
-	bool InitGame();
 	void StartGame();
 	void Restart();
 	void NextLevel(TmxLevel& level);

@@ -1,8 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-const sf::Vector2f PLAYER_BAR_POS = { -620, -330 };
-
 const sf::Vector2f HEALTH_BAR_SIZE = { 180, 70 };
 const sf::Vector2f WEAPON_BAR_SIZE = { 110, 80 };
 const sf::Vector2f PREVIEW_IMAGE_SIZE = { 400, 400 };
@@ -19,6 +17,7 @@ const int ANNOUNCEMENT_FONT_SIZE = 20;
 
 const float ANNOUNCEMENT_OUTLINE_THICKNESS = 2;
 
+const sf::Vector2f PLAYER_BARS_MARGIN = { 35, 40 };
 const sf::Vector2f PLAYER_HP_MARGIN = { 80, 2 };
 const sf::Vector2f PLAYER_WEAPON_MARGIN = { 0, HEALTH_BAR_SIZE.y };
 const sf::Vector2f PLAYER_AMMO_MARGIN = { 88, 121 };
@@ -26,7 +25,7 @@ const sf::Vector2f PREVIEW_TEXT_MARGIN = { 0, 220 };
 const sf::Vector2f PLAYER_BOXES_MARGIN = { 0, HEALTH_BAR_SIZE.y + WEAPON_BAR_SIZE.y + 10 };
 const sf::Vector2f BOSS_BAR_MARGIN = { 0, -280 };
 const sf::Vector2f BOSS_HP_LINE_MARGIN = { -BOSS_HP_LINE_SIZE.x / 2.0f + 33, -33 };
-const sf::Vector2f HELP_TEXT_MARGIN = { -665 , 350 };
+const sf::Vector2f HELP_TEXT_MARGIN = { 30 , -40 };
 const float BOXES_MIDLE_MARGIN = 60;
 const int MAX_ANNOUNCEMENT_MARGIN = 40;
 const sf::Vector2f REMARK_MARGIN = { -42, -110 };
@@ -115,6 +114,10 @@ struct Remark
 
 struct PlayerInterface
 {
+	PlayerInterface::PlayerInterface(float width, float height);
+
+	sf::Vector2f resolution;
+
 	sf::Font font;
 
 	sf::RectangleShape playerHealthBar;
@@ -176,8 +179,6 @@ struct PlayerInterface
 
 	float partDuration = 0;
 	PreviewStatus currentPart = PreviewStatus::HOUSE;
-
-	bool Init();
 
 	void CreateAnnouncement(sf::Vector2f const& position, std::string const& str);
 	void CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level);

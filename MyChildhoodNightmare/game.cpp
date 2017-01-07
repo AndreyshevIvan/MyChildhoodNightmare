@@ -29,41 +29,22 @@ void erase_if(TContainer &container, TPredicate && predicate)
 	container.erase(newEnd, container.end());
 }
 
-bool Game::InitGame()
+Game::Game(float width, float height)
+	:resolution(width, height)
+	,interface(width, height)
+	,menu(width, height)
 {
-	if (!level_0.LoadFromFile("resources/previewTileset.tmx"))
-	{
-		return false;
-	}
-	std::cout << "load 0 complete" << std::endl;
+	level_0.LoadFromFile("resources/previewTileset.tmx");
+	level_1.LoadFromFile("resources/secondTileset.tmx");
+	level_2.LoadFromFile("resources/firstTileset.tmx");
+	
+	backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png");
+	backgroundTexture_level_1.loadFromFile("resources/background_level_2.png");
 
-	if (!level_1.LoadFromFile("resources/secondTileset.tmx"))
-	{
-		return false;
-	}
-	std::cout << "load 1 complete" << std::endl;
+	player.InitPlayer();
+	InitGameSound();
 
-	if (!level_2.LoadFromFile("resources/firstTileset.tmx"))
-	{
-		return false;
-	}
-	std::cout << "load 2 complete" << std::endl;
-
-	if (!backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png") ||
-		!backgroundTexture_level_1.loadFromFile("resources/background_level_2.png"))
-	{
-		return false;
-	}
-
-	if (!player.InitPlayer() ||
-		!menu.InitMenuItems() ||
-		!interface.Init() ||
-		!InitGameSound())
-	{
-		return false;
-	}
-
-	camera.reset(sf::FloatRect(0, 0, RESOLUTION.x, RESOLUTION.y));
+	camera.reset(sf::FloatRect(0, 0, resolution.x, resolution.y));
 
 	difficult = Difficult::EASY;
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
@@ -108,8 +89,6 @@ bool Game::InitGame()
 	};
 
 	buttonColdown = 0;
-
-	return true;
 }
 
 void Game::StartGame()
@@ -279,8 +258,8 @@ sf::FloatRect Game::GetCameraArea()
 {
 	auto camCenter = camera.getCenter();
 	sf::FloatRect cameraArea(
-		camCenter.x - RESOLUTION.x / 2.0f,
-		camCenter.y - RESOLUTION.y / 2.0f, RESOLUTION.x, RESOLUTION.y
+		camCenter.x - resolution.x / 2.0f,
+		camCenter.y - resolution.y / 2.0f, resolution.x, resolution.y
 	);
 	
 	return cameraArea;
@@ -664,7 +643,7 @@ void Game::UpdateColdowns()
 
 void Game::UpdateCamera(sf::RenderWindow& window)
 {
-	sf::Vector2f halfWindow = { RESOLUTION.x / 2.0f , RESOLUTION.y / 2.0f };
+	sf::Vector2f halfWindow = { resolution.x / 2.0f , resolution.y / 2.0f };
 	sf::Vector2f cameraCenter = {
 		player.GetCharacterPos().x,
 		player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN
@@ -737,8 +716,8 @@ void Game::UpdateBackground()
 		currentBackground = background_level_1;
 	}
 
-	float bgPosX_Percent = (camera.getCenter().x - RESOLUTION.x / 2.0f) / (mapWidth - RESOLUTION.x);
-	float bgPosY_Percent = (camera.getCenter().y - RESOLUTION.y / 2.0f) / (mapHeight - RESOLUTION.y);
+	float bgPosX_Percent = (camera.getCenter().x - resolution.x / 2.0f) / (mapWidth - resolution.x);
+	float bgPosY_Percent = (camera.getCenter().y - resolution.y / 2.0f) / (mapHeight - resolution.y);
 
 	float bgAllowedWidthX = mapWidth - backgroundWidth;
 	float bgAllowedWidthY = mapHeight - backgroundHeight;

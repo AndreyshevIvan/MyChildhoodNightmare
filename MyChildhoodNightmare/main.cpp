@@ -4,6 +4,17 @@
 
 static const std::string GAME_NAME = "My Childhood Nightmare";
 
+static const std::vector<sf::Vector2f> RESOLUTIONS = {
+	sf::Vector2f(1024, 768),
+	sf::Vector2f(1280, 800),
+	sf::Vector2f(1366, 768),
+	sf::Vector2f(1280, 1024),
+	sf::Vector2f(1600, 900),
+	sf::Vector2f(1920, 1080)
+};
+
+sf::Vector2f ChoiseResolution();
+
 void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
 void InitMenuScene(Game& game);
@@ -19,27 +30,42 @@ void Render(sf::RenderWindow& window, Game& game);
 
 int main()
 {
+	const sf::Vector2f startResolution = ChoiseResolution();
+
 	sf::VideoMode videoMode;
-	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
-	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
+	videoMode.width = static_cast<unsigned>(startResolution.x);
+	videoMode.height = static_cast<unsigned>(startResolution.y);
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
 	srand(static_cast<unsigned>(time(NULL)));
 
-	Game game;
+	Game game(startResolution.x, startResolution.y);
 
-	if (game.InitGame())
-	{
-		InitScenes(game);
-		EnterGameLoop(window, game);
-	}
-	else
-	{
-		//std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS!" "\n";
-		system("pause");
-		return 1;
-	}
+	InitScenes(game);
+	EnterGameLoop(window, game);
 
 	return 0;
+}
+
+sf::Vector2f ChoiseResolution()
+{
+	size_t resolutionID = 0;
+
+	std::cout << "Avalable resolutions:" << std::endl;
+
+	for (size_t resolutionNum = 0; resolutionNum < RESOLUTIONS.size(); resolutionNum++)
+	{
+		std::cout << "Resolution with number " << resolutionNum + 1 << " is "
+			<< RESOLUTIONS[resolutionNum].x << "x" << RESOLUTIONS[resolutionNum].y << std::endl;
+	}
+
+	std::cout << "Enter a suitable screen resolution number: ";
+
+	while (resolutionID <= 0 || resolutionID + 1 > RESOLUTIONS.size())
+	{
+		std::cin >> resolutionID;
+	}
+
+	return RESOLUTIONS[resolutionID];
 }
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game)
@@ -58,7 +84,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 

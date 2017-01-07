@@ -3,8 +3,6 @@
 using namespace std;
 using namespace sf;
 
-const sf::Vector2f RESOLUTION = { 1366 , 768 };
-
 enum
 {
 	// Weapon type
@@ -15,30 +13,23 @@ enum
 	INFINITY_AMMO = INT_MAX,
 };
 
-bool PlayerInterface::Init()
+PlayerInterface::PlayerInterface(float width, float height)
+	:resolution(width, height)
 {
-	if (!playerHealthBarTexture.loadFromFile("resources/healthBar.png") ||
-		!playerMeleeBarTexture.loadFromFile("resources/meleeBar.png") ||
-		!playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png") ||
-		!playerAkBarTexture.loadFromFile("resources/akBar.png") ||
-		!gameOverTexture.loadFromFile("resources/gameOver.png") ||
-		!blackFilterTexture.loadFromFile("resources/blackFilter.png") ||
-		!redFilterTexture.loadFromFile("resources/redFilter.png") ||
-		!previewTextures[0].loadFromFile("resources/house.png") ||
-		!previewTextures[1].loadFromFile("resources/cellar.png") ||
-		!previewTextures[2].loadFromFile("resources/teaserBox.png") ||
-		!previewTextures[3].loadFromFile("resources/notAlone.png") ||
-		!boxTexture.loadFromFile("resources/box.png") ||
-		!bossBarTexture.loadFromFile("resources/bossBar.png") ||
-		!winTexture.loadFromFile("resources/win.png"))
-	{
-		return false;
-	}
-
-	if (!font.loadFromFile("resources/nightmarealley.ttf"))
-	{
-		return false;
-	}
+	font.loadFromFile("resources/nightmarealley.ttf");
+	playerHealthBarTexture.loadFromFile("resources/healthBar.png");
+	playerMeleeBarTexture.loadFromFile("resources/meleeBar.png");
+	playerShootgunBarTexture.loadFromFile("resources/shootgunBar.png");
+	playerAkBarTexture.loadFromFile("resources/akBar.png");
+	gameOverTexture.loadFromFile("resources/gameOver.png");
+	blackFilterTexture.loadFromFile("resources/blackFilter.png");
+	previewTextures[0].loadFromFile("resources/house.png");
+	previewTextures[1].loadFromFile("resources/cellar.png");
+	previewTextures[2].loadFromFile("resources/teaserBox.png");
+	previewTextures[3].loadFromFile("resources/notAlone.png");
+	boxTexture.loadFromFile("resources/box.png");
+	bossBarTexture.loadFromFile("resources/bossBar.png");
+	winTexture.loadFromFile("resources/win.png");
 
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
@@ -67,14 +58,12 @@ bool PlayerInterface::Init()
 	winText.setString("You've conquered your nightmares and escaped!");
 	winText.setOrigin(winText.getGlobalBounds().width / 2.0f, winText.getGlobalBounds().height / 2.0f);
 
-	blackFilter.setSize(RESOLUTION);
+	blackFilter.setSize(resolution);
 	blackFilter.setTexture(&blackFilterTexture);
-	blackFilter.setOrigin(RESOLUTION.x / 2.0f, RESOLUTION.y / 2.0f);
+	blackFilter.setOrigin(resolution.x / 2.0f, resolution.y / 2.0f);
 
 	previewImage.setSize(PREVIEW_IMAGE_SIZE);
 	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
-
-	return true;
 }
 
 void PlayerInterface::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level)
@@ -144,7 +133,7 @@ void PlayerInterface::UpdateRemark(float elapsedTime, sf::Vector2f const& positi
 
 void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 {
-	sf::Vector2f playerHealthPos = cameraPos + PLAYER_BAR_POS;
+	sf::Vector2f playerHealthPos = cameraPos - resolution * 0.5f + PLAYER_BARS_MARGIN;
 	sf::Vector2f playerWeaponBarPos = playerHealthPos + PLAYER_WEAPON_MARGIN;
 
 	playerHealthBar.setPosition(playerHealthPos);
@@ -162,7 +151,7 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 
 	for (auto box : boxes)
 	{
-		box->setPosition(cameraPos + PLAYER_BAR_POS + PLAYER_BOXES_MARGIN);
+		box->setPosition(playerHealthPos + PLAYER_BOXES_MARGIN);
 	}
 }
 
@@ -253,8 +242,12 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 
 void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
 {
+	const float HELP_POS_X = cameraPos.x - resolution.x * 0.5f;
+	const float HELP_POS_Y = cameraPos.y + resolution.y * 0.5f;
+	const sf::Vector2f HELP_POS(HELP_POS_X, HELP_POS_Y);
+
 	helpText.setString(helpStr);
-	helpText.setPosition(cameraPos + HELP_TEXT_MARGIN);
+	helpText.setPosition(HELP_POS + HELP_TEXT_MARGIN);
 }
 
 void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)

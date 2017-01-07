@@ -166,7 +166,6 @@ void Player::RotateDeadBody(float elapsedTime)
 
 void Player::CreateCopy()
 {
-	std::cout << "create player copy" << std::endl;
 	copy_ak_demage = akDemage;
 	copy_shootgun_demage = shootgunDemage;
 	copy_ak_ammo = ammoMap.find(Weapon::AK)->second;
@@ -178,7 +177,6 @@ void Player::CreateCopy()
 
 void Player::ReturnCopy()
 {
-	std::cout << "return player copy" << std::endl;
 	akDemage = copy_ak_demage;
 	shootgunDemage = copy_shootgun_demage;
 	ammoMap.find(Weapon::AK)->second = copy_ak_ammo;
