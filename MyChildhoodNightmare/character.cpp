@@ -27,7 +27,7 @@ sf::Vector2f Character::GetCharacterPos() const
 	return position;
 }
 
-void Character::UpdatePos(float elapsedTime, std::vector<Object> const& blocks)
+void Character::UpdatePos(float elapsedTime, std::vector<TmxObject> const& blocks)
 {
 	if (runStatus != NOT_RUN)
 	{
@@ -56,7 +56,7 @@ void Character::UpdatePos(float elapsedTime, std::vector<Object> const& blocks)
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Character::UpdateGravity(float elapsedTime, std::vector<Object> const& blocks)
+void Character::UpdateGravity(float elapsedTime, std::vector<TmxObject> const& blocks)
 {
 	float movementY = jumpSpeed;
 
@@ -93,9 +93,9 @@ void Character::UpdateHealthStatus()
 	}
 }
 
-bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<Object> const& blocks)
+bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<TmxObject> const& blocks)
 {
-	return std::any_of(blocks.begin(), blocks.end(), [&](const Object &block) {
+	return std::any_of(blocks.begin(), blocks.end(), [&](const TmxObject &block) {
 		return (rect.intersects(block.rect) && block.name == "solid");
 	});
 }

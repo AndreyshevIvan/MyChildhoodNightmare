@@ -23,7 +23,6 @@ int main()
 	videoMode.width = static_cast<unsigned>(RESOLUTION.x);
 	videoMode.height = static_cast<unsigned>(RESOLUTION.y);
 	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
-	window.setFramerateLimit(120);
 	srand(static_cast<unsigned>(time(NULL)));
 
 	Game game;
@@ -35,7 +34,7 @@ int main()
 	}
 	else
 	{
-		std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS!" "\n";
+		//std::cout << "FATAL SYSTEM ERROR: SOME FILES NOT FOUND. PLEASE REINSTALL WINDOWS!" "\n";
 		system("pause");
 		return 1;
 	}
@@ -59,7 +58,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 

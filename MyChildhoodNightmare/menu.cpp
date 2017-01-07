@@ -41,19 +41,19 @@ bool Menu::InitMenuItems()
 			sf::Text("Main menu", itemsFont, FONT_SIZE_MEDIUM)
 		};
 
-		allItems = {
+		allMenues = {
 			mainMenuItems,
 			difficultMenuItems,
 			pauseMenuItems
 		};
 
-		for (auto it = allItems.begin(); it != allItems.end(); it++)
+		for (auto menu = allMenues.begin(); menu != allMenues.end(); menu++)
 		{
-			for (auto itemsIt = it->begin(); itemsIt != it->end(); itemsIt++)
+			for (auto button = menu->begin(); button != menu->end(); button++)
 			{
-				itemsIt->setOrigin(
-					itemsIt->getGlobalBounds().width / 2.0f, 
-					itemsIt->getGlobalBounds().height / 2.0f
+				button->setOrigin(
+					button->getGlobalBounds().width / 2.0f,
+					button->getGlobalBounds().height / 2.0f
 				);
 			}
 		}
@@ -82,7 +82,7 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& point)
 	float margin = MENU_TOP_MARGIN;
 	auto currMenu = static_cast<size_t>(currentMenu);
 
-	for (auto it = allItems[currMenu].begin(); it != allItems[currMenu].end(); it++)
+	for (auto it = allMenues[currMenu].begin(); it != allMenues[currMenu].end(); it++)
 	{
 		it->setPosition(menuPos.x, menuPos.y - RESOLUTION.y / 2.0f + margin);
 		margin += MENU_ITEMS_MARGIN;
@@ -92,7 +92,7 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& point)
 void Menu::Update()
 {
 	auto currMenu = static_cast<size_t>(currentMenu);
-	auto currItem = allItems[currMenu][currentButton];
+	auto currItem = allMenues[currMenu][currentButton];
 
 	auto menuItemWidth = currItem.getGlobalBounds().width;
 	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y;
@@ -125,22 +125,22 @@ void Menu::Select(CurrentMenu const& selectMenu, Difficult const& selectButton)
 	size_t selectMenuId = static_cast<size_t>(selectMenu);
 	size_t selectButtonId = static_cast<size_t>(selectButton);
 
-	for (size_t it = 0; it < allItems[selectMenuId].size() - 1; it++)
+	for (size_t it = 0; it < allMenues[selectMenuId].size() - 1; it++)
 	{
 		if (it != selectButtonId)
 		{
-			allItems[selectMenuId][it].setFillColor(UNSELECTED_ITEM_COLOR);
+			allMenues[selectMenuId][it].setFillColor(UNSELECTED_ITEM_COLOR);
 		}
 		else
 		{
-			allItems[selectMenuId][it].setFillColor(ITEM_COLOR);
+			allMenues[selectMenuId][it].setFillColor(ITEM_COLOR);
 		}
 	}
 }
 
 void Menu::SwitchButtonUp()
 {
-	auto currMenu = allItems[(size_t)currentMenu];
+	auto currMenu = allMenues[(size_t)currentMenu];
 	auto maxItem = currMenu.size() - 1;
 
 	buttonsColdown = 0;
@@ -156,7 +156,7 @@ void Menu::SwitchButtonUp()
 
 void Menu::SwitchButtonDown()
 {
-	auto currMenu = allItems[(size_t)currentMenu];
+	auto currMenu = allMenues[(size_t)currentMenu];
 	auto maxItem = currMenu.size() - 1;
 
 	buttonsColdown = 0;
@@ -180,7 +180,7 @@ void Menu::Draw(sf::RenderWindow& window)
 		window.draw(gameName);
 	}
 
-	auto currMenu = allItems[(size_t)currentMenu];
+	auto currMenu = allMenues[(size_t)currentMenu];
 	for (auto menuElement : currMenu)
 	{
 		window.draw(menuElement);

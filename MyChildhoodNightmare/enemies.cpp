@@ -2,24 +2,24 @@
 
 using namespace std;
 
-Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
+Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type, int demageIncrease)
 {
 	switch (type)
 	{
 	case EnemyType::SHADOW:
-		this->CreateShadow();
+		this->CreateShadow(demageIncrease);
 		break;
 	case EnemyType::CLOWN:
-		this->CreateClown();
+		this->CreateClown(demageIncrease);
 		break;
 	case EnemyType::GHOST:
-		this->CreateGhost();
+		this->CreateGhost(demageIncrease);
 		break;
 	case EnemyType::SPIDER:
-		this->CreateSpider();
+		this->CreateSpider(demageIncrease);
 		break;
 	case EnemyType::BOSS:
-		this->CreateBoss();
+		this->CreateBoss(demageIncrease);
 		break;
 	default:
 		break;
@@ -44,7 +44,7 @@ Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type)
 	collisionRect = sf::FloatRect(position, BONE_SIZE);
 }
 
-void Enemy::CreateShadow()
+void Enemy::CreateShadow(int demageIncrease)
 {
 	enemyType = EnemyType::SHADOW;
 
@@ -52,27 +52,27 @@ void Enemy::CreateShadow()
 	bodyShape.setSize(SHADOW_SIZE);
 
 	health = SHADOW_START_HEALTH;
-	touchDemage = SHADOW_TOUCH_DEMAGE;
+	touchDemage = SHADOW_TOUCH_DEMAGE + demageIncrease;
 
-	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 101) / 100;
+	float randomSpeed = SHADOW_MOVE_SPEED_RANDOM * (rand() % 100 + 1) / 100;
 	moveSpeed = SHADOW_MOVE_SPEED + randomSpeed;
 
 	UpdateActivityStatus = [&](Character const& player) {
 		UpdateShadowActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
 		(void)bullets;
 		(void)player;
 		(void)blocks;
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
 		ShadowWalk(elapsedTime, blocks);
 	};
 }
 
-void Enemy::CreateClown()
+void Enemy::CreateClown(int demageIncrease)
 {
 	enemyType = EnemyType::CLOWN;
 
@@ -80,27 +80,27 @@ void Enemy::CreateClown()
 	bodyShape.setSize(CLOWN_SIZE);
 
 	health = CLOWN_START_HEALTH;
-	shootDemage = CLOWN_SHOOT_DEMAGE;
-	touchDemage = CLOWN_TOUCH_DEMAGE;
+	shootDemage = CLOWN_SHOOT_DEMAGE + demageIncrease;
+	touchDemage = CLOWN_TOUCH_DEMAGE + demageIncrease;
 	shootRange = CLOWN_SHOOT_RANGE;
 
 	UpdateActivityStatus = [&](Character const& player) {
 		UpdateClownActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)player;
 		ClownShoot(bullets);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
 }
 
-void Enemy::CreateGhost()
+void Enemy::CreateGhost(int demageIncrease)
 {
 	enemyType = EnemyType::GHOST;
 
@@ -108,26 +108,26 @@ void Enemy::CreateGhost()
 	bodyShape.setSize(GHOST_SIZE);
 
 	health = GHOST_START_HEALTH;
-	touchDemage = GHOST_TOUCH_DEMAGE;
+	touchDemage = GHOST_TOUCH_DEMAGE + demageIncrease;
 	moveSpeed = GHOST_MOVE_SPEED;
 
 	UpdateActivityStatus = [&](Character const& player) {
 		UpdateGhostActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
 		(void)bullets;
 		(void)blocks;
 		GhostPursuite(player);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
 		(void)blocks;
 		GhostIdle(elapsedTime);
 	};
 }
 
-void Enemy::CreateSpider()
+void Enemy::CreateSpider(int demageIncrease)
 {
 	enemyType = EnemyType::SPIDER;
 
@@ -135,7 +135,7 @@ void Enemy::CreateSpider()
 	bodyShape.setSize(SPIDER_SIZE);
 
 	health = SPIDER_START_HEALTH;
-	touchDemage = SPIDER_TOUCH_DEMAGE;
+	touchDemage = SPIDER_TOUCH_DEMAGE + demageIncrease;
 	moveSpeed = SPIDER_MOVE_SPEED;
 	jumpSpeed = SIDER_JUMP_SPEED;
 
@@ -143,12 +143,12 @@ void Enemy::CreateSpider()
 		UpdateSpiderActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
 		(void)bullets;
 		SpiderPursuite(player, blocks);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
@@ -160,7 +160,7 @@ void Enemy::CreateSpider()
 	bodyShape.setTextureRect(sf::IntRect(0, BODY_SIZE.y, BODY_SIZE.x, BODY_SIZE.y));
 }
 
-void Enemy::CreateBoss()
+void Enemy::CreateBoss(int demageIncrease)
 {
 	enemyType = EnemyType::BOSS;
 
@@ -168,28 +168,28 @@ void Enemy::CreateBoss()
 	bodyShape.setSize(BOSS_SIZE);
 
 	health = BOSS_START_HEALTH;
-	shootDemage = BOSS_SHOOT_DEMAGE;
-	touchDemage = BOSS_TOUCH_DEMAGE;
+	shootDemage = BOSS_SHOOT_DEMAGE + demageIncrease;
+	touchDemage = BOSS_TOUCH_DEMAGE + demageIncrease;
 	shootRange = BOSS_TARGET_RANGE;
 
 	UpdateActivityStatus = [&](Character const& player) {
 		UpdateBossActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<Object> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
 		BossPursuite(player, bullets);
 		(void)bullets;
 		(void)player;
 		(void)blocks;
 	};
 
-	Idle = [&](float elapsedTime, std::vector<Object> const& blocks) {
+	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
 }
 
-void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Object> const& blocks, std::vector<Bullet*>& bullets)
+void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<TmxObject> const& blocks, std::vector<Bullet*>& bullets)
 {
 	UpdateHealthStatus();
 	UpdateActivityStatus(player);
@@ -318,7 +318,7 @@ void Enemy::UpdateSpiderPos(float elapsedTime)
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Enemy::SpiderPursuite(Character const& player, std::vector<Object> const& blocks)
+void Enemy::SpiderPursuite(Character const& player, std::vector<TmxObject> const& blocks)
 {
 	auto targetPosX = player.GetCharacterPos().x;
 
@@ -344,7 +344,7 @@ void Enemy::SpiderPursuite(Character const& player, std::vector<Object> const& b
 	}
 }
 
-void Enemy::ShadowWalk(float elapsedTime, std::vector<Object> const& blocks)
+void Enemy::ShadowWalk(float elapsedTime, std::vector<TmxObject> const& blocks)
 {
 	if (jumpStatus != JumpingStatus::FLY)
 	{

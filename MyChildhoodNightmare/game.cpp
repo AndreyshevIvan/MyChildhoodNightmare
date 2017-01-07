@@ -31,10 +31,25 @@ void erase_if(TContainer &container, TPredicate && predicate)
 
 bool Game::InitGame()
 {
-	if (!level_0.LoadFromFile("resources/previewTileset.tmx") ||
-		!level_1.LoadFromFile("resources/secondTileset.tmx") ||
-		!level_2.LoadFromFile("resources/firstTileset.tmx") ||
-		!backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png") ||
+	if (!level_0.LoadFromFile("resources/previewTileset.tmx"))
+	{
+		return false;
+	}
+	std::cout << "load 0 complete" << std::endl;
+
+	if (!level_1.LoadFromFile("resources/secondTileset.tmx"))
+	{
+		return false;
+	}
+	std::cout << "load 1 complete" << std::endl;
+
+	if (!level_2.LoadFromFile("resources/firstTileset.tmx"))
+	{
+		return false;
+	}
+	std::cout << "load 2 complete" << std::endl;
+
+	if (!backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png") ||
 		!backgroundTexture_level_1.loadFromFile("resources/background_level_2.png"))
 	{
 		return false;
@@ -123,7 +138,7 @@ void Game::Restart()
 	currentScene = &gameplayScene;
 }
 
-void Game::NextLevel(Level& level)
+void Game::NextLevel(TmxLevel& level)
 {
 	ClearScene();
 	player.Clear();
@@ -140,14 +155,25 @@ void Game::DifficultAdjustment()
 	switch (difficult)
 	{
 	case Difficult::EASY:
-		bonusProbability = BONUS_PROBABILITY_EASY;
+	{
+		bonusProbability = EASY_BONUS_PROBABILITY;
+		demageIncrease = EASY_DEMAGE_INCREASE;
 		break;
+	}
+
 	case Difficult::NORMAL:
-		bonusProbability = BONUS_PROBABILITY_NORMAL;
+	{
+		bonusProbability = NORMAL_BONUS_PROBABILITY;
+		demageIncrease = NORMAL_DEMAGE_INCREASE;
 		break;
+	}
+
 	case Difficult::HARD:
-		bonusProbability = BONUS_PROBABILITY_HARD;
+	{
+		bonusProbability = HARD_BONUS_PROBABILITY;
+		demageIncrease = HARD_DEMAGE_INCREASE;
 		break;
+	}
 	default:
 		break;
 	}
@@ -157,20 +183,20 @@ void Game::GetMapData()
 {
 	mapSize = currentLevel->GetTilemapSize();
 	interface.CreateBoxes(boxesCountMap, currentLevel);
-	blocks = currentLevel->GetObjects("solid");
-	lava = currentLevel->GetObjects("lava");
+	blocks = currentLevel->GetAllObjects("solid");
+	lava = currentLevel->GetAllObjects("lava");
 }
 
 void Game::CheckCompletedLevel()
 {
 	const sf::FloatRect PLAYER_BODY = player.collisionRect;
-	const sf::FloatRect LEVEL_DOOR_RECT = currentLevel->GetObject("next_level").rect;
+	const sf::FloatRect LEVEL_DOOR_RECT = currentLevel->GetFirstObject("next_level").rect;
 
 	const int NECESSARY_BOXES_COUNT = boxesCountMap.find(currentLevel)->second;
 	const int PLAYER_BOXES_COUNT = player.boxes;
 
-	Level* NEXT_LEVEL = changeLevelMap.find(currentLevel)->second;
-	Level* START_LEVEL = &level_0;
+	TmxLevel* NEXT_LEVEL = changeLevelMap.find(currentLevel)->second;
+	TmxLevel* START_LEVEL = &level_0;
 
 	if (PLAYER_BODY.intersects(LEVEL_DOOR_RECT) && PLAYER_BOXES_COUNT >= NECESSARY_BOXES_COUNT)
 	{
@@ -185,37 +211,29 @@ void Game::CheckCompletedLevel()
 
 void Game::ClearScene()
 {
-	for (auto it = enemies.begin(); it != enemies.end();)
-	{
-		Character* enemy = *it;
-		it = enemies.erase(it);
-		delete(enemy);
-	}
-
-	for (auto it = bonuses.begin(); it != bonuses.end();)
-	{
-		Bonus* bonus = *it;
-		it = bonuses.erase(it);
-		delete(bonus);
-	}
-
+	enemies.clear();
+	bonuses.clear();
+	enemyBullets.clear();
 	delete interface.remark;
+	interface.demageAnnouncementText.clear();
+	interface.demageAnnouncementDuration.clear();
+
 	interface.remark = nullptr;
 }
 
 void Game::SpawnEntities()
 {
-	const std::vector<Object> SHADOW_SPAWNS = currentLevel->GetObjects("enemy_shadow_spawn");
-	const std::vector<Object> CLOWN_SPAWNS = currentLevel->GetObjects("enemy_clown_spawn");
-	const std::vector<Object> GHOST_SPAWNS = currentLevel->GetObjects("enemy_bird_spawn");
-	const std::vector<Object> SPIDER_SPAWNS = currentLevel->GetObjects("enemy_spider_spawn");
-	const std::vector<Object> BOSS_SPAWNS = currentLevel->GetObjects("enemy_boss_spawn");
+	const std::vector<TmxObject> SHADOW_SPAWNS = currentLevel->GetAllObjects("enemy_shadow_spawn");
+	const std::vector<TmxObject> CLOWN_SPAWNS = currentLevel->GetAllObjects("enemy_clown_spawn");
+	const std::vector<TmxObject> GHOST_SPAWNS = currentLevel->GetAllObjects("enemy_bird_spawn");
+	const std::vector<TmxObject> SPIDER_SPAWNS = currentLevel->GetAllObjects("enemy_spider_spawn");
+	const std::vector<TmxObject> BOSS_SPAWNS = currentLevel->GetAllObjects("enemy_boss_spawn");
 
-	const std::vector<Object> BOX_SPAWNS = currentLevel->GetObjects("item_box_spawn");
-	const std::vector<Object> HEALTH_SPAWNS = currentLevel->GetObjects("bonus_heath");
-	const std::vector<Object> AK_AMMO_SPAWNS = currentLevel->GetObjects("bonus_ak_ammo");
-	const std::vector<Object> GIFT_SPAWNS = currentLevel->GetObjects("bonus_random");
-	const std::vector<Object> SHOOTGUN_AMMO_SPAWNS = currentLevel->GetObjects("bonus_shootgun_ammo");
+	const std::vector<TmxObject> BOX_SPAWNS = currentLevel->GetAllObjects("item_box_spawn");
+	const std::vector<TmxObject> HEALTH_SPAWNS = currentLevel->GetAllObjects("bonus_heath");
+	const std::vector<TmxObject> AK_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_ak_ammo");
+	const std::vector<TmxObject> GIFT_SPAWNS = currentLevel->GetAllObjects("bonus_random");
+	const std::vector<TmxObject> SHOOTGUN_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_shootgun_ammo");
 
 	SpawnEnemies(SHADOW_SPAWNS, EnemyType::SHADOW);
 	SpawnEnemies(CLOWN_SPAWNS, EnemyType::CLOWN);
@@ -229,11 +247,11 @@ void Game::SpawnEntities()
 	SpawnItems(GIFT_SPAWNS, BonusType::GIFT);
 	SpawnItems(SHOOTGUN_AMMO_SPAWNS, BonusType::SHOOTGUN_AMMO);
 
-	const sf::Vector2f PLAYER_POS = currentLevel->GetObject("player_spawn").sprite.getPosition();
+	const sf::Vector2f PLAYER_POS = currentLevel->GetFirstObject("player_spawn").sprite.getPosition();
 	player.Spawn(PLAYER_POS);
 }
 
-void Game::SpawnItems(std::vector<Object> const& spawns, BonusType const& type)
+void Game::SpawnItems(std::vector<TmxObject> const& spawns, BonusType const& type)
 {
 	for (auto const& spawn : spawns)
 	{
@@ -242,12 +260,12 @@ void Game::SpawnItems(std::vector<Object> const& spawns, BonusType const& type)
 	}
 }
 
-void Game::SpawnEnemies(std::vector<Object> const& spawns, EnemyType const& type)
+void Game::SpawnEnemies(std::vector<TmxObject> const& spawns, EnemyType const& type)
 {
 	for (auto const& spawn : spawns)
 	{
 		sf::Vector2f pos = spawn.sprite.getPosition();
-		enemies.push_back(new Enemy(pos, type));
+		enemies.push_back(new Enemy(pos, type, demageIncrease));
 	}
 }
 
@@ -270,7 +288,7 @@ sf::FloatRect Game::GetCameraArea()
 
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	return std::any_of(blocks.begin(), blocks.end(), [&](const Object &block) {
+	return std::any_of(blocks.begin(), blocks.end(), [&](const TmxObject&block) {
 		return (rect.intersects(block.rect) && block.name == "solid");
 	});
 }

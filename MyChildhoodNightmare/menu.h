@@ -42,7 +42,7 @@ struct Menu
 	std::vector<sf::Text> mainMenuItems;
 	std::vector<sf::Text> pauseMenuItems;
 	std::vector<sf::Text> difficultMenuItems;
-	std::vector<std::vector<sf::Text>> allItems;
+	std::vector<std::vector<sf::Text>> allMenues;
 	float buttonsColdown;
 	sf::Vector2f menuPos;
 

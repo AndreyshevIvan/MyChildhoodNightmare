@@ -43,7 +43,7 @@ Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
 	InitBonusesSound();
 }
 
-void Bonus::Update(float elapsedTime, std::vector<Object> const& blocks)
+void Bonus::Update(float elapsedTime, std::vector<TmxObject> const& blocks)
 {
 	if (!IsBonusOnGround)
 	{
@@ -134,17 +134,17 @@ void Bonus::AddRandomBonus(Player& player)
 	if (randomProperty >= 1 && randomProperty <= 2)
 	{
 		AddPropertyValue(player.akDemage, BONUS_AK_DEMAGE_INCREASE, PLAYER_MAX_AK_DEMAGE);
-		announcementText = "+ MAX AK DEMAGE";
+		announcementText = "+UP AK DEMAGE";
 	}
 	else if (randomProperty >= 3 && randomProperty <= 4)
 	{
 		AddPropertyValue(player.shootgunDemage, BONUS_SHOOTGUN_DEMAGE_INCREASE, PLAYER_MAX_SHOOTGUN_DEMAGE);
-		announcementText = "+ MAX SHOOTGUN DEMAGE";
+		announcementText = "+UP SHOOTGUN DEMAGE";
 	}
 	else if (randomProperty >= 5 && randomProperty <= 6)
 	{
 		AddPropertyValue(player.maxHealth, BONUS_HEALTH_INCREASE, PLAYER_MAX_HEALTH);
-		announcementText = "+ MAX HEALTH";
+		announcementText = "+UP MAX HEALTH";
 	}
 	else
 	{

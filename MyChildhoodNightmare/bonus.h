@@ -7,9 +7,9 @@ const sf::Vector2f BONUS_BODY_SIZE = { 40, 40 };
 const int BONUS_COUNT = 4;
 const int BONUS_WEAPON_COUNT = 2;
 
-const int BONUS_PROBABILITY_EASY = 75;
-const int BONUS_PROBABILITY_NORMAL = 50;
-const int BONUS_PROBABILITY_HARD = 30;
+const int EASY_BONUS_PROBABILITY = 75;
+const int NORMAL_BONUS_PROBABILITY = 50;
+const int HARD_BONUS_PROBABILITY = 30;
 
 const float BONUS_FALL_SPEED = 200;
 
@@ -46,7 +46,7 @@ struct Bonus : BonusesSound
 	bool IsBonusOnGround = false;
 	std::string announcementText = "";
 
-	void Update(float elapsedTime, std::vector<Object> const& blocks);
+	void Update(float elapsedTime, std::vector<TmxObject> const& blocks);
 	bool AddBonusEffect(Player& player);
 	void AddRandomBonus(Player& player);
 

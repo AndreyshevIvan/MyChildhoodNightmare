@@ -38,7 +38,7 @@ const float TRANS_EXTINGUISH_DURATION = 0.5f;
 const float PART_DURATION = 3.45f;
 const float ANNOUNCEMENT_DURATION = 1;
 const float REMARK_DURATION = 2.5f;
-const float REMARK_RANDOM_COLDOWN = 20.0f;
+const float REMARK_RANDOM_COLDOWN = 25.0f;
 
 const sf::Color BOSS_HP_LINE_COLOR = sf::Color(98, 10, 10, 255);
 const sf::Color BOSS_HP_BAR_COLOR = sf::Color(255, 255, 255, 240);
@@ -47,11 +47,11 @@ const sf::Color NOT_FOUND_BOX_COLOR = sf::Color(255, 255, 255, 40);
 const float DEMAGE_ANNOUNCEMENT_SPEED = 30;
 
 const int PROBABILITY_SIZE = 100; // max order
-const float REMARK_KILL_PROBABILITY = 0.3f;
+const float REMARK_KILL_PROBABILITY = 0.2f;
 const float REMARK_DEATH_PROBABILITY = 1.0f;
-const float REMARK_BONUS_PROBABILITY = 0.5f;
-const float REMARK_GIFT_PROBABILITY = 0.8f;
-const float REMARK_RANDOM_PROBABILITY = 0.2f;
+const float REMARK_BONUS_PROBABILITY = 0.4f;
+const float REMARK_GIFT_PROBABILITY = 0.5f;
+const float REMARK_RANDOM_PROBABILITY = 0.3f;
 
 const std::vector<std::string> KILL_REMARKS = {
 	"Easy Breezy",
@@ -180,7 +180,7 @@ struct PlayerInterface
 	bool Init();
 
 	void CreateAnnouncement(sf::Vector2f const& position, std::string const& str);
-	void CreateBoxes(std::map<Level*, int> const& boxesMap, Level* level);
+	void CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level);
 	void CreateRemark(RemarkType const& type);
 
 	void UpdateRemark(float elapsedTime, sf::Vector2f const& position);

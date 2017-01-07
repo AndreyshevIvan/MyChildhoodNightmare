@@ -9,7 +9,7 @@
 #include <functional>
 #include <map>
 #include <iostream>
-#include "tinyxml\level.h"
+#include "TmxLevel.h"
 #include <string>
 #include <vector>
 

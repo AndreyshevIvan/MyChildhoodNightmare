@@ -40019,7 +40019,7 @@
    <tile gid="0"/>
   </data>
  </layer>
- <objectgroup name="solids" visible="0">
+ <objectgroup name="solids">
   <object id="51" name="solid" x="8" y="-5" width="17" height="1636"/>
   <object id="53" name="solid" x="577.5" y="483" width="218" height="28"/>
   <object id="54" name="solid" x="929" y="516" width="60" height="28"/>
@@ -40123,7 +40123,7 @@
   <object id="135" name="item_box_spawn" x="3239.58" y="1120.25" width="41.5" height="45.5"/>
   <object id="137" name="item_box_spawn" x="5966.25" y="846.25" width="41.5" height="45.5"/>
  </objectgroup>
- <objectgroup name="enemies_spawns" visible="0">
+ <objectgroup name="enemies_spawns">
   <object id="160" name="enemy_clown_spawn" x="962.333" y="422" width="46" height="44"/>
   <object id="161" name="enemy_clown_spawn" x="1115" y="929" width="46" height="44"/>
   <object id="162" name="enemy_clown_spawn" x="2949" y="1302" width="46" height="44"/>

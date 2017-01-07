@@ -61,12 +61,12 @@ struct Character : CharacterSound
 
 	sf::Vector2f GetCharacterPos() const;
 	
-	bool IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<Object> const& mapTiles);
+	bool IsCollidesWithLevel(sf::FloatRect const& rect, std::vector<TmxObject> const& mapTiles);
 
 	void Jump();
 
-	void UpdatePos(float elapsedTime, std::vector<Object> const& mapTiles);
-	void UpdateGravity(float elapsedTime, std::vector<Object> const& mapTiles);
+	void UpdatePos(float elapsedTime, std::vector<TmxObject> const& mapTiles);
+	void UpdateGravity(float elapsedTime, std::vector<TmxObject> const& mapTiles);
 	void UpdateHealthStatus();
 	void UpdateOrientation();
 	

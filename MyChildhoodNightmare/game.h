@@ -31,7 +31,7 @@ struct Game : GameSound
 	float gameOverColdown = 0;
 
 	std::map<GameScene*, sf::Music*> sceneMusicMap;
-	std::map<Level*, sf::Music*> levelMusicMap;
+	std::map<TmxLevel*, sf::Music*> levelMusicMap;
 
 	Player player;
 
@@ -39,16 +39,16 @@ struct Game : GameSound
 	std::vector<Bullet*> enemyBullets;
 	std::vector<Bonus*> bonuses;
 
-	std::vector<Object> blocks;
-	std::vector<Object> lava;
+	std::vector<TmxObject> blocks;
+	std::vector<TmxObject> lava;
 
 	sf::Vector2f mapSize;
-	Level* currentLevel;
-	Level level_0;
-	Level level_1;
-	Level level_2;
-	Level level_3;
-	std::map<Level*, Level*> changeLevelMap;
+	TmxLevel* currentLevel;
+	TmxLevel level_0;
+	TmxLevel level_1;
+	TmxLevel level_2;
+	TmxLevel level_3;
+	std::map<TmxLevel*, TmxLevel*> changeLevelMap;
 
 	sf::RectangleShape currentBackground;
 	sf::RectangleShape background_level_0;
@@ -56,7 +56,7 @@ struct Game : GameSound
 	sf::RectangleShape background_level_1;
 	sf::Texture backgroundTexture_level_1;
 
-	std::map<Level*, int> boxesCountMap;
+	std::map<TmxLevel*, int> boxesCountMap;
 
 	Menu menu;
 	PlayerInterface interface;
@@ -70,12 +70,13 @@ struct Game : GameSound
 	GameScene winScene;
 	GameScene *currentScene = nullptr;
 
-	int bonusProbability = BONUS_PROBABILITY_EASY;
+	int bonusProbability;
+	int demageIncrease;
 
 	bool InitGame();
 	void StartGame();
 	void Restart();
-	void NextLevel(Level& level);
+	void NextLevel(TmxLevel& level);
 	void GetMapData();
 
 	void DifficultAdjustment();
@@ -83,8 +84,8 @@ struct Game : GameSound
 	void CheckCompletedLevel();
 
 	void SpawnEntities();
-	void SpawnItems(std::vector<Object> const& spawns, BonusType const& type);
-	void SpawnEnemies(std::vector<Object> const& spawns, EnemyType const& type);
+	void SpawnItems(std::vector<TmxObject> const& spawns, BonusType const& type);
+	void SpawnEnemies(std::vector<TmxObject> const& spawns, EnemyType const& type);
 
 	void SetElapsedTime();
 	sf::FloatRect GetCameraArea();
