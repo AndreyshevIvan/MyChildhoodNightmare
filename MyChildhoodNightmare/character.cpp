@@ -103,6 +103,10 @@ bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<TmxObject> con
 void Character::DrawCharacter(RenderWindow& window)
 {
 	window.draw(bodyShape);
+	for (auto blood : wounds)
+	{
+		blood->Draw(window);
+	}
 }
 
 void Character::UpdateOrientation()
@@ -130,4 +134,50 @@ void Character::UpdateTexture()
 	{
 		bodyShape.setTextureRect(sf::IntRect(bodyWidth, 0, bodyWidth, bodyHeight));
 	}
+}
+
+Blood::Blood(sf::Vector2f const& characterPos, sf::Vector2f const& bulletPos)
+{
+	bloodTexture.loadFromFile("resources/blood.png");
+
+	positionOffset = characterPos - bulletPos;
+
+	blood.setSize(BLOOD_SIZE);
+	blood.setOrigin(0, BLOOD_SIZE.y / 2.0f);
+	blood.setTextureRect(sf::IntRect({ 0, 0 }, static_cast<sf::Vector2i>(BLOOD_SIZE)));
+	blood.setTexture(&bloodTexture);
+
+	float rotation = static_cast<float>(-BLOOD_MAX_ROTATION + (rand() % (2 * BLOOD_MAX_ROTATION)));
+
+	if (characterPos.x > bulletPos.x)
+	{ // character to the left
+		rotation += 180;
+		positionOffset.x -= BLOOD_MARGIN_X;
+	}
+	else
+	{ // character to the right
+		positionOffset.x += BLOOD_MARGIN_X;
+	}
+	positionOffset.y -= BLOOD_MARGIN_Y;
+
+	blood.setRotation(rotation);
+
+	duration = 0;
+	currentFrame = 0;
+	secondsPerFrame = BLOOD_DURATION / BLOOD_FRAMES;
+}
+
+void Blood::Update(sf::Vector2f const& characterPos, float elapsedTime)
+{
+	duration += elapsedTime;
+	currentFrame = static_cast<int>(duration / secondsPerFrame);
+
+	const int FRAME_POS_X = static_cast<int>(BLOOD_SIZE.x * currentFrame);
+	blood.setTextureRect(sf::IntRect({ FRAME_POS_X, 0 }, static_cast<sf::Vector2i>(BLOOD_SIZE)));
+	blood.setPosition(characterPos - positionOffset);
+}
+
+void Blood::Draw(sf::RenderWindow& window)
+{
+	window.draw(blood);
 }

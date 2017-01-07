@@ -60,12 +60,12 @@ sf::Vector2f ChoiseResolution()
 
 	std::cout << "Enter a suitable screen resolution number: ";
 
-	while (resolutionID <= 0 || resolutionID + 1 > RESOLUTIONS.size())
+	while (resolutionID <= 0 || resolutionID > RESOLUTIONS.size())
 	{
 		std::cin >> resolutionID;
 	}
 
-	return RESOLUTIONS[resolutionID];
+	return RESOLUTIONS[resolutionID - 1];
 }
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game)

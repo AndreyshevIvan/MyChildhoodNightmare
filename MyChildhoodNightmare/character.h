@@ -8,6 +8,13 @@ const float CHARACTERS_JUMP_SPEED = 400;
 const float CHARACTERS_JUMP_HEIGHT = 80;
 const float MIN_SHOOT_RANGE = 140;
 
+const sf::Vector2f BLOOD_SIZE = { 45, 30 };
+const int BLOOD_MAX_ROTATION = 30;
+const float BLOOD_MARGIN_X = 16;
+const float BLOOD_MARGIN_Y = 6;
+const int BLOOD_FRAMES = 10;
+const float BLOOD_DURATION = 0.25f;
+
 enum ExistenceStatus
 {
 	LIVE,
@@ -31,6 +38,24 @@ enum OrientationStatus
 {
 	LEFT = 1,
 	RIGHT,
+};
+
+struct Blood
+{
+	Blood(sf::Vector2f const& characterPos, sf::Vector2f const& bulletPos);
+
+	sf::RectangleShape blood;
+	sf::Texture bloodTexture;
+
+	sf::Vector2f positionOffset;
+	sf::Vector2f* position;
+
+	float secondsPerFrame;
+	float duration;
+	int currentFrame;
+
+	void Update(sf::Vector2f const& characterPos, float elapsedTime);
+	void Draw(sf::RenderWindow& window);
 };
 
 struct Character : CharacterSound
@@ -58,6 +83,7 @@ struct Character : CharacterSound
 	float shootRange = MIN_SHOOT_RANGE;
 	sf::Music* deathSound = nullptr;
 	void Spawn(sf::Vector2f const& pos);
+	std::vector<Blood*> wounds;
 
 	sf::Vector2f GetCharacterPos() const;
 	

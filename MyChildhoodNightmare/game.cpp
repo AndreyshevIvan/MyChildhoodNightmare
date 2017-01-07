@@ -421,6 +421,18 @@ void Game::UpdatePlayer()
 	player.UpdateStatuses();
 	player.UpdateTexture();
 
+	for (auto blood : player.wounds)
+	{
+		blood->Update(player.GetCharacterPos(), elapsedTime);
+	}
+	erase_if(player.wounds, [&](Blood* blood) {
+		bool durationEnd = blood->duration >= BLOOD_DURATION;
+		if (durationEnd)
+			delete(blood);
+
+		return durationEnd;
+	});
+
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
 		interface.CreateRemark(RemarkType::DEATH);
@@ -462,6 +474,19 @@ void Game::UpdateEnemies()
 	{
 		Enemy* enemy = *it;
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
+
+		for (auto blood : enemy->wounds)
+		{
+			blood->Update(enemy->GetCharacterPos(), elapsedTime);
+		}
+		erase_if(enemy->wounds, [&](Blood* blood) {
+			bool durationEnd = blood->duration >= BLOOD_DURATION;
+			if (durationEnd)
+				delete(blood);
+
+			return durationEnd;
+		});
+
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
 			interface.CreateRemark(RemarkType::KILL);
@@ -539,6 +564,7 @@ void Game::EnemyBulletsPlayerCollides()
 			{
 				PlayWithoutDouble(playerHurtGrunt);
 				player.health -= bullet->demage;
+				player.wounds.push_back(new Blood(player.GetCharacterPos(), bullet->bodyShape.getPosition()));
 				bullet->isLive = false;
 			}
 		}
@@ -598,6 +624,7 @@ void Game::PlayerBulletsEnemyCollides()
 				const std::string dmgStr = "-" + to_string(bullet->demage);
 				enemy->health -= bullet->demage;
 				enemy->activityStatus = EnemyActivity::PURSUIT;
+				enemy->wounds.push_back(new Blood(enemy->GetCharacterPos(), bullet->bodyShape.getPosition()));
 				interface.CreateAnnouncement(bullet->bodyShape.getPosition(), dmgStr);
 				bullet->isLive = false;
 			}

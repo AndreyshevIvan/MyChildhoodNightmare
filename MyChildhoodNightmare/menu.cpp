@@ -1,10 +1,6 @@
 #include "menu.h"
 #include <iostream>
 
-const float ICON_HORIZONTAL_MARGIN = 35;
-const float MENU_FIRST_BUTTON_MARGIN = 40;
-const float MENU_BUTTONS_MARGIN = 60;
-
 Menu::Menu(float width, float height)
 	:resolution(width, height)
 {
@@ -70,7 +66,7 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
 	{
 		gameName.setPosition(
 			windowCenter.x,
-			windowCenter.y - resolution.y / 2.0f + GAMENAME_POS_Y
+			windowCenter.y - resolution.y / 2.0f + GAMENAME_VERTICAL_MARGIN
 		);
 	}
 
@@ -128,7 +124,7 @@ void Menu::Select(CurrentMenu const& selectMenu, Difficult const& selectButton)
 		}
 		else
 		{
-			allMenues[selectMenuId][it].setFillColor(ITEM_COLOR);
+			allMenues[selectMenuId][it].setFillColor(BUTTON_COLOR);
 		}
 	}
 }
