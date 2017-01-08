@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="200" height="50" tilewidth="32" tileheight="32" nextobjectid="186">
- <tileset firstgid="1" name="tileset_2" tilewidth="32" tileheight="32" tilecount="400" columns="20">
+ <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="tileset.png" width="640" height="640"/>
  </tileset>
  <layer name="wrapper" width="200" height="50">
@@ -40134,7 +40134,7 @@
   <object id="167" name="enemy_shadow_spawn" x="502.333" y="1096.67" width="46" height="44"/>
   <object id="168" name="enemy_shadow_spawn" x="4779.67" y="1112.67" width="46" height="44"/>
   <object id="169" name="enemy_shadow_spawn" x="5566.33" y="1102" width="46" height="44"/>
-  <object id="170" name="enemy_bird_spawn" x="2321" y="1064.67" width="46" height="44"/>
+  <object id="170" name="enemy_bird_spawn" x="913" y="188.67" width="46" height="44"/>
   <object id="171" name="enemy_bird_spawn" x="4430.33" y="787.333" width="46" height="44"/>
   <object id="172" name="enemy_spider_spawn" x="5636.67" y="773" width="65.3333" height="67.3333"/>
   <object id="173" name="enemy_spider_spawn" x="1580.67" y="1315.67" width="65.3333" height="67.3333"/>

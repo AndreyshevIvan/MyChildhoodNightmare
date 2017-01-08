@@ -419,7 +419,7 @@ void Game::UpdatePlayer()
 	player.UpdatePos(elapsedTime, blocks);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
-	player.UpdateTexture();
+	player.UpdateTexture(elapsedTime);
 
 	for (auto blood : player.wounds)
 	{
@@ -562,7 +562,7 @@ void Game::EnemyBulletsPlayerCollides()
 		{
 			if (player.injuredColdown >= INJURED_DURATION)
 			{
-				PlayWithoutDouble(playerHurtGrunt);
+				PlayWithoutDouble(player.playerHurtGrunt);
 				player.health -= bullet->demage;
 				player.wounds.push_back(new Blood(player.GetCharacterPos(), bullet->bodyShape.getPosition()));
 				bullet->isLive = false;
@@ -579,7 +579,7 @@ void Game::PlayerLavaCollides()
 		{
 			if (player.injuredColdown >= INJURED_DURATION)
 			{
-				PlayWithoutDouble(playerHurtGrunt);
+				PlayWithoutDouble(player.playerHurtGrunt);
 				player.health -= LAVA_DEMAGE;
 				player.injuredColdown = 0;
 			}
@@ -640,6 +640,7 @@ void Game::EnemyPlayerCollides()
 		{
 			if (player.injuredColdown >= INJURED_DURATION)
 			{
+				PlayWithoutDouble(player.playerHurtGrunt);
 				CollideWithEnemySound((int)enemy->enemyType);
 				player.health -= enemy->touchDemage;
 				player.injuredColdown = 0;

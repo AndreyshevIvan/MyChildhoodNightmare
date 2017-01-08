@@ -72,7 +72,6 @@ void Character::UpdateGravity(float elapsedTime, std::vector<TmxObject> const& b
 		if (jumpSpeed > CRITICAL_JUMP_SPEED)
 		{
 			health -= static_cast<int>(jumpSpeed / SPEED_PER_DEMAGE);
-			cout << "DEAMGE: " << static_cast<int>(jumpSpeed / SPEED_PER_DEMAGE) << std::endl;
 		}
 
 		if (movementY > 0)
@@ -128,8 +127,9 @@ void Character::UpdateOrientation()
 	}
 }
 
-void Character::UpdateTexture()
+void Character::UpdateTexture(float elapsedTime)
 {
+	(void)elapsedTime;
 	auto bodyWidth = static_cast<int>(bodyShape.getSize().x);
 	auto bodyHeight = static_cast<int>(bodyShape.getSize().y);
 

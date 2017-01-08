@@ -44,7 +44,6 @@ struct GameSound
 
 	sf::Music menuButtonSwitchSound;
 
-	sf::Music playerHurtGrunt;
 	sf::Music shadowCollideSound;
 	sf::Music ghostCollideSound;
 
@@ -60,6 +59,7 @@ struct GameSound
 
 struct CharacterSound
 {
+	sf::Music playerHurtGrunt;
 	sf::Music playerDeath;
 
 	sf::Music weaponPistol;

@@ -61,10 +61,10 @@ void Enemy::CreateShadow(int demageIncrease)
 		UpdateShadowActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
 		(void)player;
-		(void)blocks;
+		ShadowWalk(elapsedTime, blocks);
 	};
 
 	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
@@ -88,9 +88,10 @@ void Enemy::CreateClown(int demageIncrease)
 		UpdateClownActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)blocks;
 		(void)player;
+		(void)elapsedTime;
 		ClownShoot(bullets);
 	};
 
@@ -115,9 +116,10 @@ void Enemy::CreateGhost(int demageIncrease)
 		UpdateGhostActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
 		(void)blocks;
+		(void)elapsedTime;
 		GhostPursuite(player);
 	};
 
@@ -143,8 +145,9 @@ void Enemy::CreateSpider(int demageIncrease)
 		UpdateSpiderActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
+		(void)elapsedTime;
 		SpiderPursuite(player, blocks);
 	};
 
@@ -176,11 +179,12 @@ void Enemy::CreateBoss(int demageIncrease)
 		UpdateBossActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks) {
+	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
 		BossPursuite(player, bullets);
 		(void)bullets;
 		(void)player;
 		(void)blocks;
+		(void)elapsedTime;
 	};
 
 	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
@@ -200,7 +204,7 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Tmx
 	}
 	else
 	{
-		Pursuit(player, bullets, blocks);
+		Pursuit(player, bullets, blocks, elapsedTime);
 	}
 
 	UpdateOrientation();
@@ -220,7 +224,7 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<Tmx
 
 	if (!(enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE))
 	{
-		UpdateTexture();
+		UpdateTexture(elapsedTime);
 	}
 
 	UpdateHands();
@@ -230,7 +234,6 @@ void Enemy::UpdateShadowActivityStatus(Character const& player)
 {
 	moveSpeed = SHADOW_MOVE_SPEED;
 	runStatus = currentRunStatus;
-	bodyShape.setFillColor(sf::Color(255, 255, 255, 255));
 
 	this->activityStatus = EnemyActivity::IDLE;
 
@@ -250,7 +253,7 @@ void Enemy::UpdateShadowActivityStatus(Character const& player)
 	if (targetArea.intersects(player.collisionRect))
 	{
 		moveSpeed = SHADOW_PURSUITE_MOVE_SPEED;
-		bodyShape.setFillColor(sf::Color::Red);
+		activityStatus = EnemyActivity::PURSUIT;
 	}
 }
 
@@ -483,4 +486,40 @@ void Enemy::UpdateHands()
 
 	handRightMiddle = sf::FloatRect({ RIGHT_HAND_POS_X, MIDDLE_HAND_POS_Y }, HAND_SIZE);
 	handRightBottom = sf::FloatRect({ RIGHT_HAND_POS_X, BOTTOM_HAND_POS_Y }, HAND_SIZE);
+}
+
+void Enemy::UpdateTexture(float elapsedTime)
+{
+	int frameWidth = static_cast<int>(bodyShape.getSize().x);
+	int frameHeight = static_cast<int>(bodyShape.getSize().y);
+	sf::Vector2i frameSize(frameWidth, frameHeight);
+	bodyShape.setFillColor(sf::Color(255, 255, 255, 255));
+	
+	int frameColl = 0;
+	int frameRow = 0;
+
+	animateTime += elapsedTime;
+	int frame = static_cast<int>(animateTime / TIME_TO_FRAME);
+
+	if (orientationStatus == OrientationStatus::LEFT)
+	{
+		frameColl++;
+	}
+
+	if (activityStatus == EnemyActivity::PURSUIT)
+	{
+		bodyShape.setFillColor(sf::Color(255, 170, 170, 255));
+		frameRow++;
+	}
+
+	if (frame == FRAMES_COUNT - 1)
+	{
+		animateTime = 0;
+	}
+
+	bodyShape.setTextureRect(
+		sf::IntRect({
+		(frameColl * FRAMES_COUNT + frame) * frameWidth, 
+		frameRow * frameHeight }, frameSize)
+		);
 }

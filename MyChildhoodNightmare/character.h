@@ -18,6 +18,9 @@ const float BLOOD_MARGIN_Y = 6;
 const int BLOOD_FRAMES = 10;
 const float BLOOD_DURATION = 0.25f;
 
+const float TIME_TO_FRAME = 0.08f;
+const int FRAMES_COUNT = 6;
+
 enum ExistenceStatus
 {
 	LIVE,
@@ -82,11 +85,12 @@ struct Character : CharacterSound
 	int health;
 	int maxHealth;
 	float shootColdown = 0;
-	float currentFrame = 0;
 	float shootRange = MIN_SHOOT_RANGE;
 	sf::Music* deathSound = nullptr;
 	void Spawn(sf::Vector2f const& pos);
 	std::vector<Blood*> wounds;
+
+	float animateTime = 0;
 
 	sf::Vector2f GetCharacterPos() const;
 	
@@ -99,7 +103,7 @@ struct Character : CharacterSound
 	void UpdateHealthStatus();
 	void UpdateOrientation();
 	
-	void UpdateTexture();
+	virtual void UpdateTexture(float elapsedTime);
 
 	virtual void DrawCharacter(sf::RenderWindow& window);
 };

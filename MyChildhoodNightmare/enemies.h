@@ -22,11 +22,11 @@ const float CLOWN_TARGET_RANGE = 500;
 const sf::Vector2f CLOWN_TARGET_AREA_SIZE = { CLOWN_TARGET_RANGE * 2.0f , CLOWN_SIZE.y / 2.0f };
 const float CLOWN_SHOOT_RANGE = CLOWN_TARGET_RANGE;
 const int CLOWN_BULLET_DEMAGE = 3;
-const float CLOWN_SHOOT_COLDOWN = 0.2f;
+const float CLOWN_SHOOT_COLDOWN = 0.24f;
 
 const sf::Vector2f GHOST_SIZE = { 80, 70 };
 const int GHOST_START_HEALTH = 80;
-const float GHOST_TARGET_RANGE = 600;
+const float GHOST_TARGET_RANGE = 300;
 const float GHOST_MIN_TARGET_RANGE = 1;
 const float GHOST_MOVE_SPEED = 110;
 const int GHOST_TOUCH_DEMAGE = 6;
@@ -101,10 +101,11 @@ struct Enemy : Character
 
 	std::function<void(Character const& player)> UpdateActivityStatus;
 	std::function<void(float elapsedTime, std::vector<TmxObject> const& blocks)> Idle;
-	std::function<void(Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks)> Pursuit;
+	std::function<void(Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime)> Pursuit;
 
 	void UpdateAI(float elapsedTime, Character const& player, std::vector<TmxObject> const& blocks, std::vector<Bullet*>& bullets);
 	void UpdateHands();
+	void UpdateTexture(float elapsedTime)override;
 
 	void UpdateGhostActivityStatus(Character const& player);
 	void UpdateShadowActivityStatus(Character const& player);
