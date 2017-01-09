@@ -3,17 +3,17 @@
 #include "game.h"
 
 static const std::string GAME_NAME = "My Childhood Nightmare";
+static const std::string SETTINGS_NAME = "Settings";
 
-static const std::vector<sf::Vector2f> RESOLUTIONS = {
-	sf::Vector2f(1024, 768),
-	sf::Vector2f(1280, 800),
-	sf::Vector2f(1366, 768),
-	sf::Vector2f(1280, 1024),
-	sf::Vector2f(1600, 900),
-	sf::Vector2f(1920, 1080)
+static const std::vector<sf::Vector2u> RESOLUTIONS = {
+	sf::Vector2u(1024, 576),
+	sf::Vector2u(1280, 720),
+	sf::Vector2u(1366, 768),
+	sf::Vector2u(1920, 1080)
 };
+static const sf::Vector2u START_RESOLUTION = RESOLUTIONS[0];
 
-sf::Vector2f ChoiseResolution();
+
 
 void InitScenes(Game& game);
 void InitGamePlayScene(Game& game);
@@ -22,6 +22,7 @@ void InitGameOverScene(Game& game);
 void InitPreviewScene(Game& game);
 void InitWinScene(Game& game);
 
+bool EnterSettingsLoop(sf::RenderWindow& window, sf::Vector2u& newResolution);
 void EnterGameLoop(sf::RenderWindow& window, Game& game);
 
 void HandleEvents(sf::RenderWindow& window, Game& game);
@@ -30,42 +31,87 @@ void Render(sf::RenderWindow& window, Game& game);
 
 int main()
 {
-	const sf::Vector2f startResolution = ChoiseResolution();
+	sf::VideoMode settingsVideoMode;
+	settingsVideoMode.width = START_RESOLUTION.x;
+	settingsVideoMode.height = START_RESOLUTION.y;
+	sf::RenderWindow settingsWindow(settingsVideoMode, SETTINGS_NAME, sf::Style::Titlebar | sf::Style::Close);
 
-	sf::VideoMode videoMode;
-	videoMode.width = static_cast<unsigned>(startResolution.x);
-	videoMode.height = static_cast<unsigned>(startResolution.y);
-	sf::RenderWindow window(videoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
-	srand(static_cast<unsigned>(time(NULL)));
+	sf::Vector2u gameResolution;
+	if (EnterSettingsLoop(settingsWindow, gameResolution))
+	{
+		sf::VideoMode gameVideoMode;
+		gameVideoMode.width = static_cast<unsigned>(CAMERA_AREA_SIZE.x);
+		gameVideoMode.height = static_cast<unsigned>(CAMERA_AREA_SIZE.y);
+		sf::RenderWindow gameWindow(gameVideoMode, GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
+		gameWindow.setSize(gameResolution);
 
-	Game game(startResolution.x, startResolution.y);
+		Game game(static_cast<float>(gameResolution.x), static_cast<float>(gameResolution.y));
 
-	InitScenes(game);
-	EnterGameLoop(window, game);
+		InitScenes(game);
+		EnterGameLoop(gameWindow, game);
+	}
 
 	return 0;
 }
 
-sf::Vector2f ChoiseResolution()
+bool EnterSettingsLoop(sf::RenderWindow& window, sf::Vector2u& newResolution)
 {
-	size_t resolutionID = 0;
+	sf::Clock clock;
+	float buttonColdown = 0;
 
-	std::cout << "Avalable resolutions:" << std::endl;
+	sf::Vector2f windowSize = static_cast<sf::Vector2f>(window.getSize());
+	sf::Vector2f windowCenter = windowSize * 0.5f;
+	
+	Menu settingsMenu(windowSize.x, windowSize.y);
+	settingsMenu.SetMenu(MenuType::RESIZE_SETTINGS, windowCenter);
+	size_t button = 0;
 
-	for (size_t resolutionNum = 0; resolutionNum < RESOLUTIONS.size(); resolutionNum++)
+	while (window.isOpen())
 	{
-		std::cout << "Resolution with number " << resolutionNum + 1 << " is "
-			<< RESOLUTIONS[resolutionNum].x << "x" << RESOLUTIONS[resolutionNum].y << std::endl;
+		bool IsButtonColdownEnd = buttonColdown > BUTTONS_COLDOWN;
+		const float elapsedTime = clock.getElapsedTime().asSeconds();
+		clock.restart();
+
+		sf::Event event;
+		while (window.pollEvent(event))
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+				return false;
+			}
+
+		if (!IsButtonColdownEnd)
+			buttonColdown += elapsedTime;
+		else
+		{
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+			{
+				newResolution = RESOLUTIONS[button];
+				break;
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			{
+				button = (button == 0) ? (RESOLUTIONS.size() - 1) : (button - 1);
+				settingsMenu.SwitchButtonUp();
+				buttonColdown = 0;
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			{
+				button = (button == RESOLUTIONS.size() - 1) ? 0 : (button + 1);
+				settingsMenu.SwitchButtonDown();
+				buttonColdown = 0;
+			}
+		}
+
+		settingsMenu.Update(windowCenter);
+
+		window.clear();
+		settingsMenu.Draw(window);
+		window.display();
 	}
 
-	std::cout << "Enter a suitable screen resolution number: ";
-
-	while (resolutionID <= 0 || resolutionID > RESOLUTIONS.size())
-	{
-		std::cin >> resolutionID;
-	}
-
-	return RESOLUTIONS[resolutionID - 1];
+	window.close();
+	return true;
 }
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game)
@@ -162,7 +208,7 @@ void InitMenuScene(Game& game)
 		game.menu.Update(game.camera.getCenter());
 	};
 	game.menuScene.onDraw = [&](sf::RenderWindow& window) {
-		if (game.menu.currentMenu == CurrentMenu::PAUSE)
+		if (game.menu.currentMenu == MenuType::PAUSE)
 		{
 			game.gameplayScene.onDraw(window);
 		}
@@ -214,7 +260,7 @@ void InitWinScene(Game& game)
 		(void)window;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
 		{
-			game.menu.SetMenu(CurrentMenu::START, game.camera.getCenter());
+			game.menu.SetMenu(MenuType::START, game.camera.getCenter());
 			game.currentScene = &game.menuScene;
 		}
 	};

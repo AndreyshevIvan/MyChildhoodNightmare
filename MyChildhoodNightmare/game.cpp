@@ -35,17 +35,19 @@ Game::Game(float width, float height)
 	,menu(width, height)
 	,audio()
 {
+	srand(static_cast<unsigned>(time(NULL)));
+
 	level_0.LoadFromFile("resources/previewTileset.tmx");
 	level_1.LoadFromFile("resources/secondTileset.tmx");
 	level_2.LoadFromFile("resources/firstTileset.tmx");
 
 	player.InitPlayer();
 
-	camera.reset(sf::FloatRect(0, 0, resolution.x, resolution.y));
+	camera.reset(sf::FloatRect({ 0, 0 }, CAMERA_AREA_SIZE));
 
 	difficult = Difficult::EASY;
-	menu.Select(CurrentMenu::DIFFICULT, difficult);
-	menu.SetMenu(CurrentMenu::START, camera.getCenter());
+	menu.Select(MenuType::DIFFICULT, difficult);
+	menu.SetMenu(MenuType::START, camera.getCenter());
 
 	changeLevelMap = {
 		{ &level_0, &level_1 },
@@ -267,7 +269,7 @@ void Game::ControlPlayer()
 {
 	if (Keyboard::isKeyPressed(Keyboard::Escape) && menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
-		menu.SetMenu(CurrentMenu::PAUSE, camera.getCenter());
+		menu.SetMenu(MenuType::PAUSE, camera.getCenter());
 		currentScene = &menuScene;
 	}
 	else if (player.existStatus != ExistenceStatus::DEAD)
@@ -302,7 +304,7 @@ void Game::ControlMenu(sf::RenderWindow& window)
 {
 	if (Keyboard::isKeyPressed(Keyboard::Escape) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN &&
-		menu.currentMenu == CurrentMenu::PAUSE)
+		menu.currentMenu == MenuType::PAUSE)
 	{
 		menu.buttonsColdown = 0;
 		currentScene = &gameplayScene;
@@ -331,14 +333,14 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 {
 	switch (menu.currentMenu)
 	{
-	case CurrentMenu::START:
+	case MenuType::START:
 		switch (menu.currentButton)
 		{
 		case START_MENU_START:
 			StartGame();
 			break;
 		case START_MENU_OPTIONS:
-			menu.SetMenu(CurrentMenu::DIFFICULT, camera.getCenter());
+			menu.SetMenu(MenuType::DIFFICULT, camera.getCenter());
 			break;
 		case START_MENU_CLOSE:
 			window.close();
@@ -348,7 +350,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 		}
 		menu.currentButton = 0;
 		break;
-	case CurrentMenu::DIFFICULT:
+	case MenuType::DIFFICULT:
 		switch (menu.currentButton)
 		{
 		case OPTIONS_MENU_EASY:
@@ -361,15 +363,15 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 			difficult = Difficult::HARD;
 			break;
 		case OPTIONS_MENU_BACK:
-			menu.SetMenu(CurrentMenu::START, camera.getCenter());
+			menu.SetMenu(MenuType::START, camera.getCenter());
 			break;
 		default:
 			break;
 		}
-		menu.Select(CurrentMenu::DIFFICULT, difficult);
+		menu.Select(MenuType::DIFFICULT, difficult);
 		break;
 
-	case CurrentMenu::PAUSE:
+	case MenuType::PAUSE:
 		switch (menu.currentButton)
 		{
 		case PAUSE_MENU_RESUME:
@@ -379,7 +381,7 @@ void Game::ControlMenuLogic(sf::RenderWindow& window)
 			Restart();
 			break;
 		case PAUSE_MENU_EXIT:
-			menu.SetMenu(CurrentMenu::START, camera.getCenter());
+			menu.SetMenu(MenuType::START, camera.getCenter());
 			break;
 		default:
 			break;
@@ -399,7 +401,7 @@ void Game::ControlGameOver(sf::RenderWindow& window)
 	}
 	if (sf::Keyboard::isKeyPressed(Keyboard::Escape))
 	{
-		menu.SetMenu(CurrentMenu::START, camera.getCenter());
+		menu.SetMenu(MenuType::START, camera.getCenter());
 		currentScene = &menuScene;
 	}
 }
@@ -666,7 +668,7 @@ void Game::UpdateColdowns()
 
 void Game::UpdateCamera(sf::RenderWindow& window)
 {
-	sf::Vector2f halfWindow = { resolution * 0.5f };
+	sf::Vector2f halfWindow = { CAMERA_AREA_SIZE * 0.5f };
 	sf::Vector2f cameraCenter = {
 		player.GetCharacterPos().x,
 		player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN

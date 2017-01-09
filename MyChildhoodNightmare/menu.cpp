@@ -16,7 +16,7 @@ Menu::Menu(float width, float height)
 
 	menuIcon.setSize(ICON_SIZE);
 	menuIcon.setTexture(&iconTexture);
-	menuIcon.setOrigin(ICON_SIZE.x / 2.0f, ICON_SIZE.y / 2.0f);
+	menuIcon.setOrigin(ICON_SIZE * 0.5f);
 
 	mainMenuButtons = {
 		sf::Text("Start", buttonFont, FONT_SIZE),
@@ -38,7 +38,7 @@ Menu::Menu(float width, float height)
 	};
 
 	resizeMenuButtons = {
-		sf::Text("854 x 480", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("1024 x 576", buttonFont, FONT_SIZE_MEDIUM),
 		sf::Text("1280 x 720", buttonFont, FONT_SIZE_MEDIUM),
 		sf::Text("1366 x 768", buttonFont, FONT_SIZE_MEDIUM),
 		sf::Text("1920 x 1080", buttonFont, FONT_SIZE_MEDIUM)
@@ -55,21 +55,19 @@ Menu::Menu(float width, float height)
 	{
 		for (auto button = menu->begin(); button != menu->end(); button++)
 		{
-			button->setOrigin(
-				button->getGlobalBounds().width / 2.0f,
-				button->getGlobalBounds().height / 2.0f
-			);
+			sf::Vector2f origin(button->getGlobalBounds().width, button->getGlobalBounds().height);
+			button->setOrigin(origin * 0.5f);
 		}
 	}
 }
 
-void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
+void Menu::SetMenu(MenuType const& menu, sf::Vector2f const& center)
 {
 	currentMenu = menu;
 	currentButton = 0;
 	buttonsColdown = 0;
 
-	if (menu != CurrentMenu::PAUSE)
+	if (menu != MenuType::PAUSE)
 	{
 		gameName.setPosition(
 			center.x,
@@ -86,23 +84,26 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
 		margin += MENU_BUTTONS_MARGIN;
 	}
 
-	if (currentMenu == CurrentMenu::PAUSE)
+	if (menu == MenuType::PAUSE)
 	{
 		menuWrapper.setSize(static_cast<sf::Vector2f>(PAUSE_MENU_SIZE));
 		menuWrapper.setTexture(&pauseWrapperTexture);
 		menuWrapper.setTextureRect(sf::IntRect({0, 0}, PAUSE_MENU_SIZE));
 	}
-	else if (currentMenu == CurrentMenu::START || currentMenu == CurrentMenu::DIFFICULT)
+	else if (menu == MenuType::START || menu == MenuType::DIFFICULT)
 	{
 		menuWrapper.setSize(resolution);
 		menuWrapper.setTexture(&mainWrapperTexture);
 		menuWrapper.setTextureRect(sf::IntRect({ 0, 0 }, MAIN_MENU_WRAPPER_SIZE));
 	}
+	else if (menu == MenuType::RESIZE_SETTINGS)
+	{
+		menuWrapper.setSize(resolution);
+		menuWrapper.setFillColor(RESIZE_SETTINGS_BG_COLOR);
+	}
 
-	menuWrapper.setOrigin(
-		menuWrapper.getGlobalBounds().width / 2.0f,
-		menuWrapper.getGlobalBounds().height / 2.0f
-	);
+	sf::Vector2f origin(menuWrapper.getGlobalBounds().width, menuWrapper.getGlobalBounds().height);
+	menuWrapper.setOrigin(origin * 0.5f);
 	menuWrapper.setPosition(center);
 }
 
@@ -118,7 +119,7 @@ void Menu::Update(sf::Vector2f const& center)
 	menuIcon.setPosition({ center.x - currIconMargin , menuButtonCenterY });
 }
 
-void Menu::Select(CurrentMenu const& selectMenu, Difficult const& selectButton)
+void Menu::Select(MenuType const& selectMenu, Difficult const& selectButton)
 {
 	size_t selectMenuId = static_cast<size_t>(selectMenu);
 	size_t selectButtonId = static_cast<size_t>(selectButton);
@@ -142,14 +143,7 @@ void Menu::SwitchButtonUp()
 	auto maxItem = currMenu.size() - 1;
 
 	buttonsColdown = 0;
-	if (currentButton == 0)
-	{
-		currentButton = maxItem;
-	}
-	else
-	{
-		currentButton = currentButton - 1;
-	}
+	currentButton = (currentButton == 0) ? maxItem : currentButton - 1;
 }
 
 void Menu::SwitchButtonDown()
@@ -158,14 +152,7 @@ void Menu::SwitchButtonDown()
 	auto maxItem = currMenu.size() - 1;
 
 	buttonsColdown = 0;
-	if (currentButton == maxItem)
-	{
-		currentButton = 0;
-	}
-	else
-	{
-		currentButton = currentButton + 1;
-	}
+	currentButton = (currentButton == maxItem) ? 0 : currentButton + 1;
 }
 
 
@@ -173,7 +160,7 @@ void Menu::Draw(sf::RenderWindow& window)
 {
 	window.draw(menuWrapper);
 
-	if (currentMenu != CurrentMenu::PAUSE)
+	if (currentMenu != MenuType::PAUSE)
 	{
 		window.draw(gameName);
 	}

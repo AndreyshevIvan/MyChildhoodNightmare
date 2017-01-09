@@ -8,6 +8,7 @@
 #include "sound.h"
 
 const float CAMERA_VERTICAL_MARGIN = 80;
+const sf::Vector2f CAMERA_AREA_SIZE = {1280, 720};
 const sf::Color BACKGROUND_COLOR = sf::Color(20, 12, 28);
 
 const int LEVEL_0_BOXES_COUNT = 0;
@@ -59,8 +60,8 @@ struct Game
 
 	Difficult difficult;
 
-	GameScene menuScene;
 	GameScene gameplayScene;
+	GameScene menuScene;
 	GameScene pauseScene;
 	GameScene gameOverScene;
 	GameScene previewScene;

@@ -5,6 +5,7 @@ const unsigned FONT_SIZE = 70;
 const unsigned FONT_SIZE_MEDIUM = 55;
 const unsigned FONT_SIZE_MINI = 40;
 
+const sf::Color RESIZE_SETTINGS_BG_COLOR = sf::Color(14, 4, 21);
 const sf::Color UNSELECTED_ITEM_COLOR = sf::Color(30, 30, 30);
 const sf::Color BUTTON_COLOR = sf::Color(30, 30, 30);
 
@@ -20,7 +21,7 @@ const float GAMENAME_VERTICAL_MARGIN = 240;
 
 const float BUTTONS_COLDOWN = 0.18f;
 
-enum struct CurrentMenu
+enum struct MenuType
 {
 	START = 0,
 	DIFFICULT,
@@ -43,7 +44,7 @@ struct Menu
 
 	sf::Font buttonFont;
 
-	CurrentMenu currentMenu;
+	MenuType currentMenu;
 	size_t currentButton;
 
 	sf::Texture gameNameTexture;
@@ -53,7 +54,6 @@ struct Menu
 	sf::RectangleShape gameName;
 	sf::RectangleShape menuWrapper;
 	sf::RectangleShape menuIcon;
-	sf::Text startButton;
 
 	std::vector<std::vector<sf::Text>> allMenues;
 	std::vector<sf::Text> mainMenuButtons;
@@ -64,10 +64,10 @@ struct Menu
 	float buttonsColdown;
 	sf::Vector2f windowCenter;
 
-	void SetMenu(CurrentMenu const& menu, sf::Vector2f const& center);
+	void SetMenu(MenuType const& menu, sf::Vector2f const& center);
 
 	void Update(sf::Vector2f const& center);
-	void Select(CurrentMenu const& selectMenu, Difficult const& selectButton);
+	void Select(MenuType const& selectMenu, Difficult const& selectButton);
 	void SwitchButtonUp();
 	void SwitchButtonDown();
 
