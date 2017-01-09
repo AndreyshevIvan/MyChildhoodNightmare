@@ -1,23 +1,20 @@
 #include "sound.h"
 
-bool GameSound::InitGameSound()
+GameSound::GameSound()
 {
-	if (!menuSound.openFromFile("resources/sound/main_menu.ogg") ||
-		!level_0_ost.openFromFile("resources/sound/level_0_ost.ogg") ||
-		!level_1_ost.openFromFile("resources/sound/level_1_ost.ogg") ||
-		!level_2_ost.openFromFile("resources/sound/level_2_ost.ogg") ||
-		!shadowCollideSound.openFromFile("resources/sound/shadow_collide.ogg") ||
-		!ghostCollideSound.openFromFile("resources/sound/ghost_collide.wav") ||
-		!winSound.openFromFile("resources/sound/win.ogg") ||
-		!menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch.ogg") ||
-		!ammoBonusSound.openFromFile("resources/sound/bonus_weapon.ogg") ||
-		!healthBonusSound.openFromFile("resources/sound/bonus_health.ogg") ||
-		!boxBonusSound.openFromFile("resources/sound/bonus_box.wav") ||
-		!randomBonusSound.openFromFile("resources/sound/bonus_random.ogg") ||
-		!gameOverSound.openFromFile("resources/sound/game_over.ogg"))
-	{
-		return false;
-	}
+	menuSound.openFromFile("resources/sound/main_menu.ogg");
+	level_0_ost.openFromFile("resources/sound/level_0_ost.ogg");
+	level_1_ost.openFromFile("resources/sound/level_1_ost.ogg");
+	level_2_ost.openFromFile("resources/sound/level_2_ost.ogg");
+	shadowCollideSound.openFromFile("resources/sound/shadow_collide.ogg");
+	ghostCollideSound.openFromFile("resources/sound/ghost_collide.wav");
+	winSound.openFromFile("resources/sound/win.ogg");
+	menuButtonSwitchSound.openFromFile("resources/sound/menu_button_switch.ogg");
+	ammoBonusSound.openFromFile("resources/sound/bonus_weapon.ogg");
+	healthBonusSound.openFromFile("resources/sound/bonus_health.ogg");
+	boxBonusSound.openFromFile("resources/sound/bonus_box.wav");
+	randomBonusSound.openFromFile("resources/sound/bonus_random.ogg");
+	gameOverSound.openFromFile("resources/sound/game_over.ogg");
 
 	menuSound.setVolume(MAIN_MENU_VOLUME);
 	level_0_ost.setVolume(GAMEPLAY_VOLUME);
@@ -34,11 +31,9 @@ bool GameSound::InitGameSound()
 	healthBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
 	boxBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
 	randomBonusSound.setVolume(ADD_AMMO_BONUS_VOLUME);
-
-	return true;
 }
 
-void GameSound::CollideWithEnemySound(int type)
+void GameSound::CollideWithEnemy(int type)
 {
 	switch (type)
 	{
@@ -59,7 +54,7 @@ void GameSound::CollideWithEnemySound(int type)
 	}
 }
 
-void GameSound::CollideWithBonusSound(int type)
+void GameSound::CollideWithBonus(int type)
 {
 	switch (type)
 	{

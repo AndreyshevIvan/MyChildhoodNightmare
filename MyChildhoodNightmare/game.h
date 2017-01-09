@@ -21,48 +21,42 @@ struct GameScene
 	std::function<void(sf::RenderWindow& window)> onDraw;
 };
 
-struct Game : GameSound
+struct Game
 {
 	Game(float width, float height);
 
 	sf::Vector2f resolution;
 
 	sf::View camera;
+	VisualEffects visualEffects;
+	GameSound audio;
+	Menu menu;
+
 	sf::Clock clock;
 	float elapsedTime;
-	float buttonColdown;
 	float gameOverColdown = 0;
 
 	std::map<GameScene*, sf::Music*> sceneMusicMap;
 	std::map<TmxLevel*, sf::Music*> levelMusicMap;
 
 	Player player;
-
 	std::vector<Enemy*> enemies;
 	std::vector<Bullet*> enemyBullets;
 	std::vector<Bonus*> bonuses;
 
 	std::vector<TmxObject> blocks;
 	std::vector<TmxObject> lava;
-
 	sf::Vector2f mapSize;
+
 	TmxLevel* currentLevel;
 	TmxLevel level_0;
 	TmxLevel level_1;
 	TmxLevel level_2;
 	TmxLevel level_3;
 	std::map<TmxLevel*, TmxLevel*> changeLevelMap;
-
-	sf::RectangleShape currentBackground;
-	sf::RectangleShape background_level_0;
-	sf::Texture backgroundTexture_level_0;
-	sf::RectangleShape background_level_1;
-	sf::Texture backgroundTexture_level_1;
-
 	std::map<TmxLevel*, int> boxesCountMap;
+	std::map<TmxLevel*, BackgroundType> levelBackgroundMap;
 
-	Menu menu;
-	PlayerInterface interface;
 	Difficult difficult;
 
 	GameScene menuScene;
@@ -79,7 +73,7 @@ struct Game : GameSound
 	void StartGame();
 	void Restart();
 	void NextLevel(TmxLevel& level);
-	void GetMapData();
+	void MapDataAdjustment();
 
 	void DifficultAdjustment();
 
@@ -105,7 +99,6 @@ struct Game : GameSound
 	void UpdateBullets();
 	void UpdateEnemies();
 	void UpdateInterface();
-	void UpdateBackground();
 	void UpdateBonuses();
 	void UpdateOST();
 

@@ -13,7 +13,7 @@ enum
 	INFINITY_AMMO = INT_MAX,
 };
 
-PlayerInterface::PlayerInterface(float width, float height)
+VisualEffects::VisualEffects(float width, float height)
 	:resolution(width, height)
 {
 	font.loadFromFile("resources/nightmarealley.ttf");
@@ -30,6 +30,8 @@ PlayerInterface::PlayerInterface(float width, float height)
 	boxTexture.loadFromFile("resources/box.png");
 	bossBarTexture.loadFromFile("resources/bossBar.png");
 	winTexture.loadFromFile("resources/win.png");
+	bgTexture_level_0.loadFromFile("resources/background_level_preview.png");
+	bgTexture_level_1.loadFromFile("resources/background_level_2.png");
 
 	playerHealth = Text("", font, PLAYER_HP_FONT_SIZE);
 	playerAmmo = Text("", font, PLAYER_AMMO_FONT_SIZE);
@@ -62,11 +64,22 @@ PlayerInterface::PlayerInterface(float width, float height)
 	blackFilter.setTexture(&blackFilterTexture);
 	blackFilter.setOrigin(resolution.x / 2.0f, resolution.y / 2.0f);
 
+	const sf::Vector2f BG_LVL_0_SISE = GetTextureSize(bgTexture_level_0);
+	const sf::Vector2f BG_LVL_1_SISE = GetTextureSize(bgTexture_level_1);
+
+	bg_level_1.setTexture(&bgTexture_level_1);
+	bg_level_1.setSize(BG_LVL_1_SISE);
+	bg_level_1.setOrigin(BG_LVL_1_SISE.x / 2.0f, BG_LVL_1_SISE.y / 2.0f);
+
+	bg_level_0.setTexture(&bgTexture_level_0);
+	bg_level_0.setSize(BG_LVL_0_SISE);
+	bg_level_0.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
+
 	previewImage.setSize(PREVIEW_IMAGE_SIZE);
 	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
 }
 
-void PlayerInterface::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level)
+void VisualEffects::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level)
 {
 	const int maxBoxes = boxesMap.find(level)->second;
 	boxes.clear();
@@ -82,7 +95,7 @@ void PlayerInterface::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxL
 	}
 }
 
-void PlayerInterface::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
+void VisualEffects::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
 {
 	auto marginX = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
 	auto marginY = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
@@ -99,7 +112,7 @@ void PlayerInterface::CreateAnnouncement(sf::Vector2f const& position, std::stri
 	demageAnnouncementDuration.push_back(0);
 }
 
-void PlayerInterface::CreateRemark(RemarkType const& type)
+void VisualEffects::CreateRemark(RemarkType const& type)
 {
 	if (remark == nullptr)
 	{
@@ -115,7 +128,37 @@ void PlayerInterface::CreateRemark(RemarkType const& type)
 	}
 }
 
-void PlayerInterface::UpdateRemark(float elapsedTime, sf::Vector2f const& position)
+void VisualEffects::SetBackground(BackgroundType type)
+{
+	switch (type)
+	{
+	case BackgroundType::SKY:
+		currentBackground = bg_level_0;
+		break;
+	case BackgroundType::CAVE:
+		currentBackground = bg_level_1;
+		break;
+	default:
+		break;
+	}
+}
+
+void VisualEffects::UpdateBackground(sf::Vector2f const& mapSize, sf::Vector2f const& center)
+{
+	auto backgroundSize = currentBackground.getSize();
+
+	float bgPosX_Percent = (center.x - resolution.x / 2.0f) / (mapSize.x - resolution.x);
+	float bgPosY_Percent = (center.y - resolution.y / 2.0f) / (mapSize.y - resolution.y);
+	sf::Vector2f bgPos_Percent(bgPosX_Percent, bgPosY_Percent);
+
+	sf::Vector2f bgAllowedSize(mapSize.x - backgroundSize.x, mapSize.y - backgroundSize.y);
+
+	sf::Vector2f bgPos_Pixel = backgroundSize * 0.5f + sf::Vector2f(bgPos_Percent.x * bgAllowedSize.x, bgPos_Percent.y * bgAllowedSize.y);
+
+	currentBackground.setPosition(bgPos_Pixel);
+}
+
+void VisualEffects::UpdateRemark(float elapsedTime, sf::Vector2f const& position)
 {
 	if (remark != nullptr)
 	{
@@ -131,7 +174,7 @@ void PlayerInterface::UpdateRemark(float elapsedTime, sf::Vector2f const& positi
 	}
 }
 
-void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
+void VisualEffects::UpdateBarsPos(Vector2f const& cameraPos)
 {
 	sf::Vector2f playerHealthPos = cameraPos - resolution * 0.5f + PLAYER_BARS_MARGIN;
 	sf::Vector2f playerWeaponBarPos = playerHealthPos + PLAYER_WEAPON_MARGIN;
@@ -155,13 +198,13 @@ void PlayerInterface::UpdateBarsPos(Vector2f const& cameraPos)
 	}
 }
 
-void PlayerInterface::UpdatePlayerHP(int health)
+void VisualEffects::UpdatePlayerHP(int health)
 {
 	string hpStr = IntToStr(health);
 	playerHealth.setString(hpStr);
 }
 
-void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
+void VisualEffects::UpdatePlayerWeapon(int weapon, int ammo)
 {
 	switch (weapon)
 	{
@@ -189,7 +232,7 @@ void PlayerInterface::UpdatePlayerWeapon(int weapon, int ammo)
 	}
 }
 
-bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedTime)
+bool VisualEffects::UpdatePreview(sf::Vector2f const& position, float elapsedTime)
 {
 	if (partDuration >= PART_DURATION)
 	{
@@ -240,7 +283,7 @@ bool PlayerInterface::UpdatePreview(sf::Vector2f const& position, float elapsedT
 	return false;
 }
 
-void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
+void VisualEffects::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
 {
 	const float HELP_POS_X = cameraPos.x - resolution.x * 0.5f;
 	const float HELP_POS_Y = cameraPos.y + resolution.y * 0.5f;
@@ -250,7 +293,7 @@ void PlayerInterface::UpdateHelpButton(std::string const& helpStr, sf::Vector2f 
 	helpText.setPosition(HELP_POS + HELP_TEXT_MARGIN);
 }
 
-void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
+void VisualEffects::UpdatePlayerBoxes(int currentBoxes)
 {
 	if (!boxes.empty())
 	{
@@ -273,20 +316,20 @@ void PlayerInterface::UpdatePlayerBoxes(int currentBoxes)
 	}
 }
 
-void PlayerInterface::UpdateBossBar(int bossMaxHealth, int bossHealth)
+void VisualEffects::UpdateBossBar(int bossMaxHealth, int bossHealth)
 {
 	float healthLineSize = static_cast<float>(bossHealth) / static_cast<float>(bossMaxHealth) * BOSS_HP_LINE_SIZE.x;
 	bossHPLine.setSize({ healthLineSize , BOSS_HP_LINE_SIZE.y });
 }
 
-void PlayerInterface::UpdateWin(sf::Vector2f const& windowCenter)
+void VisualEffects::UpdateWin(sf::Vector2f const& windowCenter)
 {
 	win.setPosition(windowCenter);
 	winText.setPosition(windowCenter + PREVIEW_TEXT_MARGIN);
 	UpdateHelpButton("Press \"ENTER\" to go main menu", windowCenter);
 }
 
-void PlayerInterface::UpdateAnnouncement(float elapsedTime)
+void VisualEffects::UpdateAnnouncement(float elapsedTime)
 {
 	for (size_t elementNumber = 0; elementNumber < demageAnnouncementDuration.size();)
 	{
@@ -313,7 +356,7 @@ void PlayerInterface::UpdateAnnouncement(float elapsedTime)
 	}
 }
 
-void PlayerInterface::Draw(RenderWindow& window)
+void VisualEffects::Draw(RenderWindow& window)
 {
 	window.draw(blackFilter);
 	window.draw(playerHealthBar);
@@ -334,7 +377,7 @@ void PlayerInterface::Draw(RenderWindow& window)
 	}
 }
 
-void PlayerInterface::DrawPart(sf::RenderWindow& window)
+void VisualEffects::DrawPart(sf::RenderWindow& window)
 {
 	window.clear(sf::Color::Black);
 	window.draw(previewImage);
@@ -342,13 +385,13 @@ void PlayerInterface::DrawPart(sf::RenderWindow& window)
 	window.draw(helpText);
 }
 
-void PlayerInterface::DrawBossBar(sf::RenderWindow& window)
+void VisualEffects::DrawBossBar(sf::RenderWindow& window)
 {
 	window.draw(bossHPLine);
 	window.draw(bossBar);
 }
 
-void PlayerInterface::DrawWin(sf::RenderWindow& window)
+void VisualEffects::DrawWin(sf::RenderWindow& window)
 {
 	window.clear(sf::Color::Black);
 	window.draw(win);
@@ -356,7 +399,7 @@ void PlayerInterface::DrawWin(sf::RenderWindow& window)
 	window.draw(helpText);
 }
 
-void PlayerInterface::DrawAnnouncement(sf::RenderWindow& window)
+void VisualEffects::DrawAnnouncement(sf::RenderWindow& window)
 {
 	for (auto announcement : demageAnnouncementText)
 	{

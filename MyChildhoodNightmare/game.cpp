@@ -31,35 +31,21 @@ void erase_if(TContainer &container, TPredicate && predicate)
 
 Game::Game(float width, float height)
 	:resolution(width, height)
-	,interface(width, height)
+	,visualEffects(width, height)
 	,menu(width, height)
+	,audio()
 {
 	level_0.LoadFromFile("resources/previewTileset.tmx");
 	level_1.LoadFromFile("resources/secondTileset.tmx");
 	level_2.LoadFromFile("resources/firstTileset.tmx");
-	
-	backgroundTexture_level_0.loadFromFile("resources/background_level_preview.png");
-	backgroundTexture_level_1.loadFromFile("resources/background_level_2.png");
 
 	player.InitPlayer();
-	InitGameSound();
 
 	camera.reset(sf::FloatRect(0, 0, resolution.x, resolution.y));
 
 	difficult = Difficult::EASY;
 	menu.Select(CurrentMenu::DIFFICULT, difficult);
 	menu.SetMenu(CurrentMenu::START, camera.getCenter());
-
-	const sf::Vector2f BG_LVL_0_SISE = GetTextureSize(backgroundTexture_level_0);
-	const sf::Vector2f BG_LVL_1_SISE = GetTextureSize(backgroundTexture_level_1);
-
-	background_level_1.setTexture(&backgroundTexture_level_1);
-	background_level_1.setSize(BG_LVL_1_SISE);
-	background_level_1.setOrigin(BG_LVL_1_SISE.x / 2.0f, BG_LVL_1_SISE.y / 2.0f);
-
-	background_level_0.setTexture(&backgroundTexture_level_0);
-	background_level_0.setSize(BG_LVL_0_SISE);
-	background_level_0.setOrigin(BG_LVL_0_SISE.x / 2.0f, BG_LVL_0_SISE.y / 2.0f);
 
 	changeLevelMap = {
 		{ &level_0, &level_1 },
@@ -74,21 +60,25 @@ Game::Game(float width, float height)
 	};
 
 	sceneMusicMap = {
-		{ &menuScene, &menuSound },
+		{ &menuScene, &audio.menuSound },
 		{ &gameplayScene, nullptr },
-		{ &pauseScene, &menuSound },
-		{ &gameOverScene, &gameOverSound },
-		{ &previewScene, &menuSound },
-		{ &winScene, &winSound }
+		{ &pauseScene, &audio.menuSound },
+		{ &gameOverScene, &audio.gameOverSound },
+		{ &previewScene, &audio.menuSound },
+		{ &winScene, &audio.winSound }
 	};
 
 	levelMusicMap = {
-		{ &level_0, &level_0_ost },
-		{ &level_1, &level_1_ost },
-		{ &level_2, &level_2_ost }
+		{ &level_0, &audio.level_0_ost },
+		{ &level_1, &audio.level_1_ost },
+		{ &level_2, &audio.level_2_ost }
 	};
 
-	buttonColdown = 0;
+	levelBackgroundMap = {
+		{ &level_0, BackgroundType::SKY },
+		{ &level_1, BackgroundType::CAVE },
+		{ &level_2, BackgroundType::CAVE }
+	};
 }
 
 void Game::StartGame()
@@ -96,7 +86,7 @@ void Game::StartGame()
 	currentLevel = &level_0;
 
 	ClearScene();
-	GetMapData();
+	MapDataAdjustment();
 
 	player.InitPlayer();
 	DifficultAdjustment();
@@ -109,7 +99,7 @@ void Game::Restart()
 {
 	ClearScene();
 
-	GetMapData();
+	MapDataAdjustment();
 
 	player.ReturnCopy();
 	SpawnEntities();
@@ -124,7 +114,7 @@ void Game::NextLevel(TmxLevel& level)
 	player.CreateCopy();
 
 	currentLevel = &level;
-	GetMapData();
+	MapDataAdjustment();
 
 	SpawnEntities();
 }
@@ -158,10 +148,11 @@ void Game::DifficultAdjustment()
 	}
 }
 
-void Game::GetMapData()
+void Game::MapDataAdjustment()
 {
+	visualEffects.SetBackground(levelBackgroundMap.find(currentLevel)->second);
 	mapSize = currentLevel->GetTilemapSize();
-	interface.CreateBoxes(boxesCountMap, currentLevel);
+	visualEffects.CreateBoxes(boxesCountMap, currentLevel);
 	blocks = currentLevel->GetAllObjects("solid");
 	lava = currentLevel->GetAllObjects("lava");
 }
@@ -193,11 +184,11 @@ void Game::ClearScene()
 	enemies.clear();
 	bonuses.clear();
 	enemyBullets.clear();
-	delete interface.remark;
-	interface.demageAnnouncementText.clear();
-	interface.demageAnnouncementDuration.clear();
+	delete visualEffects.remark;
+	visualEffects.demageAnnouncementText.clear();
+	visualEffects.demageAnnouncementDuration.clear();
 
-	interface.remark = nullptr;
+	visualEffects.remark = nullptr;
 }
 
 void Game::SpawnEntities()
@@ -295,9 +286,9 @@ void Game::ControlPlayer()
 		{
 			player.runStatus = RUN_RIGHT;
 		}
-		if (Keyboard::isKeyPressed(Keyboard::O) && buttonColdown >= BUTTONS_COLDOWN)
+		if (Keyboard::isKeyPressed(Keyboard::O) && player.switchWeaponColdown >= BUTTONS_COLDOWN)
 		{
-			buttonColdown = 0;
+			player.switchWeaponColdown = 0;
 			player.SwitchWeapon();
 		}
 		if (Keyboard::isKeyPressed(Keyboard::P))
@@ -326,13 +317,13 @@ void Game::ControlMenu(sf::RenderWindow& window)
 			menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.SwitchButtonUp();
-		menuButtonSwitchSound.play();
+		audio.menuButtonSwitchSound.play();
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::Down) &&
 		menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.SwitchButtonDown();
-		menuButtonSwitchSound.play();
+		audio.menuButtonSwitchSound.play();
 	}
 }
 
@@ -435,7 +426,7 @@ void Game::UpdatePlayer()
 
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
-		interface.CreateRemark(RemarkType::DEATH);
+		visualEffects.CreateRemark(RemarkType::DEATH);
 		player.RotateDeadBody(elapsedTime);
 
 		if (gameOverColdown >= GAME_OVER_DURATION)
@@ -489,7 +480,7 @@ void Game::UpdateEnemies()
 
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
-			interface.CreateRemark(RemarkType::KILL);
+			visualEffects.CreateRemark(RemarkType::KILL);
 			if (enemy->enemyType == EnemyType::BOSS)
 			{
 				bonuses.push_back(new Bonus(enemy->GetCharacterPos(), BonusType::ITEM_BOX));
@@ -529,19 +520,19 @@ void Game::UpdateOST()
 		OST = sceneMusicMap.find(currentScene)->second;
 	}
 
-	if (OST != currentMusic)
+	if (OST != audio.currentMusic)
 	{
-		if (currentMusic != nullptr)
+		if (audio.currentMusic != nullptr)
 		{
-			currentMusic->stop();
+			audio.currentMusic->stop();
 		}
 
-		currentMusic = OST;
+		audio.currentMusic = OST;
 	}
 
-	if (currentMusic->getStatus() != sf::Music::Playing)
+	if (audio.currentMusic->getStatus() != sf::Music::Playing)
 	{
-		currentMusic->play();
+		audio.currentMusic->play();
 	}
 }
 
@@ -595,13 +586,13 @@ void Game::BonusesPlayerCollides()
 		if (bonus->collisionRect.intersects(player.collisionRect) && bonus->AddBonusEffect(player))
 		{
 			if (bonus->bonusType == BonusType::GIFT)
-				interface.CreateRemark(RemarkType::GIFT);
+				visualEffects.CreateRemark(RemarkType::GIFT);
 			else
-				interface.CreateRemark(RemarkType::BONUS);
+				visualEffects.CreateRemark(RemarkType::BONUS);
 
 			const sf::Vector2f BONUS_POSITION(bonus->bodyShape.getPosition());
-			interface.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
-			CollideWithBonusSound(static_cast<int>(bonus->bonusType));
+			visualEffects.CreateAnnouncement(BONUS_POSITION, bonus->announcementText);
+			audio.CollideWithBonus(static_cast<int>(bonus->bonusType));
 
 			it = bonuses.erase(it);
 			delete(bonus);
@@ -625,7 +616,7 @@ void Game::PlayerBulletsEnemyCollides()
 				enemy->health -= bullet->demage;
 				enemy->activityStatus = EnemyActivity::PURSUIT;
 				enemy->wounds.push_back(new Blood(enemy->GetCharacterPos(), bullet->bodyShape.getPosition()));
-				interface.CreateAnnouncement(bullet->bodyShape.getPosition(), dmgStr);
+				visualEffects.CreateAnnouncement(bullet->bodyShape.getPosition(), dmgStr);
 				bullet->isLive = false;
 			}
 		}
@@ -641,7 +632,7 @@ void Game::EnemyPlayerCollides()
 			if (player.injuredColdown >= INJURED_DURATION)
 			{
 				PlayWithoutDouble(player.playerHurtGrunt);
-				CollideWithEnemySound((int)enemy->enemyType);
+				audio.CollideWithEnemy((int)enemy->enemyType);
 				player.health -= enemy->touchDemage;
 				player.injuredColdown = 0;
 			}
@@ -655,23 +646,27 @@ void Game::UpdateColdowns()
 		if (timer <= limit && criterion) { timer += elapsedTime; }
 	};
 
-	AddTime(player.shootColdown, MAX_WEAPON_COLDOWN);
-	AddTime(player.injuredColdown, INJURED_DURATION);
-	AddTime(menu.buttonsColdown, BUTTONS_COLDOWN);
-	AddTime(buttonColdown, BUTTONS_COLDOWN);
-	AddTime(interface.randomRemarkColdown, REMARK_RANDOM_COLDOWN);
-	AddTime(gameOverColdown, GAME_OVER_DURATION, player.existStatus == ExistenceStatus::DEAD);
-
-	for (auto enemy : enemies)
+	if (currentScene == &gameplayScene)
 	{
-		AddTime(enemy->shootColdown, CLOWN_SHOOT_COLDOWN, enemy->enemyType == EnemyType::CLOWN);
-		AddTime(enemy->shootColdown, BOSS_SHOOT_COLDOWN, enemy->enemyType == EnemyType::BOSS);
+		AddTime(player.shootColdown, MAX_WEAPON_COLDOWN);
+		AddTime(player.injuredColdown, INJURED_DURATION);
+		AddTime(player.switchWeaponColdown, BUTTONS_COLDOWN);
+		AddTime(visualEffects.randomRemarkColdown, REMARK_RANDOM_COLDOWN);
+		AddTime(gameOverColdown, GAME_OVER_DURATION, player.existStatus == ExistenceStatus::DEAD);
+
+		for (auto enemy : enemies)
+		{
+			AddTime(enemy->shootColdown, CLOWN_SHOOT_COLDOWN, enemy->enemyType == EnemyType::CLOWN);
+			AddTime(enemy->shootColdown, BOSS_SHOOT_COLDOWN, enemy->enemyType == EnemyType::BOSS);
+		}
 	}
+
+	AddTime(menu.buttonsColdown, BUTTONS_COLDOWN);
 }
 
 void Game::UpdateCamera(sf::RenderWindow& window)
 {
-	sf::Vector2f halfWindow = { resolution.x / 2.0f , resolution.y / 2.0f };
+	sf::Vector2f halfWindow = { resolution * 0.5f };
 	sf::Vector2f cameraCenter = {
 		player.GetCharacterPos().x,
 		player.GetCharacterPos().y - CAMERA_VERTICAL_MARGIN
@@ -706,54 +701,27 @@ void Game::UpdateInterface()
 {
 	const int AMMO = player.ammoMap.find(player.currentWeapon)->second;
 
-	interface.UpdateBarsPos(camera.getCenter());
-	interface.UpdatePlayerHP(player.health);
-	interface.UpdatePlayerWeapon(player.currentWeapon, AMMO);
-	interface.UpdatePlayerBoxes(player.boxes);
-	interface.UpdateAnnouncement(elapsedTime);
-	interface.UpdateRemark(elapsedTime, player.GetCharacterPos());
+	visualEffects.UpdateBackground(currentLevel->GetTilemapSize(), camera.getCenter());
+	visualEffects.UpdateBarsPos(camera.getCenter());
+	visualEffects.UpdatePlayerHP(player.health);
+	visualEffects.UpdatePlayerWeapon(player.currentWeapon, AMMO);
+	visualEffects.UpdatePlayerBoxes(player.boxes);
+	visualEffects.UpdateAnnouncement(elapsedTime);
+	visualEffects.UpdateRemark(elapsedTime, player.GetCharacterPos());
 
-	if (interface.randomRemarkColdown >= REMARK_RANDOM_COLDOWN)
+	if (visualEffects.randomRemarkColdown >= REMARK_RANDOM_COLDOWN)
 	{
-		interface.CreateRemark(RemarkType::RANDOM);
-		interface.randomRemarkColdown = 0;
+		visualEffects.CreateRemark(RemarkType::RANDOM);
+		visualEffects.randomRemarkColdown = 0;
 	}
 
 	for (auto enemy : enemies)
 	{
 		if (enemy->enemyType == EnemyType::BOSS)
 		{
-			interface.UpdateBossBar(BOSS_START_HEALTH, enemy->health);
+			visualEffects.UpdateBossBar(BOSS_START_HEALTH, enemy->health);
 		}
 	}
-}
-
-void Game::UpdateBackground()
-{
-	auto mapWidth = currentLevel->GetTilemapWidth();
-	auto mapHeight = currentLevel->GetTilemapHeight();
-	auto backgroundWidth = currentBackground.getSize().x;
-	auto backgroundHeight = currentBackground.getSize().y;
-
-	if (currentLevel == &level_0)
-	{
-		currentBackground = background_level_0;
-	}
-	else
-	{
-		currentBackground = background_level_1;
-	}
-
-	float bgPosX_Percent = (camera.getCenter().x - resolution.x / 2.0f) / (mapWidth - resolution.x);
-	float bgPosY_Percent = (camera.getCenter().y - resolution.y / 2.0f) / (mapHeight - resolution.y);
-
-	float bgAllowedWidthX = mapWidth - backgroundWidth;
-	float bgAllowedWidthY = mapHeight - backgroundHeight;
-
-	float bgPosX_Pixel = backgroundWidth / 2.0f + bgPosX_Percent * bgAllowedWidthX;
-	float bgPosY_Pixel = backgroundHeight / 2.0f + bgPosY_Percent * bgAllowedWidthY;
-
-	currentBackground.setPosition(bgPosX_Pixel, bgPosY_Pixel);
 }
 
 void Game::DrawLevel(sf::RenderWindow& window)
@@ -801,13 +769,13 @@ void Game::DrawBonuses(sf::RenderWindow& window)
 
 void Game::DrawInterface(sf::RenderWindow& window)
 {
-	interface.Draw(window);
+	visualEffects.Draw(window);
 
 	for (auto const& enemy : enemies)
 	{
 		if (enemy->enemyType == EnemyType::BOSS)
 		{
-			interface.DrawBossBar(window);
+			visualEffects.DrawBossBar(window);
 		}
 	}
 }

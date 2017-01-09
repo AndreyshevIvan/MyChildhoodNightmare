@@ -25,6 +25,7 @@ enum struct CurrentMenu
 	START = 0,
 	DIFFICULT,
 	PAUSE,
+	RESIZE_SETTINGS,
 };
 
 enum struct Difficult
@@ -40,9 +41,11 @@ struct Menu
 
 	sf::Vector2f resolution;
 
+	sf::Font buttonFont;
+
 	CurrentMenu currentMenu;
 	size_t currentButton;
-	sf::Font itemsFont;
+
 	sf::Texture gameNameTexture;
 	sf::Texture mainWrapperTexture;
 	sf::Texture pauseWrapperTexture;
@@ -51,16 +54,19 @@ struct Menu
 	sf::RectangleShape menuWrapper;
 	sf::RectangleShape menuIcon;
 	sf::Text startButton;
-	std::vector<sf::Text> mainMenuItems;
-	std::vector<sf::Text> pauseMenuItems;
-	std::vector<sf::Text> difficultMenuItems;
+
 	std::vector<std::vector<sf::Text>> allMenues;
+	std::vector<sf::Text> mainMenuButtons;
+	std::vector<sf::Text> pauseMenuButtons;
+	std::vector<sf::Text> difficultMenuButtons;
+	std::vector<sf::Text> resizeMenuButtons;
+
 	float buttonsColdown;
 	sf::Vector2f windowCenter;
 
 	void SetMenu(CurrentMenu const& menu, sf::Vector2f const& center);
 
-	void Update();
+	void Update(sf::Vector2f const& center);
 	void Select(CurrentMenu const& selectMenu, Difficult const& selectButton);
 	void SwitchButtonUp();
 	void SwitchButtonDown();

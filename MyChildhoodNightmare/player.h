@@ -39,6 +39,7 @@ struct Player : Character
 	int boxes;
 	float injuredColdown;
 	std::map<Weapon, float> weaponColdownsMap;
+	float switchWeaponColdown;
 
 	int copy_ak_demage;
 	int copy_shootgun_demage;

@@ -110,7 +110,7 @@ void Update(Game& game)
 void Render(sf::RenderWindow& window, Game& game)
 {
 	window.clear(BACKGROUND_COLOR);
-	window.draw(game.currentBackground);
+	window.draw(game.visualEffects.currentBackground);
 	game.currentScene->onDraw(window);
 	window.display();
 }
@@ -138,7 +138,6 @@ void InitGamePlayScene(Game& game)
 		game.UpdateEnemies();
 		game.UpdateBullets();
 		game.UpdateBonuses();
-		game.UpdateBackground();
 		game.CheckEntitiesCollides();
 	};
 	game.gameplayScene.onDraw = [&](sf::RenderWindow& window) {
@@ -160,7 +159,7 @@ void InitMenuScene(Game& game)
 	};
 	game.menuScene.onUpdate = [&]() {
 		game.UpdateColdowns();
-		game.menu.Update();
+		game.menu.Update(game.camera.getCenter());
 	};
 	game.menuScene.onDraw = [&](sf::RenderWindow& window) {
 		if (game.menu.currentMenu == CurrentMenu::PAUSE)
@@ -178,13 +177,13 @@ void InitGameOverScene(Game& game)
 		game.ControlGameOver(window);
 	};
 	game.gameOverScene.onUpdate = [&]() {
-		sf::RectangleShape* gameOverBack = &game.interface.gameOver;
+		sf::RectangleShape* gameOverBack = &game.visualEffects.gameOver;
 		auto pos = game.camera.getCenter();
 
 		gameOverBack->setPosition(pos);
 	};
 	game.gameOverScene.onDraw = [&](sf::RenderWindow& window) {
-		window.draw(game.interface.gameOver);
+		window.draw(game.visualEffects.gameOver);
 	};
 }
 
@@ -199,13 +198,13 @@ void InitPreviewScene(Game& game)
 	};
 	game.previewScene.onUpdate = [&]() {
 		auto cameraCenter = game.camera.getCenter();
-		if (game.interface.UpdatePreview(cameraCenter, game.elapsedTime))
+		if (game.visualEffects.UpdatePreview(cameraCenter, game.elapsedTime))
 		{
 			game.currentScene = &game.menuScene;
 		}
 	};
 	game.previewScene.onDraw = [&](sf::RenderWindow& window) {
-		game.interface.DrawPart(window);
+		game.visualEffects.DrawPart(window);
 	};
 }
 
@@ -221,9 +220,9 @@ void InitWinScene(Game& game)
 	};
 	game.winScene.onUpdate = [&]() {
 		auto cameraCenter = game.camera.getCenter();
-		game.interface.UpdateWin(cameraCenter);
+		game.visualEffects.UpdateWin(cameraCenter);
 	};
 	game.winScene.onDraw = [&](sf::RenderWindow& window) {
-		game.interface.DrawWin(window);
+		game.visualEffects.DrawWin(window);
 	};
 }

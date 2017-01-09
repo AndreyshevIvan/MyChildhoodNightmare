@@ -33,6 +33,8 @@ enum
 
 struct GameSound
 {
+	GameSound();
+
 	sf::Music* currentMusic = nullptr;
 
 	sf::Music menuSound;
@@ -52,9 +54,8 @@ struct GameSound
 	sf::Music boxBonusSound;
 	sf::Music randomBonusSound;
 
-	bool InitGameSound();
-	void CollideWithEnemySound(int type);
-	void CollideWithBonusSound(int type);
+	void CollideWithEnemy(int type);
+	void CollideWithBonus(int type);
 };
 
 struct CharacterSound

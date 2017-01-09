@@ -5,7 +5,7 @@ Menu::Menu(float width, float height)
 	:resolution(width, height)
 {
 	gameNameTexture.loadFromFile("resources/GameName.png");
-	itemsFont.loadFromFile("resources/nightmarealley.ttf");
+	buttonFont.loadFromFile("resources/nightmarealley.ttf");
 	mainWrapperTexture.loadFromFile("resources/wrapper_768p.png");
 	iconTexture.loadFromFile("resources/menuIconFace2.png");
 	pauseWrapperTexture.loadFromFile("resources/pauseMenu.png");
@@ -18,29 +18,37 @@ Menu::Menu(float width, float height)
 	menuIcon.setTexture(&iconTexture);
 	menuIcon.setOrigin(ICON_SIZE.x / 2.0f, ICON_SIZE.y / 2.0f);
 
-	mainMenuItems = {
-		sf::Text("Start", itemsFont, FONT_SIZE),
-		sf::Text("Difficulty", itemsFont, FONT_SIZE),
-		sf::Text("Leave", itemsFont, FONT_SIZE)
+	mainMenuButtons = {
+		sf::Text("Start", buttonFont, FONT_SIZE),
+		sf::Text("Difficulty", buttonFont, FONT_SIZE),
+		sf::Text("Leave", buttonFont, FONT_SIZE)
 	};
 
-	difficultMenuItems = {
-		sf::Text("Easy", itemsFont, FONT_SIZE),
-		sf::Text("Normal", itemsFont, FONT_SIZE),
-		sf::Text("Hard", itemsFont, FONT_SIZE),
-		sf::Text("back", itemsFont, FONT_SIZE_MINI)
+	difficultMenuButtons = {
+		sf::Text("Easy", buttonFont, FONT_SIZE),
+		sf::Text("Normal", buttonFont, FONT_SIZE),
+		sf::Text("Hard", buttonFont, FONT_SIZE),
+		sf::Text("back", buttonFont, FONT_SIZE_MINI)
 	};
 
-	pauseMenuItems = {
-		sf::Text("Continue", itemsFont, FONT_SIZE_MEDIUM),
-		sf::Text("Restart", itemsFont, FONT_SIZE_MEDIUM),
-		sf::Text("Main menu", itemsFont, FONT_SIZE_MEDIUM)
+	pauseMenuButtons = {
+		sf::Text("Continue", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("Restart", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("Main menu", buttonFont, FONT_SIZE_MEDIUM)
+	};
+
+	resizeMenuButtons = {
+		sf::Text("854 x 480", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("1280 x 720", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("1366 x 768", buttonFont, FONT_SIZE_MEDIUM),
+		sf::Text("1920 x 1080", buttonFont, FONT_SIZE_MEDIUM)
 	};
 
 	allMenues = {
-		mainMenuItems,
-		difficultMenuItems,
-		pauseMenuItems
+		mainMenuButtons,
+		difficultMenuButtons,
+		pauseMenuButtons,
+		resizeMenuButtons
 	};
 
 	for (auto menu = allMenues.begin(); menu != allMenues.end(); menu++)
@@ -60,13 +68,12 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
 	currentMenu = menu;
 	currentButton = 0;
 	buttonsColdown = 0;
-	windowCenter = center;
 
 	if (menu != CurrentMenu::PAUSE)
 	{
 		gameName.setPosition(
-			windowCenter.x,
-			windowCenter.y - resolution.y / 2.0f + GAMENAME_VERTICAL_MARGIN
+			center.x,
+			center.y - resolution.y / 2.0f + GAMENAME_VERTICAL_MARGIN
 		);
 	}
 
@@ -75,7 +82,7 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
 
 	for (auto it = allMenues[currMenu].begin(); it != allMenues[currMenu].end(); it++)
 	{
-		it->setPosition(windowCenter.x, windowCenter.y + margin);
+		it->setPosition(center.x, center.y + margin);
 		margin += MENU_BUTTONS_MARGIN;
 	}
 
@@ -96,19 +103,19 @@ void Menu::SetMenu(CurrentMenu const& menu, sf::Vector2f const& center)
 		menuWrapper.getGlobalBounds().width / 2.0f,
 		menuWrapper.getGlobalBounds().height / 2.0f
 	);
-	menuWrapper.setPosition(windowCenter);
+	menuWrapper.setPosition(center);
 }
 
-void Menu::Update()
+void Menu::Update(sf::Vector2f const& center)
 {
 	auto currMenu = static_cast<size_t>(currentMenu);
 	auto currItem = allMenues[currMenu][currentButton];
 
-	auto menuItemWidth = currItem.getGlobalBounds().width;
-	auto menuItemCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y;
-	float currIconMargin = menuItemWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
+	auto menuButtonWidth = currItem.getGlobalBounds().width;
+	auto menuButtonCenterY = currItem.getGlobalBounds().height / 2.0f + currItem.getPosition().y;
+	float currIconMargin = menuButtonWidth / 2.0f + ICON_HORIZONTAL_MARGIN;
 
-	menuIcon.setPosition({ windowCenter.x - currIconMargin , menuItemCenterY });
+	menuIcon.setPosition({ center.x - currIconMargin , menuButtonCenterY });
 }
 
 void Menu::Select(CurrentMenu const& selectMenu, Difficult const& selectButton)

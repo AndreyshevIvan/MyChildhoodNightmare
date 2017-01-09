@@ -97,6 +97,12 @@ enum struct RemarkType
 	RANDOM,
 };
 
+enum struct BackgroundType
+{
+	SKY,
+	CAVE,
+};
+
 struct Remark
 {
 	Remark(std::string const& text);
@@ -112,9 +118,9 @@ struct Remark
 	void Draw(sf::RenderWindow& window);
 };
 
-struct PlayerInterface
+struct VisualEffects
 {
-	PlayerInterface::PlayerInterface(float width, float height);
+	VisualEffects::VisualEffects(float width, float height);
 
 	sf::Vector2f resolution;
 
@@ -140,6 +146,12 @@ struct PlayerInterface
 		{ RemarkType::RANDOM, remarkPacks.find(RANDOM_REMARKS) }
 	};
 	float randomRemarkColdown = 0;
+
+	sf::RectangleShape currentBackground;
+	sf::RectangleShape bg_level_0;
+	sf::Texture bgTexture_level_0;
+	sf::RectangleShape bg_level_1;
+	sf::Texture bgTexture_level_1;
 
 	sf::RectangleShape playerWeaponBar;
 	sf::Texture playerMeleeBarTexture;
@@ -184,6 +196,10 @@ struct PlayerInterface
 	void CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level);
 	void CreateRemark(RemarkType const& type);
 
+	void SetBackground(BackgroundType type);
+
+
+	void UpdateBackground(sf::Vector2f const& mapSize, sf::Vector2f const& center);
 	void UpdateRemark(float elapsedTime, sf::Vector2f const& position);
 	void UpdateBarsPos(sf::Vector2f const& cameraPos);
 	void UpdatePlayerHP(int health);

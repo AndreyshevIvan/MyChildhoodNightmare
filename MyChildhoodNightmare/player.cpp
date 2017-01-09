@@ -48,6 +48,7 @@ bool Player::InitPlayer()
 		{ Weapon::SHOOTGUN, SHOOTGUN_COLDOWN },
 		{ Weapon::AK, AK_COLDOWN }
 	};
+	switchWeaponColdown = 0;
 
 	characterBullets.clear();
 	CreateCopy();
