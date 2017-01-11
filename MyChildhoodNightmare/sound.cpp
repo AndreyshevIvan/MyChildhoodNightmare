@@ -1,5 +1,9 @@
 #include "sound.h"
 
+using namespace std;
+using namespace sf;
+
+
 GameSound::GameSound()
 {
 	menuSound.openFromFile("resources/sound/main_menu.ogg");

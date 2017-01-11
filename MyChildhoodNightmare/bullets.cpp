@@ -1,5 +1,9 @@
 #include "bullets.h"
 
+using namespace std;
+using namespace sf;
+
+
 Bullet::Bullet(sf::Vector2f const& startPos, int demage, int orientation, float maxRange, BulletType const& type)
 {
 	switch (type)

@@ -3,6 +3,7 @@
 using namespace std;
 using namespace sf;
 
+
 enum
 {
 	// Weapon type
@@ -79,7 +80,7 @@ VisualEffects::VisualEffects(float width, float height)
 	previewImage.setOrigin(PREVIEW_IMAGE_SIZE.x / 2.0f, PREVIEW_IMAGE_SIZE.y / 2.0f);
 }
 
-void VisualEffects::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLevel* level)
+void VisualEffects::CreateBoxes(map<TmxLevel*, int> const& boxesMap, TmxLevel* level)
 {
 	const int maxBoxes = boxesMap.find(level)->second;
 	boxes.clear();
@@ -95,7 +96,7 @@ void VisualEffects::CreateBoxes(std::map<TmxLevel*, int> const& boxesMap, TmxLev
 	}
 }
 
-void VisualEffects::CreateAnnouncement(sf::Vector2f const& position, std::string const& str)
+void VisualEffects::CreateAnnouncement(sf::Vector2f const& position, string const& str)
 {
 	auto marginX = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
 	auto marginY = static_cast<float>(rand() % MAX_ANNOUNCEMENT_MARGIN + 1);
@@ -122,7 +123,7 @@ void VisualEffects::CreateRemark(RemarkType const& type)
 		{
 			const size_t remarksCount = remarkSystem.find(type)->second->first.size();
 			const int randomRemarkNumber = rand() % remarksCount;
-			const std::string text = remarkSystem.find(type)->second->first[randomRemarkNumber];
+			const string text = remarkSystem.find(type)->second->first[randomRemarkNumber];
 			remark = new Remark(text);
 		}
 	}
@@ -283,7 +284,7 @@ bool VisualEffects::UpdatePreview(sf::Vector2f const& position, float elapsedTim
 	return false;
 }
 
-void VisualEffects::UpdateHelpButton(std::string const& helpStr, sf::Vector2f const& cameraPos)
+void VisualEffects::UpdateHelpButton(string const& helpStr, sf::Vector2f const& cameraPos)
 {
 	const float HELP_POS_X = cameraPos.x - resolution.x * 0.5f;
 	const float HELP_POS_Y = cameraPos.y + resolution.y * 0.5f;
@@ -407,7 +408,7 @@ void VisualEffects::DrawAnnouncement(sf::RenderWindow& window)
 	}
 }
 
-Remark::Remark(std::string const& text)
+Remark::Remark(string const& text)
 	:remark(text)
 {
 	cloudTexture.loadFromFile("resources/cloud.png");
@@ -441,7 +442,7 @@ string IntToStr(int number)
 {
 	if (number >= 0)
 	{
-		return std::to_string(number);
+		return to_string(number);
 	}
 	else
 	{

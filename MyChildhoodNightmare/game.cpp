@@ -3,6 +3,7 @@
 using namespace std;
 using namespace sf;
 
+
 enum
 {
 	// Start menu buttons
@@ -23,7 +24,7 @@ enum
 template <class TContainer, class TPredicate>
 void erase_if(TContainer &container, TPredicate && predicate)
 {
-	auto newEnd = std::remove_if(std::begin(container), std::end(container), [&](auto &pBullet) {
+	auto newEnd = remove_if(begin(container), end(container), [&](auto &pBullet) {
 		return predicate(pBullet);
 	});
 	container.erase(newEnd, container.end());
@@ -195,17 +196,17 @@ void Game::ClearScene()
 
 void Game::SpawnEntities()
 {
-	const std::vector<TmxObject> SHADOW_SPAWNS = currentLevel->GetAllObjects("enemy_shadow_spawn");
-	const std::vector<TmxObject> CLOWN_SPAWNS = currentLevel->GetAllObjects("enemy_clown_spawn");
-	const std::vector<TmxObject> GHOST_SPAWNS = currentLevel->GetAllObjects("enemy_bird_spawn");
-	const std::vector<TmxObject> SPIDER_SPAWNS = currentLevel->GetAllObjects("enemy_spider_spawn");
-	const std::vector<TmxObject> BOSS_SPAWNS = currentLevel->GetAllObjects("enemy_boss_spawn");
+	const vector<TmxObject> SHADOW_SPAWNS = currentLevel->GetAllObjects("enemy_shadow_spawn");
+	const vector<TmxObject> CLOWN_SPAWNS = currentLevel->GetAllObjects("enemy_clown_spawn");
+	const vector<TmxObject> GHOST_SPAWNS = currentLevel->GetAllObjects("enemy_bird_spawn");
+	const vector<TmxObject> SPIDER_SPAWNS = currentLevel->GetAllObjects("enemy_spider_spawn");
+	const vector<TmxObject> BOSS_SPAWNS = currentLevel->GetAllObjects("enemy_boss_spawn");
 
-	const std::vector<TmxObject> BOX_SPAWNS = currentLevel->GetAllObjects("item_box_spawn");
-	const std::vector<TmxObject> HEALTH_SPAWNS = currentLevel->GetAllObjects("bonus_heath");
-	const std::vector<TmxObject> AK_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_ak_ammo");
-	const std::vector<TmxObject> GIFT_SPAWNS = currentLevel->GetAllObjects("bonus_random");
-	const std::vector<TmxObject> SHOOTGUN_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_shootgun_ammo");
+	const vector<TmxObject> BOX_SPAWNS = currentLevel->GetAllObjects("item_box_spawn");
+	const vector<TmxObject> HEALTH_SPAWNS = currentLevel->GetAllObjects("bonus_heath");
+	const vector<TmxObject> AK_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_ak_ammo");
+	const vector<TmxObject> GIFT_SPAWNS = currentLevel->GetAllObjects("bonus_random");
+	const vector<TmxObject> SHOOTGUN_AMMO_SPAWNS = currentLevel->GetAllObjects("bonus_shootgun_ammo");
 
 	SpawnEnemies(SHADOW_SPAWNS, EnemyType::SHADOW);
 	SpawnEnemies(CLOWN_SPAWNS, EnemyType::CLOWN);
@@ -223,7 +224,7 @@ void Game::SpawnEntities()
 	player.Spawn(PLAYER_POS);
 }
 
-void Game::SpawnItems(std::vector<TmxObject> const& spawns, BonusType const& type)
+void Game::SpawnItems(vector<TmxObject> const& spawns, BonusType const& type)
 {
 	for (auto const& spawn : spawns)
 	{
@@ -232,7 +233,7 @@ void Game::SpawnItems(std::vector<TmxObject> const& spawns, BonusType const& typ
 	}
 }
 
-void Game::SpawnEnemies(std::vector<TmxObject> const& spawns, EnemyType const& type)
+void Game::SpawnEnemies(vector<TmxObject> const& spawns, EnemyType const& type)
 {
 	for (auto const& spawn : spawns)
 	{
@@ -260,7 +261,7 @@ sf::FloatRect Game::GetCameraArea()
 
 bool Game::IsCollidesWithLevel(sf::FloatRect const& rect)
 {
-	return std::any_of(blocks.begin(), blocks.end(), [&](const TmxObject&block) {
+	return any_of(blocks.begin(), blocks.end(), [&](const TmxObject&block) {
 		return (rect.intersects(block.rect) && block.name == "solid");
 	});
 }
@@ -614,7 +615,7 @@ void Game::PlayerBulletsEnemyCollides()
 		{
 			if (enemy->collisionRect.intersects(bullet->collisionRect))
 			{
-				const std::string dmgStr = "-" + to_string(bullet->demage);
+				const string dmgStr = "-" + to_string(bullet->demage);
 				enemy->health -= bullet->demage;
 				enemy->activityStatus = EnemyActivity::PURSUIT;
 				enemy->wounds.push_back(new Blood(enemy->GetCharacterPos(), bullet->bodyShape.getPosition()));

@@ -1,6 +1,7 @@
 #include "bonus.h"
 
 using namespace std;
+using namespace sf;
 
 Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
 	:bonusType(type)
@@ -43,7 +44,7 @@ Bonus::Bonus(sf::Vector2f const& position, BonusType const& type)
 	InitBonusesSound();
 }
 
-void Bonus::Update(float elapsedTime, std::vector<TmxObject> const& blocks)
+void Bonus::Update(float elapsedTime, vector<TmxObject> const& blocks)
 {
 	if (!IsBonusOnGround)
 	{
@@ -71,7 +72,7 @@ void Bonus::Update(float elapsedTime, std::vector<TmxObject> const& blocks)
 	}
 }
 
-void DropBonusFromEnemy(sf::Vector2f const& position, std::vector<Bonus*>& bonuses, int probability)
+void DropBonusFromEnemy(sf::Vector2f const& position, vector<Bonus*>& bonuses, int probability)
 {
 	int digit = rand() % 100;
 

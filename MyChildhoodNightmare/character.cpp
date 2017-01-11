@@ -3,6 +3,7 @@
 using namespace std;
 using namespace sf;
 
+
 void Character::Spawn(sf::Vector2f const& pos)
 {
 	collisionRect.left = pos.x;
@@ -27,19 +28,19 @@ sf::Vector2f Character::GetCharacterPos() const
 	return position;
 }
 
-void Character::UpdatePos(float elapsedTime, std::vector<TmxObject> const& blocks)
+void Character::UpdatePos(float elapsedTime, vector<TmxObject> const& blocks)
 {
 	if (runStatus != NOT_RUN)
 	{
 		float movement = moveSpeed * elapsedTime;
 
-		if (jumpStatus == FLY)
-		{
-			movement *= FLYING_SLOWDOWN;
-		}
 		if (runStatus == RUN_LEFT)
 		{
 			movement = -movement;
+		}
+		if (jumpStatus == FLY)
+		{
+			movement *= FLYING_SLOWDOWN;
 		}
 
 		collisionRect.left += movement;
@@ -56,7 +57,7 @@ void Character::UpdatePos(float elapsedTime, std::vector<TmxObject> const& block
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Character::UpdateGravity(float elapsedTime, std::vector<TmxObject> const& blocks)
+void Character::UpdateGravity(float elapsedTime, vector<TmxObject> const& blocks)
 {
 	float movementY = jumpSpeed;
 
@@ -101,7 +102,7 @@ void Character::UpdateHealthStatus()
 
 bool Character::IsCollidesWithLevel(FloatRect const& rect, vector<TmxObject> const& blocks)
 {
-	return std::any_of(blocks.begin(), blocks.end(), [&](const TmxObject &block) {
+	return any_of(blocks.begin(), blocks.end(), [&](const TmxObject &block) {
 		return (rect.intersects(block.rect) && block.name == "solid");
 	});
 }
@@ -154,7 +155,8 @@ Blood::Blood(sf::Vector2f const& characterPos, sf::Vector2f const& bulletPos)
 	blood.setTextureRect(sf::IntRect({ 0, 0 }, static_cast<sf::Vector2i>(BLOOD_SIZE)));
 	blood.setTexture(&bloodTexture);
 
-	float rotation = static_cast<float>(-BLOOD_MAX_ROTATION + (rand() % (2 * BLOOD_MAX_ROTATION)));
+ 	int randomAngle = (rand() % (2 * BLOOD_MAX_ROTATION)) - BLOOD_MAX_ROTATION;
+	float rotation = static_cast<float>(randomAngle);
 
 	if (characterPos.x > bulletPos.x)
 	{ // character to the left
@@ -180,7 +182,8 @@ void Blood::Update(sf::Vector2f const& characterPos, float elapsedTime)
 	currentFrame = static_cast<int>(duration / secondsPerFrame);
 
 	const int FRAME_POS_X = static_cast<int>(BLOOD_SIZE.x * currentFrame);
-	blood.setTextureRect(sf::IntRect({ FRAME_POS_X, 0 }, static_cast<sf::Vector2i>(BLOOD_SIZE)));
+	const sf::IntRect frame({ FRAME_POS_X, 0 }, static_cast<sf::Vector2i>(BLOOD_SIZE));
+	blood.setTextureRect(frame);
 	blood.setPosition(characterPos - positionOffset);
 }
 

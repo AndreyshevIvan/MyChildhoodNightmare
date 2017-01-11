@@ -3,6 +3,9 @@
 #include <iostream>
 #include "lib\tinyxml2\tinyxml2.h"
 
+using namespace std;
+using namespace sf;
+
 
 using namespace tinyxml2;
 
@@ -16,11 +19,11 @@ const char DIR_SEPARATOR = '/';
 #endif
 
 // Returns parent directory of given path;
-std::string GetParentDirectory(const std::string &filepath)
+string GetParentDirectory(const string &filepath)
 {
 	const size_t slashPos = filepath.find_last_of('/');
-	std::string parentDir;
-	if (slashPos != std::string::npos)
+	string parentDir;
+	if (slashPos != string::npos)
 	{
 		parentDir = filepath.substr(0, slashPos);
 	}
@@ -28,7 +31,7 @@ std::string GetParentDirectory(const std::string &filepath)
 }
 
 // Joins two path fragments, e.g. directory path and filename
-std::string JoinPaths(const std::string &path, const std::string &subpath)
+string JoinPaths(const string &path, const string &subpath)
 {
 	if (path.empty())
 	{
@@ -49,7 +52,7 @@ sf::Color ParseColor(const std::string &hexRGB)
 	const long hexValue = strtol(hexRGB.c_str(), &pEnd, 16);
 	if (*pEnd != '\0')
 	{
-		throw std::runtime_error(hexRGB + " is not valid hex-encoded RGB color");
+		throw runtime_error(hexRGB + " is not valid hex-encoded RGB color");
 	}
 
 	const uint8_t red = uint8_t((hexValue >> 16) % 256);
@@ -59,29 +62,29 @@ sf::Color ParseColor(const std::string &hexRGB)
 	return sf::Color(red, green, blue);
 }
 
-float ParseFloat(const std::string &str)
+float ParseFloat(const string &str)
 {
 	char *pEnd = nullptr;
 	const float value = strtof(str.c_str(), &pEnd);
 	if (*pEnd != '\0')
 	{
-		throw std::runtime_error("'" + str + "' is not a float number");
+		throw runtime_error("'" + str + "' is not a float number");
 	}
 
 	return value;
 }
 
-int TmxObject::GetPropertyInt(std::string propertyName)
+int TmxObject::GetPropertyInt(string propertyName)
 {
-	return std::stoi(properties[propertyName].c_str());
+	return stoi(properties[propertyName].c_str());
 }
 
-float TmxObject::GetPropertyFloat(std::string propertyName)
+float TmxObject::GetPropertyFloat(string propertyName)
 {
 	return ParseFloat(properties[propertyName].c_str());
 }
 
-std::string TmxObject::GetPropertyString(std::string propertyName)
+string TmxObject::GetPropertyString(string propertyName)
 {
 	return properties[propertyName];
 }
@@ -100,39 +103,39 @@ void TmxObject::MoveTo(const sf::Vector2f &position)
 	sprite.setPosition(position);
 }
 
-bool TmxLevel::LoadFromFile(const std::string &filepath)
+bool TmxLevel::LoadFromFile(const string &filepath)
 {
 	XMLDocument levelFile;
 
 	// Load XML into in-memory XMLDocument.
 	if (levelFile.LoadFile(filepath.c_str()) != XML_SUCCESS)
 	{
-		throw std::runtime_error("Loading level \"" + filepath + "\" failed.");
+		throw runtime_error("Loading level \"" + filepath + "\" failed.");
 	}
 
 	// Element <map> should be root in TMX format.
 	XMLElement *map = levelFile.FirstChildElement("map");
 	if (map == 0)
 	{
-		throw std::runtime_error("<map> element not found");
+		throw runtime_error("<map> element not found");
 	}
 
 	// Map element example:
 	//	<map version="1.0" orientation="orthogonal"
 	//	width="10" height="10" tilewidth="34" tileheight="34">
-	m_width = std::stoi(map->Attribute("width"));
-	m_height = std::stoi(map->Attribute("height"));
-	m_tileWidth = std::stoi(map->Attribute("tilewidth"));
-	m_tileHeight = std::stoi(map->Attribute("tileheight"));
+	m_width = stoi(map->Attribute("width"));
+	m_height = stoi(map->Attribute("height"));
+	m_tileWidth = stoi(map->Attribute("tilewidth"));
+	m_tileHeight = stoi(map->Attribute("tileheight"));
 
 	// Retrieve tileset description and the first tile GID (Group Identifier).
 	XMLElement *tilesetElement = map->FirstChildElement("tileset");
-	m_firstTileID = std::stoi(tilesetElement->Attribute("firstgid"));
+	m_firstTileID = stoi(tilesetElement->Attribute("firstgid"));
 
 	// <image> contains tileset texture
 	XMLElement *image = tilesetElement->FirstChildElement("image");
-	const std::string imageFilename = image->Attribute("source");
-	const std::string imagePath = JoinPaths(GetParentDirectory(filepath), imageFilename);
+	const string imageFilename = image->Attribute("source");
+	const string imagePath = JoinPaths(GetParentDirectory(filepath), imageFilename);
 
 	sf::Color matteColor = sf::Color(0, 0, 0, 0);
 	if (image->Attribute("trans") != nullptr)
@@ -143,7 +146,7 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 	sf::Image img;
 	if (!img.loadFromFile(imagePath))
 	{
-		std::cout << "Failed to load tile sheet." << std::endl;
+		cout << "Failed to load tile sheet." << endl;
 		return false;
 	}
 
@@ -161,7 +164,7 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 
 	// Collect texture rects list.
 	// Each texture rect is subimage in tileset image, i.e. single tile image.
-	std::vector<sf::IntRect> subRects;
+	vector<sf::IntRect> subRects;
 	for (int y = 0; y < rows; y++)
 	{
 		for (int x = 0; x < columns; x++)
@@ -199,14 +202,14 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 		XMLElement *layerDataElement = layerElement->FirstChildElement("data");
 		if (layerDataElement == nullptr)
 		{
-			std::cout << "Bad map. No layer information found." << std::endl;
+			cout << "Bad map. No layer information found." << endl;
 		}
 
 		// <tile> contains single tile description.
 		XMLElement *tileElement = layerDataElement->FirstChildElement("tile");
 		if (tileElement == nullptr)
 		{
-			std::cout << "Bad map. No tile information found." << std::endl;
+			cout << "Bad map. No tile information found." << endl;
 			return false;
 		}
 
@@ -214,7 +217,7 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 		int y = 0;
 		while (tileElement)
 		{
-			const int tileGID = std::stoi(tileElement->Attribute("gid"));
+			const int tileGID = stoi(tileElement->Attribute("gid"));
 			const int subRectToUse = tileGID - m_firstTileID;
 
 			// Figure out texture rect for each tile.
@@ -265,18 +268,18 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 			while (objectElement)
 			{
 				// Collecting object properties - type, name, position, etc.
-				std::string objectType;
+				string objectType;
 				if (objectElement->Attribute("type") != nullptr)
 				{
 					objectType = objectElement->Attribute("type");
 				}
-				std::string objectName;
+				string objectName;
 				if (objectElement->Attribute("name") != nullptr)
 				{
 					objectName = objectElement->Attribute("name");
 				}
-				float x = std::stof(objectElement->Attribute("x"));
-				float y = std::stof(objectElement->Attribute("y"));
+				float x = stof(objectElement->Attribute("x"));
+				float y = stof(objectElement->Attribute("y"));
 				float width = 0;
 				float height = 0;
 
@@ -287,12 +290,12 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 
 				if (objectElement->Attribute("width") != nullptr)
 				{
-					width = std::stof(objectElement->Attribute("width"));
-					height = std::stof(objectElement->Attribute("height"));
+					width = stof(objectElement->Attribute("width"));
+					height = stof(objectElement->Attribute("height"));
 				}
 				else
 				{
-					const size_t index = std::stoi(objectElement->Attribute("gid")) - m_firstTileID;
+					const size_t index = stoi(objectElement->Attribute("gid")) - m_firstTileID;
 					width = static_cast<float>(subRects[index].width);
 					height = static_cast<float>(subRects[index].height);
 					sprite.setTextureRect(subRects[index]);
@@ -321,8 +324,8 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 					{
 						while (prop)
 						{
-							std::string propertyName = prop->Attribute("name");
-							std::string propertyValue = prop->Attribute("value");
+							string propertyName = prop->Attribute("name");
+							string propertyValue = prop->Attribute("value");
 
 							object.properties[propertyName] = propertyValue;
 
@@ -341,25 +344,25 @@ bool TmxLevel::LoadFromFile(const std::string &filepath)
 	}
 	else
 	{
-		std::cout << "No object layers found..." << std::endl;
+		cout << "No object layers found..." << endl;
 	}
 
 	return true;
 }
 
-TmxObject TmxLevel::GetFirstObject(const std::string &name)const
+TmxObject TmxLevel::GetFirstObject(const string &name)const
 {
 	// Only first object with given name
 	for (size_t i = 0; i < m_objects.size(); i++)
 		if (m_objects[i].name == name)
 			return m_objects[i];
-	throw std::runtime_error("Object with name " + name + " was not found");
+	throw runtime_error("Object with name " + name + " was not found");
 }
 
-std::vector<TmxObject> TmxLevel::GetAllObjects(const std::string &name)const
+vector<TmxObject> TmxLevel::GetAllObjects(const string &name)const
 {
 	// All objects with given name
-	std::vector<TmxObject> vec;
+	vector<TmxObject> vec;
 	for (size_t i = 0; i < m_objects.size(); i++)
 		if (m_objects[i].name == name)
 			vec.push_back(m_objects[i]);

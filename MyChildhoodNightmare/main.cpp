@@ -2,10 +2,14 @@
 #include <string>
 #include "game.h"
 
-static const std::string GAME_NAME = "My Childhood Nightmare";
-static const std::string SETTINGS_NAME = "Settings";
+using namespace std;
+using namespace sf;
 
-static const std::vector<sf::Vector2u> RESOLUTIONS = {
+
+static const string GAME_NAME = "My Childhood Nightmare";
+static const string SETTINGS_NAME = "Settings";
+
+static const vector<sf::Vector2u> RESOLUTIONS = {
 	sf::Vector2u(1024, 576),
 	sf::Vector2u(1280, 720),
 	sf::Vector2u(1366, 768),
@@ -130,7 +134,7 @@ void EnterGameLoop(sf::RenderWindow& window, Game& game)
 		Update(game);
 		Render(window, game);
 		
-		//std::cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
+		//cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 

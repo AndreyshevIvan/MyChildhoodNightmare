@@ -1,6 +1,10 @@
 #include "menu.h"
 #include <iostream>
 
+using namespace std;
+using namespace sf;
+
+
 Menu::Menu(float width, float height)
 	:resolution(width, height)
 {

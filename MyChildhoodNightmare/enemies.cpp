@@ -1,6 +1,8 @@
 #include "enemies.h"
 
 using namespace std;
+using namespace sf;
+
 
 Enemy::Enemy(sf::Vector2f const& position, EnemyType const& type, int demageIncrease)
 {
@@ -61,13 +63,13 @@ void Enemy::CreateShadow(int demageIncrease)
 		UpdateShadowActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
+	Pursuit = [&](Character const& player, vector<Bullet*>& bullets, vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
 		(void)player;
 		ShadowWalk(elapsedTime, blocks);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
+	Idle = [&](float elapsedTime, vector<TmxObject> const& blocks) {
 		ShadowWalk(elapsedTime, blocks);
 	};
 }
@@ -88,14 +90,14 @@ void Enemy::CreateClown(int demageIncrease)
 		UpdateClownActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
+	Pursuit = [&](Character const& player, vector<Bullet*>& bullets, vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)blocks;
 		(void)player;
 		(void)elapsedTime;
 		ClownShoot(bullets);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
+	Idle = [&](float elapsedTime, vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
@@ -116,14 +118,14 @@ void Enemy::CreateGhost(int demageIncrease)
 		UpdateGhostActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
+	Pursuit = [&](Character const& player, vector<Bullet*>& bullets, vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
 		(void)blocks;
 		(void)elapsedTime;
 		GhostPursuite(player);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
+	Idle = [&](float elapsedTime, vector<TmxObject> const& blocks) {
 		(void)blocks;
 		GhostIdle(elapsedTime);
 	};
@@ -145,13 +147,13 @@ void Enemy::CreateSpider(int demageIncrease)
 		UpdateSpiderActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
+	Pursuit = [&](Character const& player, vector<Bullet*>& bullets, vector<TmxObject> const& blocks, float elapsedTime) {
 		(void)bullets;
 		(void)elapsedTime;
 		SpiderPursuite(player, blocks);
 	};
 
-	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
+	Idle = [&](float elapsedTime, vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
@@ -179,7 +181,7 @@ void Enemy::CreateBoss(int demageIncrease)
 		UpdateBossActivityStatus(player);
 	};
 
-	Pursuit = [&](Character const& player, std::vector<Bullet*>& bullets, std::vector<TmxObject> const& blocks, float elapsedTime) {
+	Pursuit = [&](Character const& player, vector<Bullet*>& bullets, vector<TmxObject> const& blocks, float elapsedTime) {
 		BossPursuite(player, bullets);
 		(void)bullets;
 		(void)player;
@@ -187,13 +189,13 @@ void Enemy::CreateBoss(int demageIncrease)
 		(void)elapsedTime;
 	};
 
-	Idle = [&](float elapsedTime, std::vector<TmxObject> const& blocks) {
+	Idle = [&](float elapsedTime, vector<TmxObject> const& blocks) {
 		(void)blocks;
 		(void)elapsedTime;
 	};
 }
 
-void Enemy::UpdateAI(float elapsedTime, Character const& player, std::vector<TmxObject> const& blocks, std::vector<Bullet*>& bullets)
+void Enemy::UpdateAI(float elapsedTime, Character const& player, vector<TmxObject> const& blocks, vector<Bullet*>& bullets)
 {
 	UpdateHealthStatus();
 	UpdateActivityStatus(player);
@@ -296,6 +298,10 @@ void Enemy::UpdateGhostActivityStatus(Character const& player)
 	{
 		activityStatus = EnemyActivity::PURSUIT;
 	}
+	else
+	{
+		activityStatus = EnemyActivity::IDLE;
+	}
 }
 
 void Enemy::UpdateBossActivityStatus(Character const& player)
@@ -321,7 +327,7 @@ void Enemy::UpdateSpiderPos(float elapsedTime)
 	bodyShape.setPosition(GetCharacterPos());
 }
 
-void Enemy::SpiderPursuite(Character const& player, std::vector<TmxObject> const& blocks)
+void Enemy::SpiderPursuite(Character const& player, vector<TmxObject> const& blocks)
 {
 	auto targetPosX = player.GetCharacterPos().x;
 
@@ -347,7 +353,7 @@ void Enemy::SpiderPursuite(Character const& player, std::vector<TmxObject> const
 	}
 }
 
-void Enemy::ShadowWalk(float elapsedTime, std::vector<TmxObject> const& blocks)
+void Enemy::ShadowWalk(float elapsedTime, vector<TmxObject> const& blocks)
 {
 	if (jumpStatus != JumpingStatus::FLY)
 	{
@@ -384,7 +390,7 @@ void Enemy::ShadowWalk(float elapsedTime, std::vector<TmxObject> const& blocks)
 	}
 }
 
-void Enemy::ClownShoot(std::vector<Bullet*>& bullets)
+void Enemy::ClownShoot(vector<Bullet*>& bullets)
 {
 	int orientationId = static_cast<int>(orientationStatus);
 
@@ -411,6 +417,8 @@ void Enemy::UpdateGhostPos(float elapsedTime)
 	collisionRect.top += elapsedTime * moveSpeed * ghostMove.y;
 
 	bodyShape.setPosition(GetCharacterPos());
+
+	ghostMove = { 0 , 0 };
 }
 
 void Enemy::GhostIdle(float elapsedTime)
@@ -423,8 +431,6 @@ void Enemy::GhostPursuite(Character const& player)
 	sf::Vector2f playerPos = player.GetCharacterPos();
 
 	float halfPlayerBody = player.bodyShape.getSize().y / 2.0f;
-	
-	ghostMove = { 0 , 0 };
 
 	if (playerPos.x < GetCharacterPos().x)
 	{
@@ -445,7 +451,7 @@ void Enemy::GhostPursuite(Character const& player)
 	}
 }
 
-void Enemy::BossPursuite(Character const& player, std::vector<Bullet*>& bullets)
+void Enemy::BossPursuite(Character const& player, vector<Bullet*>& bullets)
 {
 	(void)player;
 	sf::Vector2f AREA_SIZE(BOSS_TARGET_RANGE, BOSS_SIZE.y);
@@ -464,7 +470,7 @@ void Enemy::BossIdle()
 
 }
 
-void Enemy::BossAttack(std::vector<Bullet*>& bullets, sf::Vector2f const& targetPos)
+void Enemy::BossAttack(vector<Bullet*>& bullets, sf::Vector2f const& targetPos)
 {
 	if (shootColdown >= BOSS_SHOOT_COLDOWN)
 	{
