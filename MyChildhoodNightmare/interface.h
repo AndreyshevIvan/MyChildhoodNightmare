@@ -221,9 +221,8 @@ struct VisualEffects
 std::string IntToStr(int number);
 sf::Vector2f GetTextureSize(sf::Texture const& texture);
 sf::Color Extinguish(
-	float elapsedTime,
 	sf::Color const& color,
-	float duration,
+	float elementDuration,
 	float maxDuration,
-	float transExtinguishDur = TRANS_EXTINGUISH_DURATION
+	float extinguishDuration = TRANS_EXTINGUISH_DURATION
 );

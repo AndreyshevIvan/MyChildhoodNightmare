@@ -254,8 +254,8 @@ bool VisualEffects::UpdatePreview(sf::Vector2f const& position, float elapsedTim
 	previewText.setPosition(position + PREVIEW_TEXT_MARGIN );
 
 	const sf::Color color = previewImage.getFillColor();
-	previewImage.setFillColor(Extinguish(elapsedTime, color, partDuration, PART_DURATION));
-	previewText.setFillColor(Extinguish(elapsedTime, color, partDuration, PART_DURATION));
+	previewImage.setFillColor(Extinguish(color, partDuration, PART_DURATION));
+	previewText.setFillColor(Extinguish(color, partDuration, PART_DURATION));
 
 	switch (currentPart)
 	{
@@ -347,7 +347,7 @@ void VisualEffects::UpdateAnnouncement(float elapsedTime)
 			text->move(0, -DEMAGE_ANNOUNCEMENT_SPEED * elapsedTime);
 
 			const sf::Color color = text->getFillColor();
-			sf::Color newColor(Extinguish(elapsedTime, color, *duration, ANNOUNCEMENT_DURATION));
+			sf::Color newColor(Extinguish(color, *duration, ANNOUNCEMENT_DURATION));
 			text->setFillColor(newColor);
 			text->setOutlineColor(sf::Color(0, 0, 0, newColor.a));
 
@@ -428,8 +428,8 @@ void Remark::Update(sf::Vector2f const& position, float elapsedTime)
 	remarkText.setPosition(cloud.getPosition() + REMARK_TEXT_MARGIN);
 	duration += elapsedTime;
 
-	cloud.setFillColor(Extinguish(elapsedTime, cloud.getFillColor(), duration, REMARK_DURATION));
-	remarkText.setFillColor(Extinguish(elapsedTime, remarkText.getFillColor(), duration, REMARK_DURATION));
+	cloud.setFillColor(Extinguish(cloud.getFillColor(), duration, REMARK_DURATION));
+	remarkText.setFillColor(Extinguish(remarkText.getFillColor(), duration, REMARK_DURATION));
 }
 
 void Remark::Draw(sf::RenderWindow& window)
@@ -461,20 +461,19 @@ sf::Vector2f GetTextureSize(sf::Texture const& texture)
 }
 
 sf::Color Extinguish(
-	float elapsedTime,
 	sf::Color const& color,
-	float duration,
+	float elementDuration,
 	float maxDuration,
-	float transExtinguishDur
+	float extinguishDuration
 )
 {
-	float avalableDuration = maxDuration - transExtinguishDur;
+	float startExtinguishTime = maxDuration - extinguishDuration;
 	sf::Color newColor;
-	if (duration >= avalableDuration)
+	if (elementDuration >= startExtinguishTime)
 	{
-		sf::Uint8 transparency = color.a;
-		sf::Uint8 step = static_cast<sf::Uint8>(255 * elapsedTime / transExtinguishDur);
-		newColor = sf::Color(255, 255, 255, transparency - step);
+		float extinguishElapsedTime = elementDuration - startExtinguishTime;
+		sf::Uint8 transStep = static_cast<sf::Uint8>(255 * extinguishElapsedTime / extinguishDuration);
+		newColor = sf::Color(255, 255, 255, 255 - transStep);
 
 		return newColor;
 	}
