@@ -55,28 +55,38 @@ const float REMARK_RANDOM_PROBABILITY = 0.3f;
 const std::vector<std::string> KILL_REMARKS = {
 	"Easy Breezy",
 	"Next please",
-	"Die!",
-	"Death to you!",
-	"So sweet..."
+	"I'm not afraid of you!",
+	"Take that!",
+	"How you like me now?",
+	"Now you're done!"
 };
 const std::vector<std::string> DEATH_REMARKS = {
 	"Ohhh, noooo",
-	"Lucky shot..."
+	"Lucky shot...",
+	"ahhrhhahrh",
+	"God dammit!",
+	"Oh, shit!",
+	"Deadpool doest it better..."
 };
 const std::vector<std::string> BONUS_REMARKS = {
-	"Earned through blood",
-	"The wait has ended"
+	"That can be handy",
+	"Nice!",
+	"That's much better",
+	"Right in time!",
+	"What would I do without you?"
 };
 const std::vector<std::string> GIFT_REMARKS = {
 	"Nice!",
-	"It`s mine"
+	"It`s mine",
+	"I've grown up!",
+	"I'm like Flash!"
 };
 const std::vector<std::string> RANDOM_REMARKS = {
 	"Forward!",
 	"The time has come...",
-	"Prepare for the wave of terror: boo!",
-	"Delicious...",
-	"Ah ahahahahahahahah ahahah!"
+	"Debbie does Dallas!",
+	"OMG, help me be like them!",
+	"Wakey, wakey, sleepy, wakey!"
 };
 
 enum struct PreviewStatus
