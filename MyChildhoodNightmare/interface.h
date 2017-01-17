@@ -7,13 +7,14 @@ const sf::Vector2f PREVIEW_IMAGE_SIZE = { 400, 400 };
 const sf::Vector2f BOX_SIZE = { 58, 50 };
 const sf::Vector2f BOSS_BAR_SIZE = { 700, 82 };
 const sf::Vector2f BOSS_HP_LINE_SIZE = { 630, 30 };
-const sf::Vector2f REMARK_CLOUD_SIZE = { 188, 58 };
+const sf::Vector2f REMARK_CLOUD_SIZE = { 165, 54 };
 
 const int PLAYER_HP_FONT_SIZE = 50;
 const int PLAYER_AMMO_FONT_SIZE = 28;
 const int PREVIEW_FONT_SIZE = 35;
 const int HELP_FONT_SIZE = 15;
 const int ANNOUNCEMENT_FONT_SIZE = 20;
+const int REMARK_FONT_SIZE = 16;
 
 const float ANNOUNCEMENT_OUTLINE_THICKNESS = 2;
 
@@ -28,8 +29,9 @@ const sf::Vector2f BOSS_HP_LINE_MARGIN = { -BOSS_HP_LINE_SIZE.x / 2.0f + 33, -33
 const sf::Vector2f HELP_TEXT_MARGIN = { 30 , -40 };
 const float BOXES_MIDLE_MARGIN = 60;
 const int MAX_ANNOUNCEMENT_MARGIN = 40;
-const sf::Vector2f REMARK_MARGIN = { -42, -110 };
-const sf::Vector2f REMARK_TEXT_MARGIN = { REMARK_CLOUD_SIZE.x / 2.0f, 18 };
+const float REMARK_CLOUD_VERTICAL_ORIGIN = 18;
+const sf::Vector2f REMARK_CLOUD_MARGIN = { 45, -90 };
+const sf::Vector2f REMARK_TEXT_MARGIN = { 0, -2 };
 
 const int PART_COUNT = 3;
 
@@ -54,8 +56,7 @@ const float REMARK_RANDOM_PROBABILITY = 0.3f;
 
 const std::vector<std::string> KILL_REMARKS = {
 	"Easy Breezy",
-	"Next please",
-	"I'm not afraid of you!",
+	"Next please"
 	"Take that!",
 	"How you like me now?",
 	"Now you're done!"
@@ -65,15 +66,13 @@ const std::vector<std::string> DEATH_REMARKS = {
 	"Lucky shot...",
 	"ahhrhhahrh",
 	"God dammit!",
-	"Oh, shit!",
-	"Deadpool doest it better..."
+	"Oh, shit!"
 };
 const std::vector<std::string> BONUS_REMARKS = {
 	"That can be handy",
 	"Nice!",
 	"That's much better",
-	"Right in time!",
-	"What would I do without you?"
+	"Right in time!"
 };
 const std::vector<std::string> GIFT_REMARKS = {
 	"Nice!",
@@ -84,9 +83,7 @@ const std::vector<std::string> GIFT_REMARKS = {
 const std::vector<std::string> RANDOM_REMARKS = {
 	"Forward!",
 	"The time has come...",
-	"Debbie does Dallas!",
-	"OMG, help me be like them!",
-	"Wakey, wakey, sleepy, wakey!"
+	"Debbie does Dallas!"
 };
 
 enum struct PreviewStatus

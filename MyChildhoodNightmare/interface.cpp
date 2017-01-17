@@ -416,15 +416,16 @@ Remark::Remark(string const& text)
 
 	cloud.setTexture(&cloudTexture);
 	cloud.setSize(REMARK_CLOUD_SIZE);
+	cloud.setOrigin(REMARK_CLOUD_SIZE.x / 2.0f, REMARK_CLOUD_VERTICAL_ORIGIN);
 
-	remarkText = sf::Text(remark, font, HELP_FONT_SIZE);
+	remarkText = sf::Text(remark, font, REMARK_FONT_SIZE);
 	remarkText.setOrigin(remarkText.getGlobalBounds().width / 2.0f, remarkText.getGlobalBounds().height / 2.0f);
 	remarkText.setFillColor(sf::Color::Black);
 }
 
 void Remark::Update(sf::Vector2f const& position, float elapsedTime)
 {
-	cloud.setPosition(position + REMARK_MARGIN);
+	cloud.setPosition(position + REMARK_CLOUD_MARGIN);
 	remarkText.setPosition(cloud.getPosition() + REMARK_TEXT_MARGIN);
 	duration += elapsedTime;
 
