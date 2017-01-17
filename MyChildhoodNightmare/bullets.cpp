@@ -29,7 +29,7 @@ Bullet::Bullet(sf::Vector2f const& startPos, int demage, int orientation, float 
 	}
 
 	collisionRect.left = startPos.x;
-	collisionRect.top = startPos.y - 50;
+	collisionRect.top = startPos.y + BULLET_VERTICAL_MARGIN;
 	collisionRect.width = BULLET_SIZE.x;
 	collisionRect.height = BULLET_SIZE.y;
 

@@ -409,11 +409,11 @@ void Game::ControlGameOver(sf::RenderWindow& window)
 
 void Game::UpdatePlayer()
 {
+	player.UpdateTexture(elapsedTime);
 	player.UpdateOrientation();
 	player.UpdatePos(elapsedTime, blocks);
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
-	player.UpdateTexture(elapsedTime);
 
 	for (auto blood : player.wounds)
 	{

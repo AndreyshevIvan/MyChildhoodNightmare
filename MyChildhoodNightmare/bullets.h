@@ -11,6 +11,8 @@ const float PISTOL_COLDOWN = 0.4f;
 const float SHOOTGUN_COLDOWN = 0.5f;
 const float AK_COLDOWN = 0.1f;
 
+const float BULLET_VERTICAL_MARGIN = -50;
+
 enum struct BulletType
 {
 	PLAYER_AK,

@@ -8220,7 +8220,7 @@
   <object id="16" name="solid" x="1437" y="963" width="93.9997" height="106"/>
   <object id="17" name="solid" x="1470.33" y="995" width="93.9997" height="106"/>
   <object id="18" name="solid" x="1503" y="1027" width="93.9997" height="106"/>
-  <object id="23" name="solid" x="1473.67" y="705.667" width="69.9997" height="60.6667"/>
+  <object id="23" name="solid" x="1473.67" y="724.667" width="69.9997" height="41.6667"/>
   <object id="24" name="solid" x="1505.67" y="738.333" width="69.9997" height="60.6667"/>
   <object id="25" name="solid" x="1538.33" y="769.667" width="69.9997" height="60.6667"/>
   <object id="26" name="solid" x="1568.33" y="800.333" width="69.9997" height="60.6667"/>
@@ -8229,7 +8229,6 @@
  </objectgroup>
  <objectgroup name="spawns">
   <object id="6" name="player_spawn" x="474.667" y="591" width="28" height="28"/>
-  <object id="179" name="enemy_spider_spawn" x="978" y="389" width="46" height="44"/>
  </objectgroup>
  <objectgroup name="level">
   <object id="36" name="next_level" x="1591.34" y="884.663" width="86.6667" height="170.5"/>

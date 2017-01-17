@@ -69,6 +69,36 @@ void Player::UpdateStatuses()
 	}
 }
 
+void Player::UpdateTexture(float elapsedTime)
+{
+	auto bodyWidth = static_cast<int>(bodyShape.getSize().x);
+	auto bodyHeight = static_cast<int>(bodyShape.getSize().y);
+	sf::Vector2i frameSize(bodyWidth, bodyHeight);
+
+	int weaponMargin = currentWeapon * 3 * bodyHeight;
+	int orientationMargin = (orientationStatus == LEFT) ? FRAMES_COUNT * bodyWidth : 0;
+	int jumpMargin = (jumpStatus == FLY) ? 2 * bodyHeight : 0;
+	int runMargin = 0;
+	
+	if (jumpStatus == ON_GROUND)
+	{
+		runMargin = (runStatus != NOT_RUN) ? bodyHeight : 0;
+		std::cout << runMargin;
+	}
+
+	animateTime += elapsedTime;
+	int frame = static_cast<int>(animateTime / TIME_TO_FRAME);
+
+	if (frame == FRAMES_COUNT - 1)
+	{
+		animateTime = 0;
+	}
+
+	int verticalFramePos = frame * frameSize.x + orientationMargin;
+	int horizontalFramePos = weaponMargin + jumpMargin + runMargin;
+	bodyShape.setTextureRect(sf::IntRect({ verticalFramePos, horizontalFramePos }, frameSize));
+}
+
 void Player::SwitchWeapon()
 {
 	switchWeapon.play();
@@ -130,7 +160,9 @@ void Player::PistolFire(int orientation)
 {
 	weaponPistol.play();
 
-	auto bullet = new Bullet(GetCharacterPos(), shootDemage, orientation, shootRange, BulletType::PLAYER_AK);
+	auto bullPos = GetCharacterPos() + PLAYER_SHOOT_MARGIN;
+
+	auto bullet = new Bullet(bullPos, shootDemage, orientation, shootRange, BulletType::PLAYER_AK);
 	characterBullets.push_back(bullet);
 }
 
@@ -138,11 +170,12 @@ void Player::ShootgunFire(int orientation)
 {
 	weaponShootgun.play();
 
-	Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25);
-	Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25);
+	Vector2f topBullPos = GetCharacterPos() + Vector2f(0, -25) + PLAYER_SHOOT_MARGIN;
+	Vector2f middleBullPos = GetCharacterPos() + PLAYER_SHOOT_MARGIN;
+	Vector2f bottomBullPos = GetCharacterPos() + Vector2f(0, 25) + PLAYER_SHOOT_MARGIN;
 
 	auto topBullet = new Bullet(topBullPos, shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
-	auto midBullet = new Bullet(GetCharacterPos(), shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
+	auto midBullet = new Bullet(middleBullPos, shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
 	auto botBullet = new Bullet(bottomBullPos, shootgunDemage, orientation, shootRange, BulletType::PLAYER_SHOOTGUN);
 
 	characterBullets.push_back(topBullet);
@@ -156,7 +189,9 @@ void Player::AkFire(int orientation)
 {
 	weaponAK.play();
 
-	auto bullet = new Bullet(GetCharacterPos(), akDemage, orientation, shootRange, BulletType::PLAYER_AK);
+	auto bullPos = GetCharacterPos() + PLAYER_SHOOT_MARGIN;
+
+	auto bullet = new Bullet(bullPos, akDemage, orientation, shootRange, BulletType::PLAYER_AK);
 	characterBullets.push_back(bullet);
 	ammoMap.find(currentWeapon)->second--;
 }

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 const float MAIN_MENU_VOLUME = 10.0f;
-const float GAMEPLAY_VOLUME = 18.0f;
+const float GAMEPLAY_VOLUME = 26.0f;
 const float MENU_BUTTON_SWITCH_VOLUME = 5.0f;
 const float WIN_VOLUME = 25.0f;
 

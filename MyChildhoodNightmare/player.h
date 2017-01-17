@@ -23,6 +23,8 @@ const sf::Color INJURED_COLOR = sf::Color(255, 255, 255, 140);
 const float GAME_OVER_DURATION = 2;
 const float DEAD_ROTATION = 90;
 
+const sf::Vector2f PLAYER_SHOOT_MARGIN = { 0 , 10 };
+
 enum Weapon
 {
 	PISTOL,
@@ -63,6 +65,7 @@ struct Player : Character
 	void ReturnCopy();
 
 	void UpdateStatuses();
+	void UpdateTexture(float elapsedTime) override;
 
 	void Clear();
 };
