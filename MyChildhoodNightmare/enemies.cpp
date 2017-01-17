@@ -224,11 +224,7 @@ void Enemy::UpdateAI(float elapsedTime, Character const& player, vector<TmxObjec
 		UpdatePos(elapsedTime, blocks);
 	}
 
-	if (!(enemyType == EnemyType::SPIDER && activityStatus == EnemyActivity::IDLE))
-	{
-		UpdateTexture(elapsedTime);
-	}
-
+	UpdateTexture(elapsedTime);
 	UpdateHands();
 }
 

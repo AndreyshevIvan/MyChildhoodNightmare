@@ -7,16 +7,16 @@ const float PLAYER_MOVE_SPEED = 250;
 
 const int PLAYER_START_HEALTH = 100;
 const int PLAYER_START_SHOOTGUN_AMMO = 7;
-const int PLAYER_START_AK_AMMO = 30;
-const int PLAYER_MAX_AMMO = 99;
-const int PLAYER_PISTOL_DEMAGE = 10;
-const int PLAYER_AK_DEMAGE = 6;
-const int PLAYER_SHOOTGUN_DEMAGE = 9;
-const float PLAYER_START_SHOOT_RANGE = 400;
+const int PLAYER_START_AK_AMMO = 20;
+const int PLAYER_MAX_AMMO = 50;
+const int PLAYER_PISTOL_DEMAGE = 8;
+const int PLAYER_AK_DEMAGE = 5;
+const int PLAYER_SHOOTGUN_DEMAGE = 7;
+const float PLAYER_START_SHOOT_RANGE = 420;
 
-const int PLAYER_MAX_AK_DEMAGE = 40;
-const int PLAYER_MAX_SHOOTGUN_DEMAGE = 30;
-const int PLAYER_MAX_HEALTH = 250;
+const int PLAYER_MAX_AK_DEMAGE = 16;
+const int PLAYER_MAX_SHOOTGUN_DEMAGE = 16;
+const int PLAYER_MAX_HEALTH = 240;
 
 const float INJURED_DURATION = 1.0;
 const sf::Color INJURED_COLOR = sf::Color(255, 255, 255, 140);

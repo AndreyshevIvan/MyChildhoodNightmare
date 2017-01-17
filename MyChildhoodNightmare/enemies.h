@@ -26,7 +26,7 @@ const float CLOWN_SHOOT_COLDOWN = 0.24f;
 
 const sf::Vector2f GHOST_SIZE = { 80, 70 };
 const int GHOST_START_HEALTH = 80;
-const float GHOST_TARGET_RANGE = 300;
+const float GHOST_TARGET_RANGE = 600;
 const float GHOST_MIN_TARGET_RANGE = 1;
 const float GHOST_MOVE_SPEED = 110;
 const int GHOST_TOUCH_DEMAGE = 6;

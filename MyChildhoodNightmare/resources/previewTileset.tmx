@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="65" height="42" tilewidth="32" tileheight="32" nextobjectid="179">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="65" height="42" tilewidth="32" tileheight="32" nextobjectid="180">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="400" columns="20">
   <image source="tileset.png" width="640" height="640"/>
  </tileset>
@@ -8229,7 +8229,7 @@
  </objectgroup>
  <objectgroup name="spawns">
   <object id="6" name="player_spawn" x="474.667" y="591" width="28" height="28"/>
-  <object id="178" name="enemy_shadow_spawn" x="985" y="478" width="46" height="44"/>
+  <object id="179" name="enemy_spider_spawn" x="978" y="389" width="46" height="44"/>
  </objectgroup>
  <objectgroup name="level">
   <object id="36" name="next_level" x="1591.34" y="884.663" width="86.6667" height="170.5"/>
