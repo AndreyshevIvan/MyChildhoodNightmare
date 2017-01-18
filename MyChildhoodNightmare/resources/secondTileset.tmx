@@ -27578,9 +27578,9 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
    <tile gid="3"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -27778,9 +27778,9 @@
    <tile gid="22"/>
    <tile gid="22"/>
    <tile gid="22"/>
-   <tile gid="6"/>
-   <tile gid="2"/>
-   <tile gid="3"/>
+   <tile gid="22"/>
+   <tile gid="22"/>
+   <tile gid="23"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -40058,7 +40058,7 @@
   <object id="89" name="solid" x="4258" y="1186" width="60" height="28"/>
   <object id="90" name="solid" x="4417" y="1185" width="156" height="421"/>
   <object id="91" name="solid" x="4576" y="1280" width="393" height="330"/>
-  <object id="92" name="solid" x="4962" y="1187" width="346" height="413"/>
+  <object id="92" name="solid" x="4962" y="1187" width="409" height="413"/>
   <object id="93" name="solid" x="4997.67" y="1088.33" width="60" height="28"/>
   <object id="94" name="solid" x="5125" y="995.333" width="60" height="28"/>
   <object id="100" name="solid" x="1752" y="1589.5" width="2700" height="79"/>
@@ -40079,7 +40079,6 @@
   <object id="115" name="solid" x="5794" y="737" width="208" height="28"/>
   <object id="116" name="solid" x="5856" y="767" width="196" height="28"/>
   <object id="117" name="solid" x="257.333" y="1218.83" width="60" height="89"/>
-  <object id="118" name="solid" x="5206" y="1222.5" width="166" height="153"/>
   <object id="119" name="solid" x="5697" y="1220.5" width="166" height="153"/>
   <object id="120" name="solid" x="5858" y="1186.5" width="249" height="153"/>
   <object id="121" name="solid" x="5372.5" y="1250.5" width="343" height="153"/>
@@ -40126,7 +40125,7 @@
  <objectgroup name="enemies_spawns">
   <object id="160" name="enemy_clown_spawn" x="962.333" y="422" width="46" height="44"/>
   <object id="161" name="enemy_clown_spawn" x="1115" y="929" width="46" height="44"/>
-  <object id="162" name="enemy_clown_spawn" x="2949" y="1302" width="46" height="44"/>
+  <object id="162" name="enemy_clown_spawn" x="2943" y="1266" width="46" height="44"/>
   <object id="163" name="enemy_clown_spawn" x="4037" y="1236.67" width="46" height="44"/>
   <object id="164" name="enemy_clown_spawn" x="5747.67" y="870" width="46" height="44"/>
   <object id="165" name="enemy_shadow_spawn" x="1367.67" y="1034" width="46" height="44"/>

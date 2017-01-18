@@ -83,7 +83,6 @@ void Player::UpdateTexture(float elapsedTime)
 	if (jumpStatus == ON_GROUND)
 	{
 		runMargin = (runStatus != NOT_RUN) ? bodyHeight : 0;
-		std::cout << runMargin;
 	}
 
 	animateTime += elapsedTime;
@@ -146,6 +145,7 @@ void Player::Attack()
 				break;
 			}
 
+			gunFire.push_back(new GunFire());
 			shootColdown = 0;
 		}
 		else if(!IsEmptySoundPlaying)

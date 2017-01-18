@@ -56,7 +56,7 @@ const float REMARK_RANDOM_PROBABILITY = 0.3f;
 
 const std::vector<std::string> KILL_REMARKS = {
 	"Easy Breezy",
-	"Next please"
+	"Next please",
 	"Take that!",
 	"How you like me now?",
 	"Now you're done!"

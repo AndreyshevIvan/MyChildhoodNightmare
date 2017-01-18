@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "bullets.h"
 #include "sound.h"
+#include "temporaryObjects.h"
 
 const float FLYING_SLOWDOWN = 0.6f;
 const float CHARACTERS_JUMP_SPEED = 400;
@@ -10,13 +11,6 @@ const float MIN_SHOOT_RANGE = 140;
 
 const float CRITICAL_JUMP_SPEED = 700;
 const float SPEED_PER_DEMAGE = 160;
-
-const sf::Vector2f BLOOD_SIZE = { 45, 30 };
-const int BLOOD_MAX_ROTATION = 30;
-const float BLOOD_MARGIN_X = 16;
-const float BLOOD_MARGIN_Y = 6;
-const int BLOOD_FRAMES = 10;
-const float BLOOD_DURATION = 0.25f;
 
 const float TIME_TO_FRAME = 0.08f;
 const int FRAMES_COUNT = 6;
@@ -46,24 +40,6 @@ enum OrientationStatus
 	RIGHT,
 };
 
-struct Blood
-{
-	Blood(sf::Vector2f const& characterPos, sf::Vector2f const& bulletPos);
-
-	sf::RectangleShape blood;
-	sf::Texture bloodTexture;
-
-	sf::Vector2f positionOffset;
-	sf::Vector2f* position;
-
-	float secondsPerFrame;
-	float duration;
-	int currentFrame;
-
-	void Update(sf::Vector2f const& characterPos, float elapsedTime);
-	void Draw(sf::RenderWindow& window);
-};
-
 struct Character : CharacterSound
 {
 	sf::Texture bodyTexture;
@@ -76,6 +52,8 @@ struct Character : CharacterSound
 	OrientationStatus orientationStatus = OrientationStatus::RIGHT;
 
 	std::vector<Bullet*> characterBullets;
+	std::vector<Blood*> wounds;
+	std::vector<GunFire*> gunFire;
 
 	float moveSpeed;
 	float jumpSpeed = 0;
@@ -88,7 +66,6 @@ struct Character : CharacterSound
 	float shootRange = MIN_SHOOT_RANGE;
 	sf::Music* deathSound = nullptr;
 	void Spawn(sf::Vector2f const& pos);
-	std::vector<Blood*> wounds;
 
 	float animateTime = 0;
 

@@ -54,6 +54,9 @@
     <ClCompile Include="lib\tinyxml2\tinyxml2.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
+    <ClCompile Include="temporaryObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="lib\tinyxml2\tinyxml2.h">
       <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="temporaryObjects.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

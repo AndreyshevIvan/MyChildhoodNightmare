@@ -24,7 +24,7 @@ Menu::Menu(float width, float height)
 
 	mainMenuButtons = {
 		sf::Text("Start", buttonFont, FONT_SIZE),
-		sf::Text("Difficulty", buttonFont, FONT_SIZE),
+		sf::Text("Difficult", buttonFont, FONT_SIZE),
 		sf::Text("Leave", buttonFont, FONT_SIZE)
 	};
 
@@ -128,15 +128,15 @@ void Menu::Select(MenuType const& selectMenu, Difficult const& selectButton)
 	size_t selectMenuId = static_cast<size_t>(selectMenu);
 	size_t selectButtonId = static_cast<size_t>(selectButton);
 
-	for (size_t it = 0; it < allMenues[selectMenuId].size() - 1; it++)
+	for (size_t buttonNum = 0; buttonNum < allMenues[selectMenuId].size() - 1; buttonNum++)
 	{
-		if (it != selectButtonId)
+		if (buttonNum != selectButtonId)
 		{
-			allMenues[selectMenuId][it].setFillColor(UNSELECTED_ITEM_COLOR);
+			allMenues[selectMenuId][buttonNum].setFillColor(UNSELECTED_ITEM_COLOR);
 		}
 		else
 		{
-			allMenues[selectMenuId][it].setFillColor(BUTTON_COLOR);
+			allMenues[selectMenuId][buttonNum].setFillColor(SELECTED_BUTTON_COLOR);
 		}
 	}
 }

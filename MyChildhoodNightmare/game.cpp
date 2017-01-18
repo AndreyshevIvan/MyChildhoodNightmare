@@ -311,7 +311,7 @@ void Game::ControlMenu(sf::RenderWindow& window)
 		currentScene = &gameplayScene;
 	}
 	else if ((Keyboard::isKeyPressed(Keyboard::F) || Keyboard::isKeyPressed(Keyboard::Return)) &&
-			menu.buttonsColdown >= BUTTONS_COLDOWN)
+		menu.buttonsColdown >= BUTTONS_COLDOWN)
 	{
 		menu.buttonsColdown = 0;
 		ControlMenuLogic(window);
@@ -415,18 +415,6 @@ void Game::UpdatePlayer()
 	player.UpdateHealthStatus();
 	player.UpdateStatuses();
 
-	for (auto blood : player.wounds)
-	{
-		blood->Update(player.GetCharacterPos(), elapsedTime);
-	}
-	erase_if(player.wounds, [&](Blood* blood) {
-		bool durationEnd = blood->duration >= BLOOD_DURATION;
-		if (durationEnd)
-			delete(blood);
-
-		return durationEnd;
-	});
-
 	if (player.existStatus == ExistenceStatus::DEAD)
 	{
 		visualEffects.CreateRemark(RemarkType::DEATH);
@@ -469,20 +457,10 @@ void Game::UpdateEnemies()
 		Enemy* enemy = *it;
 		enemy->UpdateAI(elapsedTime, player, blocks, enemyBullets);
 
-		for (auto blood : enemy->wounds)
-		{
-			blood->Update(enemy->GetCharacterPos(), elapsedTime);
-		}
-		erase_if(enemy->wounds, [&](Blood* blood) {
-			bool durationEnd = blood->duration >= BLOOD_DURATION;
-			if (durationEnd)
-				delete(blood);
-
-			return durationEnd;
-		});
-
 		if (enemy->existStatus == ExistenceStatus::DEAD)
 		{
+			audio.EnemyDeath(static_cast<int>(enemy->enemyType));
+			explosions.push_back(new Explosion(enemy->GetCharacterPos()));
 			visualEffects.CreateRemark(RemarkType::KILL);
 			if (enemy->enemyType == EnemyType::BOSS)
 			{
@@ -500,6 +478,60 @@ void Game::UpdateEnemies()
 			++it;
 		}
 	}
+}
+
+void Game::UpdateTemporaryObjects()
+{
+	for (auto enemy : enemies)
+	{
+		for (auto blood : enemy->wounds)
+		{
+			blood->Update(enemy->GetCharacterPos(), elapsedTime);
+		}
+		erase_if(enemy->wounds, [&](Blood* blood) {
+			bool durationEnd = blood->duration >= BLOOD_DURATION;
+			if (durationEnd)
+				delete(blood);
+
+			return durationEnd;
+		});
+	}
+
+	for (auto blood : player.wounds)
+	{
+		blood->Update(player.GetCharacterPos(), elapsedTime);
+	}
+	erase_if(player.wounds, [&](Blood* blood) {
+		bool durationEnd = blood->duration >= BLOOD_DURATION;
+		if (durationEnd)
+			delete(blood);
+
+		return durationEnd;
+	});
+
+	for (auto fire : player.gunFire)
+	{
+		fire->Update(player.GetCharacterPos(), elapsedTime, player.orientationStatus);
+	}
+	erase_if(player.gunFire, [&](GunFire* fire) {
+		bool durationEnd = fire->duration >= GUNFIRE_DURATION;
+		if (durationEnd)
+			delete(fire);
+
+		return durationEnd;
+	});
+
+	for (auto explosion : explosions)
+	{
+		explosion->Update(elapsedTime);
+	}
+	erase_if(explosions, [&](Explosion* explosion) {
+		bool durationEnd = explosion->duration >= EXPLOSION_DURATION;
+		if (durationEnd)
+			delete(explosion);
+
+		return durationEnd;
+	});
 }
 
 void Game::UpdateBonuses()
@@ -767,6 +799,14 @@ void Game::DrawBonuses(sf::RenderWindow& window)
 		{
 			bonus->DrawBonus(window);
 		}
+	}
+}
+
+void Game::DrawTemporaryObjects(sf::RenderWindow& window)
+{
+	for (auto explosion : explosions)
+	{
+		explosion->Draw(window);
 	}
 }
 

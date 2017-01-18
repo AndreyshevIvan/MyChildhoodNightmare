@@ -19,6 +19,10 @@ GameSound::GameSound()
 	boxBonusSound.openFromFile("resources/sound/bonus_box.wav");
 	randomBonusSound.openFromFile("resources/sound/bonus_random.ogg");
 	gameOverSound.openFromFile("resources/sound/game_over.ogg");
+	deathShadow.openFromFile("resources/sound/shadow_death.ogg");
+	deathSpider.openFromFile("resources/sound/spider_death.ogg");
+	deathClown.openFromFile("resources/sound/clown_death.ogg");
+	deathGhost.openFromFile("resources/sound/ghost_death.ogg");
 
 	menuSound.setVolume(MAIN_MENU_VOLUME);
 	level_0_ost.setVolume(GAMEPLAY_VOLUME);
@@ -28,6 +32,11 @@ GameSound::GameSound()
 	gameOverSound.setVolume(MAIN_MENU_VOLUME);
 	winSound.setVolume(WIN_VOLUME);
 
+	deathShadow.setVolume(COLLIDES_VOLIME);
+	deathSpider.setVolume(COLLIDES_VOLIME);
+	deathClown.setVolume(COLLIDES_VOLIME);
+	deathGhost.setVolume(GHOST_DEATH_VOLUME);
+
 	shadowCollideSound.setVolume(COLLIDES_VOLIME);
 	ghostCollideSound.setVolume(COLLIDES_VOLIME);
 
@@ -35,6 +44,29 @@ GameSound::GameSound()
 	healthBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
 	boxBonusSound.setVolume(ADD_HEALTH_BONUS_VOLUME);
 	randomBonusSound.setVolume(ADD_AMMO_BONUS_VOLUME);
+}
+
+void GameSound::EnemyDeath(int type)
+{
+	switch (type)
+	{
+	case SHADOW:
+		deathShadow.play();
+		break;
+	case CLOWN:
+		deathClown.play();
+		break;
+	case GHOST:
+		deathGhost.play();
+		break;
+	case SPIDER:
+		deathSpider.play();
+		break;
+	case BOSS:
+		break;
+	default:
+		break;
+	}
 }
 
 void GameSound::CollideWithEnemy(int type)

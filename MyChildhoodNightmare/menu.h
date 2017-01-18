@@ -7,7 +7,7 @@ const unsigned FONT_SIZE_MINI = 40;
 
 const sf::Color RESIZE_SETTINGS_BG_COLOR = sf::Color(14, 4, 21);
 const sf::Color UNSELECTED_ITEM_COLOR = sf::Color(30, 30, 30);
-const sf::Color BUTTON_COLOR = sf::Color(30, 30, 30);
+const sf::Color SELECTED_BUTTON_COLOR = sf::Color::White;
 
 const sf::Vector2f GAMENAME_SIZE = { 328, 180 };
 const sf::Vector2i MAIN_MENU_WRAPPER_SIZE = { 1366, 768 };

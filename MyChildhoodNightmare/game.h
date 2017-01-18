@@ -44,6 +44,7 @@ struct Game
 	std::vector<Enemy*> enemies;
 	std::vector<Bullet*> enemyBullets;
 	std::vector<Bonus*> bonuses;
+	std::vector<Explosion*> explosions;
 
 	std::vector<TmxObject> blocks;
 	std::vector<TmxObject> lava;
@@ -99,6 +100,7 @@ struct Game
 	void UpdatePlayer();
 	void UpdateBullets();
 	void UpdateEnemies();
+	void UpdateTemporaryObjects();
 	void UpdateInterface();
 	void UpdateBonuses();
 	void UpdateOST();
@@ -114,6 +116,7 @@ struct Game
 	void DrawBullets(sf::RenderWindow& window);
 	void DrawEnemies(sf::RenderWindow& window);
 	void DrawBonuses(sf::RenderWindow& window);
+	void DrawTemporaryObjects(sf::RenderWindow& window);
 	void DrawInterface(sf::RenderWindow& window);
 
 	void ClearScene();

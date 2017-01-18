@@ -54,9 +54,9 @@ const int WALL_ATTACK_WINDOW_BULLETS_COUNT = 3;
 const int LAVA_DEMAGE = 20;
 const float BOTTOM_HAND_MARGIN = 10;
 
-const int EASY_DEMAGE_INCREASE = 0;
-const int NORMAL_DEMAGE_INCREASE = 2;
-const int HARD_DEMAGE_INCREASE = 5;
+const int EASY_DEMAGE_INCREASE = -2;
+const int NORMAL_DEMAGE_INCREASE = 0;
+const int HARD_DEMAGE_INCREASE = 3;
 
 enum struct EnemyType
 {

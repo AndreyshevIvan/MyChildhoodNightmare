@@ -8,6 +8,8 @@ using namespace sf;
 
 static const string GAME_NAME = "My Childhood Nightmare";
 static const sf::Vector2u START_RESOLUTION = { 1280, 720 };
+static const float CRITICAL_ELAPSED_TIME = 0.1f;
+static const float NORMAL_ELAPSED_TIME = 0.016f;
 
 
 void InitScenes(Game& game);
@@ -40,21 +42,18 @@ int main()
 
 void EnterGameLoop(sf::RenderWindow& window, Game& game)
 {
-
 	while (window.isOpen())
 	{
 		game.SetElapsedTime();
 
-		if (game.elapsedTime >= 0.1)
+		if (game.elapsedTime >= CRITICAL_ELAPSED_TIME)
 		{
-			game.elapsedTime = 0.016f;
+			game.elapsedTime = NORMAL_ELAPSED_TIME;
 		}
 
 		HandleEvents(window, game);
 		Update(game);
 		Render(window, game);
-		
-		//cout << "FPS : " << static_cast<int>(1 / game.elapsedTime) << "\n";
 	}
 }
 
@@ -107,6 +106,7 @@ void InitGamePlayScene(Game& game)
 		game.UpdatePlayer();
 		game.UpdateEnemies();
 		game.UpdateBullets();
+		game.UpdateTemporaryObjects();
 		game.UpdateBonuses();
 		game.CheckEntitiesCollides();
 	};
@@ -118,6 +118,7 @@ void InitGamePlayScene(Game& game)
 		game.DrawBullets(window);
 		game.DrawEnemies(window);
 		game.DrawBonuses(window);
+		game.DrawTemporaryObjects(window);
 		game.DrawInterface(window);
 	};
 }

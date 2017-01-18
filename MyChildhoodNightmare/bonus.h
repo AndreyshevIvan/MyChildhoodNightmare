@@ -13,8 +13,8 @@ const int HARD_BONUS_PROBABILITY = 30;
 
 const float BONUS_FALL_SPEED = 200;
 
-const int BONUS_AK_AMMO_COUNT = 14;
-const int BONUS_SHOOTGUN_AMMO_COUNT = 8;
+const int BONUS_AK_AMMO_COUNT = 20;
+const int BONUS_SHOOTGUN_AMMO_COUNT = 10;
 const int BONUS_HEALTH_COUNT = 20;
 
 const int BONUS_HEALTH_INCREASE = 10;

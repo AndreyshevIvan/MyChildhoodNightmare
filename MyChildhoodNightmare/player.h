@@ -7,7 +7,7 @@ const float PLAYER_MOVE_SPEED = 250;
 
 const int PLAYER_START_HEALTH = 100;
 const int PLAYER_START_SHOOTGUN_AMMO = 7;
-const int PLAYER_START_AK_AMMO = 20;
+const int PLAYER_START_AK_AMMO = 30;
 const int PLAYER_MAX_AMMO = 50;
 const int PLAYER_PISTOL_DEMAGE = 8;
 const int PLAYER_AK_DEMAGE = 5;
